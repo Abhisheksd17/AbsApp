@@ -21,4 +21,15 @@ dependencyResolutionManagement {
 
 rootProject.name = "AbsApp"
 include(":app")
- 
+include(":core:ui")
+include(":core:common")
+include(":core:network")
+include(":core:database")
+include(":core:model")
+include(":feature-auth")
+include(":feature-chat")
+include(":feature-profile")
+include(":feature-notifications")
+include(":feature-settings")
+include(":core:data")
+include(":core:domain")
