@@ -42,15 +42,22 @@ android {
 }
 
 dependencies {
-    implementation(platform(libs.androidx.compose.bom))
 
+    implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
-    implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material3)
 
     debugImplementation(libs.androidx.compose.ui.tooling)
+
+    // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
-    implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.7.3")
+
+    //coroutines
+    implementation(libs.coroutines.core)
+    implementation(libs.coroutines.android)
+    implementation(libs.lifecycle.viewmodel.ktx)
+    implementation(libs.lifecycle.runtime.ktx)
 }

@@ -1,4 +1,4 @@
-package com.example.absapp.navigation
+package com.example.common.navigati.navigation
 
 sealed class NavAction {
     data class Navigate(val route: String) : NavAction()

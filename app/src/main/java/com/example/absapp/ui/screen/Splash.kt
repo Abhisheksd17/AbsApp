@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
@@ -22,10 +21,9 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.absapp.R
 
-import com.example.absapp.navigation.AppNavigator
-import com.example.absapp.navigation.LocalNavigator
-import com.example.absapp.navigation.Screen
+import com.example.common.navigati.navigation.LocalNavigator
 import com.example.absapp.ui.theme.White
+import com.example.common.navigati.navigation.Screen
 import kotlinx.coroutines.delay
 
 

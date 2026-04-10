@@ -7,6 +7,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.absapp.ui.screen.Home
 import com.example.absapp.ui.screen.Splash
+import com.example.common.navigati.navigation.NavAction
+import com.example.common.navigati.navigation.Screen
 import com.example.feature_auth.ui.OnBoarding
 import com.example.feature_auth.ui.SignIn
 import com.example.feature_auth.ui.SignUp
