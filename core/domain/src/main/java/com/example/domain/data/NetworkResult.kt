@@ -1,4 +1,4 @@
-package com.example.data.wrapper
+package com.example.domain.data
 
 sealed class NetworkResult<T>(
     val data: T? = null,
@@ -10,5 +10,7 @@ sealed class NetworkResult<T>(
     class Error<T>(message: String, data: T? = null) : NetworkResult<T>(data, message)
 
     class Loading<T> : NetworkResult<T>()
+
+    class Idle<T> : NetworkResult<T>()
 
 }

@@ -1,6 +1,6 @@
 package com.example.common.navigati.navigation
 
-import com.example.common.navigati.navigation.Screen
+import com.example.common.navigation.Screen
 
 // Basic operations
 interface Navigation {

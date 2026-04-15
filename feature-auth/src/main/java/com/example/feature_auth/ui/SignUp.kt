@@ -23,10 +23,10 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.common.util.Validator
 import com.example.common.navigati.navigation.LocalNavigator
 import com.example.common.R as common
-import com.example.common.navigati.navigation.Screen
-import com.example.common.navigation.Validator
+import com.example.common.navigation.Screen
 import com.example.ui.screen.Button.SubmitButton
 import com.example.ui.screen.InputField.CustomNameInputField
 import com.example.ui.screen.InputField.CustomPasswordInputField

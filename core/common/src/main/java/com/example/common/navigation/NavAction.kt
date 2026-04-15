@@ -1,4 +1,4 @@
-package com.example.common.navigati.navigation
+package com.example.common.navigation
 
 sealed class NavAction {
     data class Navigate(val route: String) : NavAction()

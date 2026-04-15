@@ -29,7 +29,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.common.navigati.navigation.LocalNavigator
-import com.example.common.navigati.navigation.Screen
+import com.example.common.navigation.Screen
 import com.example.ui.screen.Button.SocialIconButton
 import com.example.ui.screen.Button.SubmitButton
 import com.example.common.R as Common

@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,21 +31,18 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
-import com.example.common.util.Validator
+import com.example.ui.R as ui
+import com.example.common.R as common
 import com.example.common.navigati.navigation.LocalNavigator
 import com.example.common.navigation.Screen
 import com.example.domain.data.NetworkResult
 import com.example.feature_auth.viewmodel.LoginViewModel
 import com.example.model.event.AuthEvent
 import com.example.ui.screen.AppAlertDialog
-import com.example.ui.screen.Button.SocialIconButton
 import com.example.ui.screen.Button.SubmitButton
-import com.example.ui.R as ui
-import com.example.common.R as common
-import com.example.ui.screen.InputField.CustomPhoneInputField
+import com.example.ui.screen.InputField.OtpInput
 import com.example.ui.theme.Black
 import com.example.ui.theme.IceGray
-import com.example.ui.theme.LightSageGray
 import com.example.ui.theme.SlateGray
 import com.example.ui.theme.TealGreen
 import com.example.ui.theme.White
@@ -55,30 +51,29 @@ import com.example.ui.theme.carosMedium
 import kotlinx.coroutines.launch
 
 @Composable
-fun SignIn(
-){
+fun OtpVerification(){
 
     val viewModel: LoginViewModel = hiltViewModel()
     val scope = rememberCoroutineScope()
     val navigator = LocalNavigator.current
-    val state by viewModel.sendOtpState.collectAsState()
+    val state by viewModel.verifyOtpState.collectAsState()
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
 
+    var otp by remember { mutableStateOf("") }
 
-    var phone by remember { mutableStateOf("") }
-
-    val isFormValid= Validator.isPhoneValid(phone)
-
+    val isFormValid=!otp.isEmpty()
 
     Box(
         modifier = Modifier
-            .background(White).fillMaxSize()
+            .background(White).fillMaxWidth()
     ){
+
         Column(
             modifier = Modifier.padding(top=17.dp).fillMaxSize()
         )
         {
+
             Icon(
                 painter = painterResource(id = ui.drawable.back_ic),
                 contentDescription = null,
@@ -87,7 +82,7 @@ fun SignIn(
             )
 
             Text(
-                text = stringResource(common.string.log_in_chat),
+                text = stringResource(common.string.verify_phone),
                 modifier = Modifier.padding(top = 60.dp).fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontFamily = carosBold,
@@ -96,7 +91,7 @@ fun SignIn(
             )
 
             Text(
-                text = stringResource(common.string.welcome_back),
+                text = stringResource(common.string.enter_digit),
                 modifier = Modifier.padding(top = 16.dp).padding(horizontal = 24.dp).fillMaxWidth(),
                 textAlign = TextAlign.Center,
                 fontFamily = carosMedium,
@@ -105,66 +100,51 @@ fun SignIn(
                 color = SlateGray
             )
 
-            Row(
-                horizontalArrangement = Arrangement.spacedBy(20.dp, Alignment.CenterHorizontally),
-                verticalAlignment = Alignment.CenterVertically,
+            OtpInput(
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(top = 30.dp)
-            ) {
-                SocialIconButton(ui.drawable.fb_ic) { }
-                SocialIconButton(ui.drawable.google_ic) { }
-                SocialIconButton(ui.drawable.apple_ic) { }
-            }
-
+                    .padding(horizontal = 24.dp)
+                    .fillMaxWidth(),
+                6,
+                onOtpComplete={
+                    otp=it
+                }
+            )
 
             Row(
-                horizontalArrangement = Arrangement.Center,
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 30.dp).padding(horizontal = 30.dp)
-            )
-            {
-
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    color = LightSageGray,
-                    thickness = 1.dp
+                modifier = Modifier
+                    .padding(top = 16.dp)
+                    .fillMaxWidth(),
+                horizontalArrangement = Arrangement.Center
+            ) {
+                Text(
+                    text = stringResource(common.string.did_not_recieve),
+                    fontFamily = carosMedium,
+                    fontSize = 14.sp,
+                    color = SlateGray
                 )
 
                 Text(
-                    text = "OR",
-                    color = SlateGray,
-                    fontSize = 14.sp,
+                    text = stringResource(common.string.resend_otp),
                     fontFamily = carosMedium,
-                    modifier = Modifier.padding(horizontal = 7.dp)
+                    fontSize = 14.sp,
+                    color = TealGreen,
+                    modifier = Modifier.clickable {
+                        // TODO: call resend API
+                    }
                 )
-
-                HorizontalDivider(
-                    modifier = Modifier.weight(1f),
-                    color = LightSageGray,
-                    thickness = 1.dp
-                )
-
             }
-
-            CustomPhoneInputField(
-                value = phone,
-                onValueChange = { phone = it },
-                label = stringResource(common.string.mobile_no),
-                modifier = Modifier.padding(top = 30.dp).padding(horizontal = 24.dp),
-            )
-
 
             Spacer(
                 modifier = Modifier.weight(1f)
             )
 
             SubmitButton(
-                text = stringResource(common.string.submit),
+                text = stringResource(common.string.verify),
                 onClick = {
                     if(isFormValid){
                         scope.launch {
-                            viewModel.sendOtp(phone)
+                            viewModel.verifyOtp(otp)
                         }
                     }
                 },
@@ -177,26 +157,24 @@ fun SignIn(
                 modifier = Modifier
                     .padding(horizontal = 24.dp).padding(bottom = 16.dp)
                     .fillMaxWidth()
-
+                    .navigationBarsPadding()
             )
 
-            Text(
-                text = stringResource(common.string.forgot_password),
-                modifier = Modifier.fillMaxWidth().navigationBarsPadding().clickable(){
-                },
-                textAlign = TextAlign.Center,
-                fontFamily = carosMedium,
-                fontSize = 13.sp,
-                color = TealGreen
-            )
+
+
+            if (showErrorDialog) {
+                AppAlertDialog(
+                    title = stringResource(common.string.error),
+                    message = errorMessage,
+                    onConfirm = { showErrorDialog = false },
+                    onDismiss = { showErrorDialog = false }
+                )
+            }
+
+
         }
 
-
         when (state) {
-
-            is NetworkResult.Idle->{
-
-            }
 
             is NetworkResult.Loading -> {
                 Box(
@@ -210,6 +188,7 @@ fun SignIn(
             }
 
             is NetworkResult.Success -> {
+
             }
 
             is NetworkResult.Error -> {
@@ -219,35 +198,28 @@ fun SignIn(
                     showErrorDialog = true
                 }
             }
+
+            is NetworkResult.Idle->{
+
+            }
         }
 
         LaunchedEffect(Unit) {
             viewModel.event.collect { event ->
                 when (event) {
                     is AuthEvent.NavigateToOtp -> {
-                        navigator.navigate(Screen.Otp)
+
                     }
                     is AuthEvent.NavigateToHome -> {
 
                     }
 
                     is AuthEvent.NavigateToUpdateProfile -> {
-
+                        navigator.navigate(Screen.Update)
                     }
 
                 }
             }
         }
-
-        if (showErrorDialog) {
-            AppAlertDialog(
-                title = stringResource(common.string.error),
-                message = errorMessage,
-                onConfirm = { showErrorDialog = false },
-                onDismiss = { showErrorDialog = false }
-            )
-        }
-
     }
-
 }

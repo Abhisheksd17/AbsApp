@@ -1,6 +1,7 @@
 package com.example.data.wrapper
 
-import com.example.data.wrapper.NetworkResult
+import com.example.domain.data.NetworkResult
+import com.example.model.ApiResponse
 import retrofit2.Response
 
 open class BaseApiResponse {
@@ -15,8 +16,15 @@ open class BaseApiResponse {
                 val body = response.body()
 
                 if (body != null) {
-                    if (body.status == 0 && body.data != null) {
-                        NetworkResult.Success(body.data)
+                    if (body.status == 0) {
+
+                        body.data?.let {
+                            NetworkResult.Success(it)
+                        } ?: run {
+                            @Suppress("UNCHECKED_CAST")
+                            NetworkResult.Success(Unit as T)
+                        }
+
                     } else {
                         NetworkResult.Error(body.message)
                     }

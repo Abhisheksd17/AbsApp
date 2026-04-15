@@ -37,6 +37,10 @@ android {
 }
 
 dependencies {
+
+    implementation(project(":core:model"))
+
+
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
     implementation(libs.material)
@@ -47,4 +51,8 @@ dependencies {
     androidTestImplementation(libs.androidx.espresso.core)
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation(libs.androidx.datastore.preferences)
+    implementation(libs.okhttp.v532)
+    implementation(libs.kotlinx.coroutines.core.v1102)
+    implementation(libs.kotlinx.coroutines.android.v1102)
 }

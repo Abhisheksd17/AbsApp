@@ -1,4 +1,4 @@
-package com.example.data.wrapper
+package com.example.model
 
 import kotlinx.serialization.Serializable
 

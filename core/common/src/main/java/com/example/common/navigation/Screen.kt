@@ -1,4 +1,4 @@
-package com.example.common.navigati.navigation
+package com.example.common.navigation
 
 sealed class Screen(val route: String) {
     object Splash : Screen("splash")
@@ -6,5 +6,8 @@ sealed class Screen(val route: String) {
     object SignUp : Screen("signup")
     object OnBoarding : Screen("onboarding")
     object Home : Screen("home")
+    object Otp : Screen("otp")
+
+    object Update : Screen("update")
 
 }

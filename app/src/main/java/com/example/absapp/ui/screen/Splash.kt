@@ -23,7 +23,7 @@ import com.example.absapp.R
 
 import com.example.common.navigati.navigation.LocalNavigator
 import com.example.absapp.ui.theme.White
-import com.example.common.navigati.navigation.Screen
+import com.example.common.navigation.Screen
 import kotlinx.coroutines.delay
 
 

@@ -1,4 +1,4 @@
-package com.example.common.navigation
+package com.example.common.util
 
 import android.util.Patterns
 
