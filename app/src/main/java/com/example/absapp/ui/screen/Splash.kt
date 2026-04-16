@@ -14,25 +14,35 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.absapp.R
 
 import com.example.common.navigati.navigation.LocalNavigator
 import com.example.absapp.ui.theme.White
+import com.example.common.datastore.DataStore
 import com.example.common.navigation.Screen
+import com.example.feature_auth.viewmodel.LoginViewModel
 import kotlinx.coroutines.delay
+import javax.inject.Inject
 
 
 @Composable
 fun Splash(
 ) {
 
+
     val navigator = LocalNavigator.current
     var startAnimation by remember { mutableStateOf(false) }
+    val viewModel: LoginViewModel = hiltViewModel()
+    val scope = rememberCoroutineScope()
+
+
 
     val scale by animateFloatAsState(
         targetValue = if (startAnimation) 1f else 0.7f,
@@ -46,9 +56,15 @@ fun Splash(
 
     LaunchedEffect(Unit) {
         startAnimation = true
-        delay(800)
-        navigator.navigate(Screen.OnBoarding)
+        val token = viewModel.getToken()
+        if (token.isNullOrEmpty()) {
+            navigator.navigate(Screen.OnBoarding)
+        } else {
+            navigator.navigate(Screen.Home)
+        }
     }
+
+
 
     Box(
         modifier = Modifier

@@ -44,6 +44,10 @@ class LoginViewModel @Inject constructor(
     private val _event = MutableSharedFlow<AuthEvent>()
     val event = _event.asSharedFlow()
 
+    suspend fun getToken():String?{
+        return datastore.getAccessToken()
+    }
+
 
     fun sendOtp(phone: String) {
         viewModelScope.launch {

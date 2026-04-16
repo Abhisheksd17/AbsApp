@@ -66,11 +66,10 @@ fun AppNavHost(navigator: AppNavigator) {
         composable(Screen.OnBoarding.route) { OnBoarding() }
         composable(Screen.SignIn.route) { SignIn() }
         composable(Screen.SignUp.route) { SignUp() }
-        composable(Screen.Home.route) { Home() }
         composable(Screen.Otp.route) { OtpVerification() }
         composable(Screen.Update.route) { UpdateProfile() }
+        composable(Screen.Home.route) { Home() }
     }
-
 
 
 }
