@@ -20,7 +20,10 @@
             <option value="$PROJECT_DIR$/core/network" />
             <option value="$PROJECT_DIR$/core/ui" />
             <option value="$PROJECT_DIR$/feature-auth" />
+            <option value="$PROJECT_DIR$/feature-call" />
             <option value="$PROJECT_DIR$/feature-chat" />
+            <option value="$PROJECT_DIR$/feature-contact" />
+            <option value="$PROJECT_DIR$/feature-contacts" />
             <option value="$PROJECT_DIR$/feature-notifications" />
             <option value="$PROJECT_DIR$/feature-profile" />
             <option value="$PROJECT_DIR$/feature-settings" />

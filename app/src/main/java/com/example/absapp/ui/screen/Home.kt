@@ -8,21 +8,30 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.common.navigation.Screen
-import com.example.ui.screen.HomeBottomNav
+import com.example.feature_call.Call
+import com.example.feature_chat.screens.Chat
+import com.example.feature_contact.Contacts
+import com.example.feature_profile.Profile
+
 
 @Composable
 fun Home(){
 
     val navController=rememberNavController()
     Scaffold(
-        bottomBar = HomeBottomNav(navController)
+        bottomBar = {
+            HomeBottomBar(navController)
+        }
     ) {padding ->
         NavHost(
             navController=navController,
-            startDestination = "chats",
+            startDestination = Screen.Chats.route,
             modifier = Modifier.padding(padding)
         ){
-            composable(Screen.Chats.route) {  }
+            composable(Screen.Chats.route) { Chat() }
+            composable(Screen.Calls.route) { Call() }
+            composable(Screen.Contacts.route) { Contacts() }
+            composable(Screen.Profile.route) { Profile() }
         }
 
     }

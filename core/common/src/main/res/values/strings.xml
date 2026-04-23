@@ -8,7 +8,12 @@
     <string name="log_in_chat">Log in to ChatBox</string>
     <string name="name">Name</string>
     <string name="info">Info</string>
+    <string name="home">Home</string>
     <string name="verify_phone">Verify Your Number</string>
+    <string name="msg">Message</string>
+    <string name="call">Calls</string>
+    <string name="contact">Contacts</string>
+    <string name="setting">Settings</string>
     <string name="submit">Submit</string>
     <string name="error">Error</string>
     <string name="resend_otp">Resend OTP</string>

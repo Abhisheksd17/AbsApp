@@ -11,6 +11,7 @@ sealed class Screen(val route: String) {
     object Chats : Screen("chats")
     object Calls : Screen("calls")
     object Contacts : Screen("contacts")
+    object Profile : Screen("profile")
     object Settings : Screen("settings")
 
 }

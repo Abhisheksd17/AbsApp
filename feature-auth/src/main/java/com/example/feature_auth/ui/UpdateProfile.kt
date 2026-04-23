@@ -1,8 +1,11 @@
 package com.example.feature_auth.ui
 
+import android.Manifest
 import android.content.Context
 import android.net.Uri
 import android.util.Log
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -33,6 +36,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.common.navigati.navigation.LocalNavigator
 import com.example.common.navigation.Screen
 import com.example.domain.data.NetworkResult
+import com.example.feature_auth.viewmodel.ContactViewModel
 import com.example.feature_auth.viewmodel.LoginViewModel
 import com.example.model.event.AuthEvent
 import com.example.ui.screen.AppAlertDialog
@@ -54,6 +58,7 @@ fun UpdateProfile(){
 
     val context = LocalContext.current
     val viewModel: LoginViewModel = hiltViewModel()
+    val contactViewModel: ContactViewModel = hiltViewModel()
     val scope = rememberCoroutineScope()
     val navigator = LocalNavigator.current
     val state by viewModel.profileState.collectAsState()
@@ -65,6 +70,17 @@ fun UpdateProfile(){
 
 
     val isFormValid=!(userName.isEmpty() || status.isEmpty() || imageUri.toString().isEmpty())
+
+    val permissionLauncher =
+        rememberLauncherForActivityResult(
+            contract = ActivityResultContracts.RequestPermission()
+        ) { granted ->
+            if (granted) {
+                contactViewModel.startSync() // trigger WorkManager
+            } else {
+                // handle denied (show message)
+            }
+        }
 
 
     Box(
@@ -158,6 +174,7 @@ fun UpdateProfile(){
             }
 
             is NetworkResult.Success -> {
+                permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
             }
 
             is NetworkResult.Error -> {

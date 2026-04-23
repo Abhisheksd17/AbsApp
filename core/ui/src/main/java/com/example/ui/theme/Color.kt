@@ -20,10 +20,13 @@ val LightSageGray = Color(0xFFCDD1D0)
 val PaleMintGray = Color(0xFFD6E4E0)
 val SlateGray = Color(0xFF797C7B)
 val IceGray = Color(0xFFF3F6F6)
+val SoftLightGray = Color(0xFFE6E6E6)
+
 
 
 //Green
 val TealGreen = Color(0xFF24786D)
+val CoolSlateGreen = Color(0xFF363F3B)
 
 //Red
 val ErrorRed = Color(0xFFFF2D1B)

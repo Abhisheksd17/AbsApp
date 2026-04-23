@@ -68,7 +68,6 @@ class AuthRepositoryImpl @Inject constructor(
             val result = safeApiCall {
                 apiService.updateProfile(request)
             }
-
             emit(result)
         }.flowOn(Dispatchers.IO)
 

@@ -25,6 +25,7 @@ import com.example.absapp.R
 
 import com.example.common.navigati.navigation.LocalNavigator
 import com.example.absapp.ui.theme.White
+import com.example.feature_auth.viewmodel.ContactViewModel
 import com.example.common.datastore.DataStore
 import com.example.common.navigation.Screen
 import com.example.feature_auth.viewmodel.LoginViewModel
@@ -40,6 +41,7 @@ fun Splash(
     val navigator = LocalNavigator.current
     var startAnimation by remember { mutableStateOf(false) }
     val viewModel: LoginViewModel = hiltViewModel()
+    val contactViewModel: ContactViewModel = hiltViewModel()
     val scope = rememberCoroutineScope()
 
 

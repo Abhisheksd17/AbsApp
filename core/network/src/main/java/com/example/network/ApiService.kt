@@ -2,6 +2,9 @@ package com.example.network
 
 import com.example.model.ApiResponse
 import com.example.model.Response
+import com.example.model.chat.ChatListResponse
+import com.example.model.contact.ContactList
+import com.example.model.contact.ContactSyncRequest
 import com.example.model.login.AuthResponse
 import com.example.model.login.AvatarResponse
 import com.example.model.login.OtpRequest
@@ -41,4 +44,13 @@ interface ApiService {
     suspend fun uploadAvatar(
         @Part file: MultipartBody.Part
     ): ApiResponse<AvatarResponse>
+
+
+    @GET("/chats")
+    suspend fun getChatList(): retrofit2.Response<ApiResponse<ChatListResponse>>
+
+    @POST("contacts/sync")
+    suspend fun syncContacts(
+        @Body hashes: ContactSyncRequest
+    ):retrofit2.Response<ApiResponse<List<ContactList>>>
 }

@@ -18,3 +18,7 @@ val carosThin = FontFamily(
 val carosBold = FontFamily(
     Font(R.font.caros_bold, FontWeight.Bold,FontStyle.Normal)
 )
+
+val carosLight = FontFamily(
+    Font(com.example.common.R.font.caroslight, FontWeight.Bold,FontStyle.Normal)
+)

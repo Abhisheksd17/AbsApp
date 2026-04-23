@@ -72,4 +72,9 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.lifecycle.runtime.ktx)
+
+
+    implementation(libs.work.runtime)
+    implementation(libs.hilt.work)
+    kapt(libs.hilt.compiler)
 }
