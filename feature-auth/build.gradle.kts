@@ -9,9 +9,7 @@ plugins {
 
 android {
     namespace = "com.example.feature_auth"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
@@ -28,9 +26,6 @@ android {
                 "proguard-rules.pro"
             )
         }
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.14" // IMPORTANT
     }
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
@@ -50,6 +45,7 @@ dependencies {
     implementation(project(":core:common"))
     implementation(project(":core:domain"))
     implementation(project(":core:model"))
+    implementation(project(":core:worker"))
 
     // Compose BOM (controls all versions)
     implementation(platform(libs.androidx.compose.bom))
@@ -76,5 +72,4 @@ dependencies {
 
     implementation(libs.work.runtime)
     implementation(libs.hilt.work)
-    kapt(libs.hilt.compiler)
 }

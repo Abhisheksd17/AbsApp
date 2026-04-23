@@ -10,7 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.common.navigation.Screen
 import com.example.feature_call.Call
 import com.example.feature_chat.screens.Chat
-import com.example.feature_contact.Contacts
+import com.example.feature_contact.screen.Contacts
 import com.example.feature_profile.Profile
 
 

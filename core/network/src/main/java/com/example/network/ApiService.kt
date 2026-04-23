@@ -49,7 +49,7 @@ interface ApiService {
     @GET("/chats")
     suspend fun getChatList(): retrofit2.Response<ApiResponse<ChatListResponse>>
 
-    @POST("contacts/sync")
+    @POST("/users/contacts/sync")
     suspend fun syncContacts(
         @Body hashes: ContactSyncRequest
     ):retrofit2.Response<ApiResponse<List<ContactList>>>

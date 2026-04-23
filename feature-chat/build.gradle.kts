@@ -9,9 +9,7 @@ plugins {
 
 android {
     namespace = "com.example.feature_chat"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
@@ -42,8 +40,6 @@ android {
 }
 
 dependencies {
-
-
 
     implementation(project(":core:ui"))
     implementation(project(":core:common"))

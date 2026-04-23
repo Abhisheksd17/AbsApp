@@ -9,9 +9,7 @@ plugins {
 
 android {
     namespace = "com.example.absapp"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.example.absapp"
@@ -59,6 +57,7 @@ dependencies {
     implementation(project(":core:domain"))
     implementation(project(":core:model"))
     implementation(project(":core:network"))
+    implementation(project(":core:worker"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
@@ -97,7 +96,7 @@ dependencies {
 
     implementation(libs.work.runtime)
     implementation(libs.hilt.work)
-    kapt(libs.hilt.compiler)
+    kapt(libs.androidx.hilt.compiler)
 
 
 }

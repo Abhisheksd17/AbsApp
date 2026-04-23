@@ -9,9 +9,7 @@ plugins {
 
 android {
     namespace = "com.example.ui"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
@@ -57,6 +55,8 @@ android {
         // Hilt
         implementation(libs.hilt.android)
         kapt(libs.hilt.compiler)
+        androidTestImplementation(libs.hilt.android.testing)
+        kaptAndroidTest(libs.hilt.compiler)
 
-        implementation("io.coil-kt:coil-compose:2.6.0")
+        implementation(libs.coil.compose)
     }

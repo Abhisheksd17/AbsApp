@@ -1,4 +1,4 @@
-package com.example.common.worker
+package com.example.worker
 
 import android.content.Context
 import androidx.work.WorkManager

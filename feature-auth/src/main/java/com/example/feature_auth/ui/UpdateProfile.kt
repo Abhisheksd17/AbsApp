@@ -71,16 +71,20 @@ fun UpdateProfile(){
 
     val isFormValid=!(userName.isEmpty() || status.isEmpty() || imageUri.toString().isEmpty())
 
+
     val permissionLauncher =
         rememberLauncherForActivityResult(
             contract = ActivityResultContracts.RequestPermission()
         ) { granted ->
             if (granted) {
-                contactViewModel.startSync() // trigger WorkManager
+                contactViewModel.startSync()
             } else {
-                // handle denied (show message)
             }
         }
+
+    LaunchedEffect(Unit) {
+        permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+    }
 
 
     Box(
@@ -174,7 +178,7 @@ fun UpdateProfile(){
             }
 
             is NetworkResult.Success -> {
-                permissionLauncher.launch(Manifest.permission.READ_CONTACTS)
+
             }
 
             is NetworkResult.Error -> {

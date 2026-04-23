@@ -1,12 +1,14 @@
-package com.example.common.util
+package com.example.data.wrapper
 
 import android.content.Context
 import android.provider.ContactsContract
+import com.example.common.util.Utils
 import com.example.model.contact.Contact
+import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
 class DeviceContactDataSource @Inject constructor(
-    private val context: Context
+    @ApplicationContext private val context: Context
 ) {
 
     fun getContacts(): List<Contact> {

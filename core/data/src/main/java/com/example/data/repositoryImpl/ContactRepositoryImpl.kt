@@ -1,6 +1,6 @@
 package com.example.data.repositoryImpl
 
-import com.example.common.util.DeviceContactDataSource
+import com.example.data.wrapper.DeviceContactDataSource
 import com.example.database.dao.ContactDao
 import com.example.database.entity.ContactEntity
 import com.example.domain.repository.ContactRepository

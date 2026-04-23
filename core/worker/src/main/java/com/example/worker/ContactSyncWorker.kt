@@ -1,21 +1,20 @@
-package com.example.common.worker
+package com.example.worker
 
 import android.content.Context
 import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.domain.repository.ContactRepository
-import com.example.domain.repository.SyncTask
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.io.IOException
 
 @HiltWorker
 class ContactSyncWorker @AssistedInject constructor(
-    @Assisted context: Context,
-    @Assisted params: WorkerParameters,
+    @Assisted appContext: Context,
+    @Assisted workerParams: WorkerParameters,
     private val repository: ContactRepository
-) : CoroutineWorker(context, params) {
+) : CoroutineWorker(appContext, workerParams) {
 
     override suspend fun doWork(): Result {
         return try {

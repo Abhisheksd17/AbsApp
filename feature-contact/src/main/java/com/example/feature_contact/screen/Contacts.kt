@@ -1,4 +1,4 @@
-package com.example.feature_contact
+package com.example.feature_contact.screen
 
 import androidx.compose.runtime.Composable
 
