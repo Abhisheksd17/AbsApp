@@ -12,7 +12,7 @@ import com.example.database.entity.ContactEntity
         ChatListEntity::class,
         ContactEntity::class
     ],
-    version = 2,
+    version = 3,
     exportSchema = false
 )
 abstract class ChatRoomDataBase : RoomDatabase() {

@@ -15,6 +15,7 @@
     <string name="contact">Contacts</string>
     <string name="setting">Settings</string>
     <string name="submit">Submit</string>
+    <string name="profile">Profile</string>
     <string name="error">Error</string>
     <string name="resend_otp">Resend OTP</string>
     <string name="something_went_wrong">Something went wrong</string>

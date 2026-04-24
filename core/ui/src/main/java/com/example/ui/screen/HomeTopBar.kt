@@ -1,4 +1,4 @@
-package com.example.feature_chat.ui
+package com.example.ui.screen
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -20,10 +20,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.common.R
 
 import com.example.ui.R as ui
 import com.example.ui.theme.CoolSlateGreen
@@ -32,6 +30,7 @@ import com.example.ui.theme.carosMedium
 
 @Composable
 fun HomeTopBar(
+    header:String,
     search: Boolean,
     query: String,
     onQueryChange: (String) -> Unit,
@@ -105,14 +104,13 @@ fun HomeTopBar(
                     )
                 }
 
-                // CENTER TEXT (perfectly centered)
                 Box(
                     modifier = Modifier
                         .weight(1f),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = stringResource(R.string.home),
+                        text = header,
                         color = White,
                         fontFamily = carosMedium,
                         fontSize = 20.sp

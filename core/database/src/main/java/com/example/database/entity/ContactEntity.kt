@@ -11,6 +11,7 @@ data class ContactEntity(
     val lastModified: Long,
     val isSynced: Boolean,
     val isRegistered: Boolean,
-    val name: String?,
-    val status: String?
+    val name: String,
+    val status: String?,
+    val profile_url:String?
 )

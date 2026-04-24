@@ -66,7 +66,6 @@ fun SwipeableChatItem(
             }
         )
 
-        // ── Foreground chat row (slides left on swipe) ──
         Box(
             modifier = Modifier
                 .fillMaxWidth()

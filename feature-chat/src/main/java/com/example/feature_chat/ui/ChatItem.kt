@@ -36,6 +36,7 @@ import com.example.ui.theme.carosBold
 import com.example.ui.theme.carosLight
 import com.example.ui.theme.carosMedium
 import com.example.ui.theme.carosThin
+import com.example.ui.theme.circularStd
 
 @Composable
 fun ChatItem(
@@ -90,7 +91,7 @@ fun ChatItem(
                     text = message?:"",
                     fontSize = 10.sp,
                     color = SlateGray,
-                    fontFamily = carosLight
+                    fontFamily = circularStd
 
                 )
 

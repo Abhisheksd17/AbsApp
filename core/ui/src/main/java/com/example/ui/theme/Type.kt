@@ -22,3 +22,7 @@ val carosBold = FontFamily(
 val carosLight = FontFamily(
     Font(com.example.common.R.font.caroslight, FontWeight.Bold,FontStyle.Normal)
 )
+
+val circularStd = FontFamily(
+    Font(R.font.circular_std, FontWeight.Bold,FontStyle.Normal)
+)

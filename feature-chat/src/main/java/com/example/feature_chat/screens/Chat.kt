@@ -8,6 +8,8 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -17,17 +19,23 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import com.example.common.R
 import com.example.domain.data.NetworkResult
-import com.example.feature_chat.ui.HomeTopBar
+import com.example.ui.screen.HomeTopBar
 import com.example.feature_chat.ui.SwipeableChatItem
 import com.example.feature_chat.viewmodel.ChatListViewModel
 import com.example.ui.theme.Black
+import com.example.ui.theme.SoftLightGray
 import com.example.ui.theme.White
 
 @Composable
@@ -35,6 +43,8 @@ fun Chat() {
 
     val viewModel: ChatListViewModel = hiltViewModel()
     val state by viewModel.chatListState.collectAsState()
+    var isSearch by rememberSaveable { mutableStateOf(false) }
+    var query by rememberSaveable { mutableStateOf("") }
 
     LaunchedEffect(Unit) {
         viewModel.getChatList()
@@ -54,14 +64,20 @@ fun Chat() {
         Column(modifier = Modifier.fillMaxSize()) {
 
             HomeTopBar(
-                search = false,
+                header = stringResource(R.string.home),
+                search = isSearch,
                 query = "",
                 onQueryChange = {},
-                onSearchClick = {},
-                onBackClick = {}
+                onSearchClick = {
+                    isSearch = !isSearch
+                },
+                onBackClick = {
+                    isSearch = false
+                    query = ""
+                }
             )
 
-            Box(
+            Column(
                 modifier = Modifier
                     .weight(1f)
                     .fillMaxWidth()
@@ -69,47 +85,65 @@ fun Chat() {
                     .background(White)
             ) {
 
-                when (val result = state) {
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterHorizontally)
+                        .padding(top = 14.dp, bottom = 24.dp)
+                        .width(30.dp)
+                        .height(3.dp)
+                        .clip(RoundedCornerShape(50))
+                        .background(SoftLightGray.copy(alpha = 0.5f))
+                )
 
-                    is NetworkResult.Loading -> {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            CircularProgressIndicator()
-                        }
-                    }
 
-                    is NetworkResult.Success -> {
+                Box(
 
-                        val chats = result.data ?: emptyList()
+                ) {
 
-                        LazyColumn {
-                            items(chats, key = { it.chatId }) { item ->
+                    when (val result = state) {
 
-                                SwipeableChatItem(
-                                    imageUri = item.profileUrl ?: "",
-                                    onImageSelected = {},
-                                    name = item.title,
-                                    message = item.lastMsgPreview ?: "",
-                                    timesAgo = item.lastMsgAt?.toString() ?: "",
-                                    unreadMsg = item.unreadCount > 0,
-                                    msgCount = item.unreadCount,
-                                    onMute = {},
-                                    onDelete = {}
-                                )
-
-                                Spacer(modifier = Modifier.height(8.dp))
+                        is NetworkResult.Loading -> {
+                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                CircularProgressIndicator()
                             }
                         }
-                    }
 
-                    is NetworkResult.Error -> {
-                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                            Text(result.message ?: "Error")
+                        is NetworkResult.Success -> {
+
+                            val chats = result.data ?: emptyList()
+
+                            LazyColumn {
+                                items(chats, key = { it.chatId }) { item ->
+
+                                    SwipeableChatItem(
+                                        imageUri = item.profileUrl ?: "",
+                                        onImageSelected = {},
+                                        name = item.title,
+                                        message = item.lastMsgPreview ?: "",
+                                        timesAgo = item.lastMsgAt?.toString() ?: "",
+                                        unreadMsg = item.unreadCount > 0,
+                                        msgCount = item.unreadCount,
+                                        onMute = {},
+                                        onDelete = {}
+                                    )
+
+                                    Spacer(modifier = Modifier.height(8.dp))
+                                }
+                            }
                         }
-                    }
 
-                    else -> Unit
+                        is NetworkResult.Error -> {
+                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                Text(result.message ?: "Error")
+                            }
+                        }
+
+                        else -> Unit
+                    }
                 }
             }
+
+
         }
     }
 }
