@@ -1,14 +1,13 @@
 package com.example.database.dao
 
 import androidx.room.Dao
-import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Upsert
 import com.example.database.entity.ChatListEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao
-interface ChatDao {
+interface ChatListDao {
 
     @Query("SELECT * FROM chats ORDER BY lastMsgAt DESC")
     fun observeChats(): Flow<List<ChatListEntity>>

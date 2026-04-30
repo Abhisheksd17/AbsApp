@@ -1,8 +1,12 @@
 package com.example.network
 
 import com.example.model.ApiResponse
-import com.example.model.Response
-import com.example.model.chat.ChatListResponse
+import com.example.model.chat.CreateChatRequest
+import com.example.model.chat.CreateChatResponse
+import com.example.model.chat.CreateGroupRequest
+import com.example.model.chatlist.ChatDetails
+import com.example.model.message.MessagesResponse
+import com.example.model.message.SendMessageRequest
 import com.example.model.contact.ContactList
 import com.example.model.contact.ContactSyncRequest
 import com.example.model.login.AuthResponse
@@ -18,6 +22,8 @@ import retrofit2.http.Multipart
 import retrofit2.http.POST
 import retrofit2.http.PUT
 import retrofit2.http.Part
+import retrofit2.http.Path
+import retrofit2.http.Query
 
 interface ApiService {
 
@@ -47,10 +53,33 @@ interface ApiService {
 
 
     @GET("/chats")
-    suspend fun getChatList(): retrofit2.Response<ApiResponse<ChatListResponse>>
+    suspend fun getChatList(): retrofit2.Response<ApiResponse<List<ChatDetails>>>
 
     @POST("/users/contacts/sync")
     suspend fun syncContacts(
         @Body hashes: ContactSyncRequest
     ):retrofit2.Response<ApiResponse<List<ContactList>>>
+
+    @GET("messages/{chatId}/messages")
+    suspend fun getMessages(
+        @Path("chatId") chatId: Int,
+        @Query("limit") limit: Int,
+        @Query("cursor") cursor: String? = null
+    ): retrofit2.Response<ApiResponse<MessagesResponse>>
+
+    @POST("messages")
+    suspend fun sendMessage(
+        @Body request: SendMessageRequest
+    ): retrofit2.Response<ApiResponse<Unit>>
+
+    @POST("chats/direct")
+    suspend fun createDirectChat(
+        @Body request: CreateChatRequest
+    ): retrofit2.Response<ApiResponse<CreateChatResponse>>
+
+    @POST("chats/group")
+    suspend fun createGroupChat(
+        @Body request: CreateGroupRequest
+    ): retrofit2.Response<ApiResponse<CreateChatResponse>>
+
 }

@@ -45,7 +45,6 @@ fun SwipeableChatItem(
             .fillMaxWidth()
             .onSizeChanged { } // placeholder; we measure button area below
     ) {
-        // ── Background action buttons (rendered behind) ──
         SwipeActionsBackground(
             modifier = Modifier
                 .align(Alignment.CenterEnd)
@@ -74,7 +73,6 @@ fun SwipeableChatItem(
                     detectHorizontalDragGestures(
                         onDragEnd = {
                             coroutineScope.launch {
-                                // Snap open if dragged past 40% of reveal width, else close
                                 if (-offsetX.value > revealWidthPx * 0.5f) {
                                     offsetX.animateTo(-revealWidthPx, tween(300))
                                 } else {

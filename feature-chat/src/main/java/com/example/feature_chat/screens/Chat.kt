@@ -1,5 +1,6 @@
 package com.example.feature_chat.screens
 import android.app.Activity
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -29,6 +30,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.navigation.NavController
 import com.example.common.R
 import com.example.domain.data.NetworkResult
 import com.example.ui.screen.HomeTopBar
@@ -45,6 +47,7 @@ fun Chat() {
     val state by viewModel.chatListState.collectAsState()
     var isSearch by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
+
 
     LaunchedEffect(Unit) {
         viewModel.getChatList()
@@ -111,6 +114,7 @@ fun Chat() {
                         is NetworkResult.Success -> {
 
                             val chats = result.data ?: emptyList()
+                            Log.d("chats",chats.toString())
 
                             LazyColumn {
                                 items(chats, key = { it.chatId }) { item ->

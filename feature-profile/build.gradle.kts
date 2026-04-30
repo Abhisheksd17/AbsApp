@@ -43,6 +43,7 @@ dependencies {
 
     implementation(project(":core:ui"))
     implementation(project(":core:domain"))
+    implementation(project(":core:common"))
 
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.compose.ui)
@@ -61,6 +62,8 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.lifecycle.runtime.ktx)
+
+    implementation(libs.coil.compose)
 
     
 }

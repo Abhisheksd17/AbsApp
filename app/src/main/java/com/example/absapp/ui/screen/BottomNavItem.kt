@@ -12,5 +12,5 @@ sealed class BottomNavItem(
     object Chats : BottomNavItem("chats", common.string.msg, R.drawable.message_ic)
     object Calls : BottomNavItem("calls", common.string.call, R.drawable.call_ic)
     object Contacts : BottomNavItem("contacts", common.string.contact, R.drawable.user_ic)
-    object Settings : BottomNavItem("settings", common.string.setting, R.drawable.settings_ic)
+    object Profile : BottomNavItem("profile", common.string.setting, R.drawable.settings_ic)
 }

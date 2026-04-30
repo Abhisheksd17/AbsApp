@@ -1,48 +1,56 @@
 package com.example.data.repositoryImpl
 
-import com.example.data.mapper.ChatListMapper
 import com.example.data.wrapper.BaseApiResponse
-import com.example.database.dao.ChatDao
-import com.example.database.entity.ChatListEntity
-import com.example.domain.data.ChatList
+import com.example.database.dao.UserDao
 import com.example.domain.data.NetworkResult
 import com.example.domain.repository.ChatRepository
+import com.example.model.chat.CreateChatRequest
+import com.example.model.chat.CreateChatResponse
+import com.example.model.chat.CreateGroupRequest
 import com.example.network.ApiService
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.catch
-import kotlinx.coroutines.flow.map
-import kotlinx.coroutines.flow.onStart
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class ChatRepositoryImpl @Inject constructor(
     private val api: ApiService,
-    private val dao: ChatDao,
-    private val mapper: ChatListMapper
-) : ChatRepository, BaseApiResponse() {
+    private val userDao: UserDao
+): ChatRepository, BaseApiResponse() {
 
-    override fun getChats(): Flow<NetworkResult<List<ChatList>>> {
-        return dao.observeChats()
-            .map<List<ChatListEntity>, NetworkResult<List<ChatList>>> { entities ->
-                val domainList = mapper.entityListToDomainList(entities)
-                NetworkResult.Success(domainList)
+
+    override suspend fun createChat(
+        request: CreateChatRequest
+    ): Flow<NetworkResult<CreateChatResponse>> {
+
+        return flow {
+            emit(NetworkResult.Loading())
+
+            val result = safeApiCall {
+                api.createDirectChat(request)
             }
-            .onStart {
-                emit(NetworkResult.Loading<List<ChatList>>())
-                refreshChats()
-            }
-            .catch { e ->
-                emit(NetworkResult.Error<List<ChatList>>(e.message ?: "DB error"))
-            }
+
+            emit(result)
+        }.flowOn(Dispatchers.IO)
     }
-    override suspend fun refreshChats() {
-        val result = safeApiCall { api.getChatList() }
 
-        if (result is NetworkResult.Success) {
-            result.data?.let { chatListResponse ->
-                val entities = mapper.dtoToEntityList(chatListResponse)
-                dao.insertChatList(entities)
+    override suspend fun createGroupChat(
+        request: CreateGroupRequest
+    ): Flow<NetworkResult<CreateChatResponse>> {
+
+        return flow {
+            emit(NetworkResult.Loading())
+
+            val result = safeApiCall {
+                api.createGroupChat(request)
             }
-        }
 
+            emit(result)
+        }.flowOn(Dispatchers.IO)
+    }
+
+    override suspend fun getChatByUserId(userId: Int): Int? {
+      return userDao.getChatId(userId)
     }
 }

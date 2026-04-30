@@ -2,8 +2,10 @@ package com.example.database.db
 
 import android.content.Context
 import androidx.room.Room
-import com.example.database.dao.ChatDao
+import com.example.database.dao.MessageDao
+import com.example.database.dao.ChatListDao
 import com.example.database.dao.ContactDao
+import com.example.database.dao.UserDao
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -41,8 +43,15 @@ object DatabaseModule {
     }
 
     @Provides
-    fun provideChatDao(db: ChatRoomDataBase): ChatDao = db.chatDao()
+    fun provideChatListDao(db: ChatRoomDataBase): ChatListDao = db.chatListDao()
 
     @Provides
     fun provideContactDao(db: ChatRoomDataBase): ContactDao = db.contactDao()
-}
+
+    @Provides
+    fun provideUserDao(db: ChatRoomDataBase): UserDao = db.userDao()
+
+    @Provides
+    fun provideMessageDao(db: ChatRoomDataBase): MessageDao = db.messageDao()
+
+    }

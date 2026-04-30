@@ -32,10 +32,12 @@ import com.example.ui.theme.circularStd
 
 @Composable
 fun ContactItem(
+    id: Int,
     imageUri: String?,
     onImageSelected: (String) -> Unit,
     name: String,
     status: String?,
+    onChatSelected:(Int)->Unit
 ) {
 
 
@@ -43,7 +45,8 @@ fun ContactItem(
         modifier = Modifier
             .fillMaxWidth()
             .background(White)
-            .padding(horizontal = 24.dp, vertical = 10.dp),
+            .padding(horizontal = 24.dp, vertical = 10.dp)
+            .clickable{onChatSelected(id)},
         verticalAlignment = Alignment.CenterVertically
     )
     {

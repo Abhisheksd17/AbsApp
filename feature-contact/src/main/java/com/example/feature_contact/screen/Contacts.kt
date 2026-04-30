@@ -1,5 +1,6 @@
 package com.example.feature_contact.screen
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,7 +12,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.material3.pulltorefresh.PullToRefreshBox
 import androidx.compose.material3.pulltorefresh.rememberPullToRefreshState
@@ -20,7 +20,6 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -39,7 +38,9 @@ import com.example.ui.theme.SoftLightGray
 import com.example.ui.theme.White
 
 @Composable
-fun Contacts(){
+fun Contacts(
+    onOpenConversation: (Int) -> Unit
+){
 
     val viewModel: ContactViewModel = hiltViewModel()
 
@@ -47,7 +48,7 @@ fun Contacts(){
 
     var isSearch by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
-    var isRefreshing by remember { mutableStateOf(false) }
+    val isRefreshing = state is NetworkResult.Loading
     val refreshState = rememberPullToRefreshState()
 
 
@@ -94,44 +95,44 @@ fun Contacts(){
                         .background(SoftLightGray.copy(alpha = 0.5f))
                 )
 
+
                 PullToRefreshBox(
                     isRefreshing = isRefreshing,
                     onRefresh = {
-                        isRefreshing = true
                         viewModel.syncRefreshContact()
                     },
                     state = refreshState
-                )
-                {
+                ) {
                     when (val result = state) {
 
                         is NetworkResult.Loading -> {
-                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                CircularProgressIndicator()
-                            }
+
                         }
 
                         is NetworkResult.Success -> {
-                            isRefreshing = false
-
                             val contacts = result.data ?: emptyList()
 
-                            LazyColumn {
-                                items(contacts, key = {it.id }) { item ->
-
+                            LazyColumn(
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                items(contacts, key = { it.id }) { item ->
                                     ContactItem(
+                                        id = item.id,
                                         imageUri = item.profile_url,
                                         onImageSelected = {},
                                         name = item.name,
-                                        status = item.status
-                                    )
+                                        status = item.status,
+                                        onChatSelected = {
+                                            Log.d("passing",item.id.toString())
+                                            onOpenConversation(item.id)
+                                        }
 
+                                    )
                                 }
                             }
                         }
 
                         is NetworkResult.Error -> {
-                            isRefreshing = false
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 Text(result.message ?: "Error")
                             }

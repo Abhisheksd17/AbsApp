@@ -24,4 +24,11 @@ object Utils {
         return md.digest(input.toByteArray())
             .joinToString("") { "%02x".format(it) }
     }
+
+    fun formatTime(isoTime: String): String {
+        val instant = java.time.Instant.parse(isoTime)
+        val formatter = java.time.format.DateTimeFormatter.ofPattern("hh:mm a")
+            .withZone(java.time.ZoneId.systemDefault())
+        return formatter.format(instant)
+    }
 }

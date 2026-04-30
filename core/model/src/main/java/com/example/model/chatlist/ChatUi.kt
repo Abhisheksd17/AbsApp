@@ -1,4 +1,4 @@
-package com.example.model.chat
+package com.example.model.chatlist
 
 data class ChatUi(
     val id: Int,

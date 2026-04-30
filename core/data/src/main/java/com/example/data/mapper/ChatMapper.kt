@@ -1,51 +1,66 @@
 package com.example.data.mapper
 
-import com.example.database.entity.ChatListEntity
-import com.example.domain.data.ChatList
-import com.example.model.chat.ChatListResponse
+import com.example.database.entity.MessageEntity
+import com.example.model.message.MessageDto
+import com.example.model.message.MessageStatus
+import java.util.UUID
 import javax.inject.Inject
 
-class ChatListMapper @Inject constructor() {
+class ChatMapper @Inject constructor() {
 
-    fun dtoToEntityList(response: ChatListResponse): List<ChatListEntity> {
-        return response.chat.map { dto ->
-            ChatListEntity(
-                chatId = dto.chat_id,
-                title = dto.title,
-                userId = dto.user_id.toIntOrNull(),
-                profileUrl = dto.profile_url,
-                type = dto.type,
-
-                lastMsgPreview = dto.last_msg_preview,
-                lastMsgAt = dto.last_msg_at?.toLongOrNull(),
-                lastMsgSenderId = dto.last_msg_sender_id,
-
-                unreadCount = dto.unread_count ?: 0,
-                peerOnline = dto.peer_online
-            )
-        }
-    }
-
-    fun entityToDomain(entity: ChatListEntity): ChatList {
-        return ChatList(
-            chatId = entity.chatId,
-            title = entity.title,
-            userId = entity.userId,
-            profileUrl = entity.profileUrl,
-            type = entity.type,
-
-            lastMsgPreview = entity.lastMsgPreview,
-            lastMsgAt = entity.lastMsgAt,
-            lastMsgSenderId = entity.lastMsgSenderId,
-
-            unreadCount = entity.unreadCount,
-            peerOnline = entity.peerOnline
+    fun dtoToEntity(messageDto: MessageDto): MessageEntity {
+        return MessageEntity(
+            id = messageDto.id,
+            chatId = messageDto.chat_id,
+            senderId = messageDto.sender_id,
+            type = messageDto.type,
+            body = messageDto.body,
+            mediaId = messageDto.media_id,
+            mediaUrl = messageDto.media_url,
+            mediaThumb = messageDto.media_thumb,
+            replyToId = messageDto.reply_to_id,
+            createdAt = messageDto.created_at,
+            isForwarded = messageDto.is_forwarded,
+            readByMe = messageDto.read_by_me,
+            clientId = null,
+            status = MessageStatus.SENT
         )
     }
 
-    fun entityListToDomainList(entities: List<ChatListEntity>): List<ChatList> {
-        return entities.map { entityToDomain(it) }
+    fun dtoListToEntityList(messageList: List<MessageDto>): List<MessageEntity> {
+        return messageList.map { dtoToEntity(it) }
     }
+
+
+    fun createLocalMessage(
+        chatId: Int,
+        senderId: Int,
+        type: String,
+        body: String?,
+        mediaId: Int?,
+        replyToId: Int?,
+        clientId: String
+    ): MessageEntity {
+        return MessageEntity(
+            id = UUID.randomUUID().hashCode(),
+            chatId = chatId,
+            senderId = senderId,
+            type = type,
+            body = body,
+            mediaId = mediaId,
+            mediaUrl = null,
+            mediaThumb = null,
+            replyToId = replyToId,
+            createdAt = System.currentTimeMillis(),
+            isForwarded = false,
+            readByMe = true,
+
+            clientId = clientId,
+            status = MessageStatus.SENDING
+        )
+    }
+
+
 
 
 }

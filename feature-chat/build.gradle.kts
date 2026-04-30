@@ -64,4 +64,8 @@ dependencies {
     implementation(libs.coroutines.android)
     implementation(libs.lifecycle.viewmodel.ktx)
     implementation(libs.lifecycle.runtime.ktx)
+
+    implementation(libs.coil.compose)
+
+    implementation("androidx.compose.material:material-icons-extended:1.7.8")
 }

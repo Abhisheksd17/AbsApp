@@ -44,7 +44,7 @@ class ContactRepositoryImpl @Inject constructor(
                 val registered = response.body()?.data ?: emptyList()
                 val mapped = registered.map {
                     ContactEntity(
-                        id = it.phone_hash,
+                        id = it.user_id,
                         phoneHash = it.phone_hash,
                         lastModified = System.currentTimeMillis(),
                         isSynced = true,

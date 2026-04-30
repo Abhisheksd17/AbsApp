@@ -22,7 +22,7 @@ fun HomeBottomBar(navController: NavController) {
         BottomNavItem.Chats,
         BottomNavItem.Calls,
         BottomNavItem.Contacts,
-        BottomNavItem.Settings
+        BottomNavItem.Profile
     )
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()

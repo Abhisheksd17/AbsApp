@@ -7,7 +7,6 @@ import kotlinx.coroutines.flow.Flow
 interface ContactRepository {
     suspend fun syncContacts()
     fun fetchContacts(): Flow<NetworkResult<List<ContactDomain>>>
-
     fun syncRefreshContact(): Flow<NetworkResult<List<ContactDomain>>>
 
 
