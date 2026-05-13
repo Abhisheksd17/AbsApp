@@ -1,8 +1,10 @@
 package com.example.common.datastore
 
 import android.content.Context
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.intPreferencesKey
+import androidx.datastore.preferences.core.longPreferencesKey
 import androidx.datastore.preferences.core.stringPreferencesKey
 import androidx.datastore.preferences.preferencesDataStore
 import com.example.model.login.AuthResponse
@@ -16,18 +18,44 @@ import javax.inject.Inject
 private val Context.dataStore by preferencesDataStore(name = "user_prefs")
 private val TOKEN_KEY = stringPreferencesKey("auth_token")
 private val NUMBER_KEY = stringPreferencesKey("num_token")
-private val ACCESS_TOKEN_KEY = stringPreferencesKey("access_token")
-private val USER_ID_KEY = intPreferencesKey("user_id")
-private val DISPLAY_NAME_KEY = stringPreferencesKey("display_name")
-private val AVATAR_KEY = stringPreferencesKey("avatar_key")
-private val STATUS_TEXT_KEY = stringPreferencesKey("status_text")
+
+
+
+
+private val ACCESS_TOKEN= stringPreferencesKey("access_token")
+private val USER_ID = intPreferencesKey("user_id")
+private val DISPLAY_NAME = stringPreferencesKey("display_name")
+private val STATUS_TEXT = stringPreferencesKey("status_text")
+private val PROFILE_URL = stringPreferencesKey("profile_url")
+
 class DataStore @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
-    suspend fun saveToken(token: String) {
-        context.dataStore.edit { prefs ->
-            prefs[TOKEN_KEY] = token
+
+
+    suspend fun saveUserData(
+        authResponse: AuthResponse
+    ) {
+
+        context.dataStore.edit { pref ->
+
+            pref[ACCESS_TOKEN] = authResponse.access_token
+
+            pref[USER_ID] = authResponse.user_id
+
+            pref[DISPLAY_NAME] = authResponse.display_name
+
+            authResponse.status_text?.let {
+                pref[STATUS_TEXT] = it
+            } ?: pref.remove(STATUS_TEXT)
+
+            authResponse.profile_url?.let {
+                pref[PROFILE_URL] = it
+            } ?: pref.remove(PROFILE_URL)
+
+
+
         }
     }
 
@@ -37,31 +65,15 @@ class DataStore @Inject constructor(
         }
     }
 
-    suspend fun saveAuthData(user: AuthResponse) {
-        context.dataStore.edit { prefs ->
-            prefs[ACCESS_TOKEN_KEY] = user.access_token
-            prefs[USER_ID_KEY] = user.user_id
-        }
-    }
-    suspend fun saveUserProfile(user: UserResponse) {
-        context.dataStore.edit { prefs ->
-            prefs[DISPLAY_NAME_KEY] = user.display_name
-            user.avatar_key?.let {
-                prefs[AVATAR_KEY] = it
-            }
-            user.status_text?.let {
-                prefs[STATUS_TEXT_KEY] = it
-            }
-        }
-    }
+
 
     fun getUserProfile(): Flow<UserResponse> {
         return context.dataStore.data.map { prefs ->
             UserResponse(
-                display_name = prefs[DISPLAY_NAME_KEY] ?: "",
-                avatar_key = prefs[AVATAR_KEY],
-                status_text = prefs[STATUS_TEXT_KEY],
-                id = prefs[USER_ID_KEY] ?: 0,
+                display_name = prefs[DISPLAY_NAME] ?: "",
+                avatar_key = prefs[PROFILE_URL],
+                status_text = prefs[STATUS_TEXT],
+                id = prefs[USER_ID] ?: 0,
                 is_online = false,
                 last_seen_at = null
             )
@@ -69,11 +81,11 @@ class DataStore @Inject constructor(
     }
 
     suspend fun getAccessToken(): String? {
-        return context.dataStore.data.firstOrNull()?.get(ACCESS_TOKEN_KEY)
+        return context.dataStore.data.firstOrNull()?.get(ACCESS_TOKEN)
     }
 
     suspend fun getUserId(): Int? {
-        return context.dataStore.data.firstOrNull()?.get(USER_ID_KEY)
+        return context.dataStore.data.firstOrNull()?.get(USER_ID)
     }
 
      fun getNumber(): Flow<String?> {
@@ -84,7 +96,7 @@ class DataStore @Inject constructor(
 
     fun getTokenFlow(): Flow<String?> {
         return context.dataStore.data.map { prefs ->
-            prefs[ACCESS_TOKEN_KEY]
+            prefs[ACCESS_TOKEN]
         }
     }
 

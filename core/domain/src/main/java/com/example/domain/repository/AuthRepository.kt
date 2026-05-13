@@ -20,4 +20,10 @@ interface AuthRepository {
     suspend fun updateProfile(request: UpdateProfileRequest): Flow<NetworkResult<UserResponse>>
     suspend fun uploadAvatar(file: File): ApiResponse<AvatarResponse>
 
+    fun connectWebSocket(baseUrl:String)
+
+    fun disconnectWebSocket()
+
+
+
 }

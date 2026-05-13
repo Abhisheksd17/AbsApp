@@ -9,11 +9,19 @@ import com.example.model.message.MessageStatus
     tableName = "messages",
     indices = [
         Index("chatId"),
-        Index("senderId")
+        Index("senderId"),
+        Index(value = ["clientId"], unique = true),
+        Index(value = ["serverId"], unique = true),
     ]
 )
 data class MessageEntity(
-    @PrimaryKey val id: Int,
+
+    @PrimaryKey(autoGenerate = true)
+    val localId: Long = 0,
+
+    val serverId: Long?,    // backend msg_id — null until API confirms send
+    val clientId: String?,  // local UUID — null for messages from other users
+
     val chatId: Int,
     val senderId: Int,
     val type: String,
@@ -25,6 +33,5 @@ data class MessageEntity(
     val createdAt: Long,
     val isForwarded: Boolean,
     val readByMe: Boolean,
-    val clientId: String?,
-    val status: MessageStatus
+    val status: MessageStatus,
 )

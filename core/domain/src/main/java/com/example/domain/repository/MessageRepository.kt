@@ -1,9 +1,13 @@
 package com.example.domain.repository
 
+import android.net.Uri
 import com.example.domain.data.NetworkResult
 import com.example.model.message.MessageWithUser
 import com.example.model.message.SendMessageRequest
+import com.example.model.message.UserUi
+import com.example.model.websocket.WsEvent
 import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.StateFlow
 
 interface MessageRepository {
     fun getChats(
@@ -18,4 +22,15 @@ interface MessageRepository {
         request: SendMessageRequest,
         currentUserId: Int
     )
+
+
+    suspend fun getChatUser(chatId: Int): Flow<UserUi?>
+
+    suspend fun uploadMedia( uri: Uri,chatId: Int,type:String)
+
+    val isTyping: StateFlow<Boolean>
+
+    fun sendTyping(chatId: Int)
+
+    fun sendStopTyping(chatId: Int)
 }

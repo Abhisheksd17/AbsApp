@@ -39,6 +39,7 @@ android {
 dependencies {
 
     implementation(project(":core:model"))
+    implementation(project(":core:domain"))
 
 
     implementation(libs.androidx.core.ktx)
@@ -46,6 +47,7 @@ dependencies {
     implementation(libs.material)
     implementation(libs.androidx.ui.graphics)
     implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.material3)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

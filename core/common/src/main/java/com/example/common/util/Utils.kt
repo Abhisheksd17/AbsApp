@@ -2,6 +2,7 @@ package com.example.common.util
 
 import android.content.Context
 import android.net.Uri
+import androidx.compose.material3.SnackbarHostState
 import java.io.File
 import java.security.MessageDigest
 
@@ -31,4 +32,18 @@ object Utils {
             .withZone(java.time.ZoneId.systemDefault())
         return formatter.format(instant)
     }
+
+    suspend fun showSnackBar(
+        snackbarHostState: SnackbarHostState,
+        message: String,
+    ) {
+        snackbarHostState.showSnackbar(
+            message = message,
+            withDismissAction = true
+        )
+    }
+
+
+
+
 }

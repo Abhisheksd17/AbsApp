@@ -1,34 +1,58 @@
 package com.example.absapp.ui.screen
 
-import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.absapp.ui.components.IncomingCallOverlay
 import com.example.common.navigation.Screen
-import com.example.feature_call.Call
+import com.example.common.viewmodel.CallerViewModel
+import com.example.domain.data.CallState
+import com.example.feature_call.screens.Call
 import com.example.feature_chat.screens.Chat
 import com.example.feature_chat.screens.Conversation
 import com.example.feature_contact.screen.Contacts
 import com.example.feature_profile.screens.Profile
+import com.example.model.call.CallParams
 
 
 @Composable
 fun Home() {
 
     val navController = rememberNavController()
+    val callViewModel: CallerViewModel = hiltViewModel()
+    val callState by callViewModel.callState.collectAsStateWithLifecycle()
 
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     val currentRoute = navBackStackEntry?.destination?.route
 
+    var currentCallParams by remember {
+        mutableStateOf<CallParams?>(null)
+    }
+
     val showBottomBar = shouldShowBottomBar(currentRoute)
+
+    // ── Root-level incoming call overlay ──────────────────────────────────────
+    IncomingCallOverlay(
+        callState = callState,
+        viewModel = callViewModel,
+        onNavigateToCall = { activeState ->
+            currentCallParams = activeState.params
+            navController.navigate(Screen.Calls.route)
+        }
+    )
 
     Scaffold(
         bottomBar = {
@@ -44,9 +68,32 @@ fun Home() {
             modifier = Modifier.padding(padding)
         ) {
 
-            composable(Screen.Chats.route) { Chat() }
-            composable(Screen.Calls.route) { Call() }
-            composable(Screen.Profile.route) { Profile() }
+            composable(Screen.Chats.route) {
+                Chat(
+                    onOpenConversation = { userId ->
+                        navController.navigate(
+                            Screen.Conversation.createRoute(userId)
+                        )
+                    }
+                )
+            }
+
+            composable(Screen.Calls.route) {
+                currentCallParams?.let { params ->
+                    Call(
+                        params = params,
+                        onCallEnded = {
+                            currentCallParams = null
+                            callViewModel.resetState()
+                            navController.popBackStack()
+                        }
+                    )
+                }
+            }
+
+            composable(Screen.Profile.route) {
+                Profile()
+            }
 
             composable(Screen.Contacts.route) {
                 Contacts(
@@ -68,7 +115,13 @@ fun Home() {
             ) { backStackEntry ->
 
                 val userId = backStackEntry.arguments?.getInt("userId")
-                Conversation(userId = userId)
+                Conversation(
+                    userId = userId,
+                    onNavigateToCall = { params ->
+                        currentCallParams = params
+                        navController.navigate(Screen.Calls.route)
+                    }
+                )
             }
         }
     }

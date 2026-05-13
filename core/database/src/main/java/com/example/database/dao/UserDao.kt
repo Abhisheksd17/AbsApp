@@ -5,6 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import com.example.database.entity.UserEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface UserDao {
@@ -17,4 +18,7 @@ interface UserDao {
 
     @Query(" SELECT chatId from users where id = :userId")
     suspend fun getChatId(userId: Int): Int?
+
+    @Query("SELECT * FROM users WHERE chatId = :chatId LIMIT 1")
+    fun getUserForChat(chatId: Int): Flow<UserEntity?>
 }

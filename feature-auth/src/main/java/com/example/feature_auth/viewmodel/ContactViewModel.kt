@@ -16,7 +16,6 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ContactViewModel @Inject constructor(
-   // private val workManager: WorkManager
     private val repository: ContactRepository
 ) : ViewModel() {
 
@@ -29,18 +28,4 @@ class ContactViewModel @Inject constructor(
     }
 
 
-   /* fun startSync() {
-
-        val constraints = Constraints.Builder()
-            .setRequiredNetworkType(NetworkType.CONNECTED)
-            .build()
-
-
-        val syncWork = OneTimeWorkRequestBuilder<ContactSyncWorker>()
-            .setConstraints(constraints)
-            .build()
-
-
-        workManager.enqueueUniqueWork("contact_sync", ExistingWorkPolicy.REPLACE,syncWork)
-    }*/
 }

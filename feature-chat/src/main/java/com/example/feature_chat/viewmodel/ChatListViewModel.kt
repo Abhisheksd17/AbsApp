@@ -2,6 +2,7 @@ package com.example.feature_chat.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.common.datastore.DataStore
 import com.example.domain.data.ChatList
 import com.example.domain.data.NetworkResult
 import com.example.domain.repository.ChatListRepository
@@ -14,12 +15,26 @@ import javax.inject.Inject
 
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
-    private val chatListRepository: ChatListRepository
+    private val chatListRepository: ChatListRepository,
+    private val dataStore: DataStore
 ): ViewModel() {
+
+    init {
+        viewModelScope.launch {
+
+            getChatList()
+        }
+    }
+
     private val _chatListState = MutableStateFlow<NetworkResult<List<ChatList>>>(NetworkResult.Idle())
     val chatListState = _chatListState.asStateFlow()
 
 
+    fun fetchChatList(){
+        viewModelScope.launch {
+            chatListRepository.refreshChatsList()
+        }
+    }
     fun getChatList(){
         viewModelScope.launch {
             chatListRepository.getChatsList().collect{ response ->
@@ -27,6 +42,8 @@ class ChatListViewModel @Inject constructor(
             }
         }
     }
+
+
 
 }
 

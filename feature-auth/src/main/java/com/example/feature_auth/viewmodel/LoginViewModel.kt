@@ -1,9 +1,7 @@
 package com.example.feature_auth.viewmodel
 
 
-import android.content.Context
-import android.net.Uri
-import android.util.Log
+
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.common.datastore.DataStore
@@ -26,6 +24,7 @@ import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
+const val SOCKET_URL = "wss://absapp-backend.onrender.com"
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
@@ -44,8 +43,17 @@ class LoginViewModel @Inject constructor(
     private val _event = MutableSharedFlow<AuthEvent>()
     val event = _event.asSharedFlow()
 
+    val userProfile = datastore.getUserProfile()
+
     suspend fun getToken():String?{
         return datastore.getAccessToken()
+    }
+
+    fun connectSocket(){
+        viewModelScope.launch {
+            authRepository.connectWebSocket(SOCKET_URL)
+        }
+
     }
 
 
@@ -77,7 +85,7 @@ class LoginViewModel @Inject constructor(
                 if (response is NetworkResult.Success) {
 
                     response.data?.let { user ->
-                        datastore.saveAuthData(user)
+                        datastore.saveUserData(user)
                     }
                     _event.emit(AuthEvent.NavigateToUpdateProfile)
                 }
@@ -113,9 +121,6 @@ class LoginViewModel @Inject constructor(
                 _profileState.value = response
                 if(response is NetworkResult.Success){
 
-                    response.data?.let {
-                        datastore.saveUserProfile(it)
-                    }
                     _event.emit(AuthEvent.NavigateToHome)
                 }
 

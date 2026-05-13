@@ -62,6 +62,7 @@ fun Splash(
         if (token.isNullOrEmpty()) {
             navigator.navigate(Screen.OnBoarding)
         } else {
+            viewModel.connectSocket()
             navigator.navigate(Screen.Home)
         }
     }

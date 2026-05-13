@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -41,7 +40,9 @@ import com.example.ui.theme.SoftLightGray
 import com.example.ui.theme.White
 
 @Composable
-fun Chat() {
+fun Chat(
+    onOpenConversation: (Int) -> Unit
+) {
 
     val viewModel: ChatListViewModel = hiltViewModel()
     val state by viewModel.chatListState.collectAsState()
@@ -50,7 +51,7 @@ fun Chat() {
 
 
     LaunchedEffect(Unit) {
-        viewModel.getChatList()
+        viewModel.fetchChatList()
     }
 
     val context = LocalContext.current
@@ -106,15 +107,15 @@ fun Chat() {
                     when (val result = state) {
 
                         is NetworkResult.Loading -> {
-                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            /*Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                                 CircularProgressIndicator()
-                            }
+                            }*/
                         }
 
                         is NetworkResult.Success -> {
 
                             val chats = result.data ?: emptyList()
-                            Log.d("chats",chats.toString())
+
 
                             LazyColumn {
                                 items(chats, key = { it.chatId }) { item ->
@@ -128,7 +129,10 @@ fun Chat() {
                                         unreadMsg = item.unreadCount > 0,
                                         msgCount = item.unreadCount,
                                         onMute = {},
-                                        onDelete = {}
+                                        onDelete = {},
+                                        onChatSelected = {
+                                            onOpenConversation(item.userId?:return@SwipeableChatItem)
+                                        }
                                     )
 
                                     Spacer(modifier = Modifier.height(8.dp))

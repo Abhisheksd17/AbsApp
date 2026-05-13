@@ -4,6 +4,7 @@ import android.app.Application
 import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkManager
+import com.cloudinary.android.MediaManager
 import dagger.hilt.android.HiltAndroidApp
 import javax.inject.Inject
 
@@ -20,6 +21,10 @@ class AbsApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
+        val config = mapOf(
+            "cloud_name" to "dujzbrfam"
+        )
+        MediaManager.init(this, config)
         net.sqlcipher.database.SQLiteDatabase.loadLibs(this)
     }
 }

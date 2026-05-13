@@ -43,7 +43,6 @@ class ChatViewModel @Inject constructor(
     fun loadOrCreateChat(userId: Int) {
         viewModelScope.launch {
             val id = repository.getChatByUserId(userId)
-            Log.d("user",id.toString())
 
             if (id != null) {
                 _chatId.value = id

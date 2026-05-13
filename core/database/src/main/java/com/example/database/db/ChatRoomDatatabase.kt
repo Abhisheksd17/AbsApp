@@ -19,7 +19,7 @@ import com.example.database.entity.ChatEntity
         UserEntity::class,
         MessageEntity::class,
     ],
-    version = 9,
+    version = 11,
     exportSchema = false
 )
 abstract class ChatRoomDataBase : RoomDatabase() {

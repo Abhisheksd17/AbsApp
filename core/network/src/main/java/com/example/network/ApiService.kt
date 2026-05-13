@@ -1,6 +1,10 @@
 package com.example.network
 
 import com.example.model.ApiResponse
+import com.example.model.call.AcceptCallRequest
+import com.example.model.call.CallTokenResponse
+import com.example.model.call.EndCallRequest
+import com.example.model.call.InitiateCallRequest
 import com.example.model.chat.CreateChatRequest
 import com.example.model.chat.CreateChatResponse
 import com.example.model.chat.CreateGroupRequest
@@ -15,6 +19,9 @@ import com.example.model.login.OtpRequest
 import com.example.model.login.UpdateProfileRequest
 import com.example.model.login.UserResponse
 import com.example.model.login.VerifyOtpRequest
+import com.example.model.media.MediaUploadRequest
+import com.example.model.media.MediaUploadResponse
+import com.example.model.message.SendMessageResponse
 import okhttp3.MultipartBody
 import retrofit2.http.Body
 import retrofit2.http.GET
@@ -70,7 +77,7 @@ interface ApiService {
     @POST("messages")
     suspend fun sendMessage(
         @Body request: SendMessageRequest
-    ): retrofit2.Response<ApiResponse<Unit>>
+    ): retrofit2.Response<ApiResponse<SendMessageResponse>>
 
     @POST("chats/direct")
     suspend fun createDirectChat(
@@ -81,5 +88,19 @@ interface ApiService {
     suspend fun createGroupChat(
         @Body request: CreateGroupRequest
     ): retrofit2.Response<ApiResponse<CreateChatResponse>>
+
+    @POST("/media")
+    suspend fun uploadMedia(
+        @Body request: MediaUploadRequest
+        ): retrofit2.Response<ApiResponse<MediaUploadResponse>>
+
+    @POST("call/call/initiate")
+    suspend fun initiateCall(@Body body: InitiateCallRequest): retrofit2.Response<ApiResponse<CallTokenResponse>>
+
+    @POST("call/call/accept")
+    suspend fun acceptCall(@Body body: AcceptCallRequest): retrofit2.Response<ApiResponse<CallTokenResponse>>
+
+    @POST("call/call/end")
+    suspend fun endCall(@Body body: EndCallRequest):retrofit2.Response<ApiResponse<Unit>>
 
 }

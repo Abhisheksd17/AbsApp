@@ -1,11 +1,13 @@
 package com.example.data.di
 
 import com.example.data.repositoryImpl.AuthRepositoryImpl
+import com.example.data.repositoryImpl.CallRepositoryImpl
 import com.example.data.repositoryImpl.ChatListRepositoryImpl
 import com.example.data.repositoryImpl.ChatRepositoryImpl
 import com.example.data.repositoryImpl.MessageRepositoryImpl
 import com.example.data.repositoryImpl.ContactRepositoryImpl
 import com.example.domain.repository.AuthRepository
+import com.example.domain.repository.CallRepository
 import com.example.domain.repository.ChatListRepository
 import com.example.domain.repository.ChatRepository
 import com.example.domain.repository.MessageRepository
@@ -49,6 +51,14 @@ abstract class RepositoryModule {
     abstract fun bindChatRepository(
         impl: ChatRepositoryImpl
     ): ChatRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindCallRepository(
+        impl: CallRepositoryImpl
+    ): CallRepository
+
+
 
 
 }

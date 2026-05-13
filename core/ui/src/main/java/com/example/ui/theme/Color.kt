@@ -16,6 +16,7 @@ val Black = Color(0xFF000000)
 //Gray
 val SageGray = Color(0xFFB9C1BE)
 val CoolSlateGray = Color(0xFFA8B0AF)
+val TimeColor = Color(0xFF8696A0)
 val LightSageGray = Color(0xFFCDD1D0)
 val PaleMintGray = Color(0xFFD6E4E0)
 val SlateGray = Color(0xFF797C7B)
@@ -39,3 +40,6 @@ val OnlineGreen = Color(0xFF2BEF83)
 
 //Red
 val ErrorRed = Color(0xFFFF2D1B)
+
+//Blue
+val ReadBlue = Color(0xFF4FC3F7)

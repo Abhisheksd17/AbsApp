@@ -11,6 +11,9 @@ android {
     namespace = "com.example.absapp"
     compileSdk = 36
 
+    buildFeatures {
+        buildConfig = true
+    }
     defaultConfig {
         applicationId = "com.example.absapp"
         minSdk = 24
@@ -23,6 +26,11 @@ android {
 
     buildTypes {
         release {
+            buildConfigField(
+                "String",
+                "SOCKET_BASE_URL",
+                "\"wss://absapp-backend.onrender.com\""
+            )
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
@@ -97,6 +105,9 @@ dependencies {
     implementation(libs.work.runtime)
     implementation(libs.hilt.work)
     kapt(libs.androidx.hilt.compiler)
+
+    implementation(libs.cloudinary.android)
+    implementation(libs.compose.material.icons.extended)
 
 
 }

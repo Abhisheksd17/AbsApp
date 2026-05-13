@@ -9,7 +9,10 @@ sealed class Screen(val route: String) {
     object Otp : Screen("otp")
     object Update : Screen("update")
     object Chats : Screen("chats")
-    object Calls : Screen("calls")
+    object Calls : Screen("calls/{params}") {
+        fun createRoute(params: String) =
+            "calls/$params"
+    }
     object Contacts : Screen("contacts")
     object Profile : Screen("profile")
     object Settings : Screen("settings")

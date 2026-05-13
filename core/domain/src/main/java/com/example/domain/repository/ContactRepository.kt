@@ -10,4 +10,6 @@ interface ContactRepository {
     fun syncRefreshContact(): Flow<NetworkResult<List<ContactDomain>>>
 
 
+
+
 }

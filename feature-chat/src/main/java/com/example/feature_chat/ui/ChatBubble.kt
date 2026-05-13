@@ -2,26 +2,28 @@ package com.example.feature_chat.ui
 
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.PlayArrow
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.layout.ContentScale
+import coil.compose.AsyncImage
 import com.example.ui.theme.BubbleIncoming
 import com.example.ui.theme.BubbleOutgoing
 import com.example.ui.theme.TextIncoming
 import com.example.ui.theme.TextOutgoing
 import com.example.ui.theme.TimeIncoming
 import com.example.ui.theme.TimeOutgoing
-import com.example.ui.theme.White
 
 
 
@@ -41,13 +43,15 @@ fun ChatBubble(
         RoundedCornerShape(topStart = 4.dp, topEnd = 16.dp, bottomStart = 16.dp, bottomEnd = 16.dp)
     }
 
+    var showImageViewer by remember { mutableStateOf(false) }
+
     Row(
         modifier = modifier
             .fillMaxWidth()
             .padding(
-                start = if (isSelf) 60.dp else 0.dp,
-                end   = if (isSelf) 0.dp  else 60.dp,
-                top   = 2.dp,
+                start  = if (isSelf) 60.dp else 0.dp,
+                end    = if (isSelf) 0.dp  else 60.dp,
+                top    = 2.dp,
                 bottom = 2.dp
             ),
         horizontalArrangement = if (isSelf) Arrangement.End else Arrangement.Start
@@ -56,49 +60,66 @@ fun ChatBubble(
             modifier = Modifier
                 .clip(bubbleShape)
                 .background(bubbleColor)
-                .padding(horizontal = 12.dp, vertical = 8.dp)
         ) {
             when {
-                message.isVoice -> {
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.PlayArrow,
-                            contentDescription = "Play",
-                            tint = Color.White,
+
+
+                message.imageUrl != null -> {
+                    Column {
+                        AsyncImage(
+                            model = message.imageUrl,
+                            contentDescription = null,
                             modifier = Modifier
-                                .size(28.dp)
-                                .background(Color.White.copy(alpha = 0.3f), shape = androidx.compose.foundation.shape.CircleShape)
-                                .padding(4.dp)
+                                .width(220.dp)
+                                .aspectRatio(4f / 3f)
+                                .clip(bubbleShape)
+                                .clickable { showImageViewer = true },
+                            contentScale = ContentScale.Crop
                         )
-
                         Row(
-                            horizontalArrangement = Arrangement.spacedBy(2.dp),
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
                             verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier.width(100.dp)
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
                         ) {
-                            val barHeights = listOf(8, 14, 10, 18, 12, 20, 10, 16, 8, 14, 10, 18)
-                            barHeights.forEach { h ->
-                                Box(
-                                    modifier = Modifier
-                                        .width(3.dp)
-                                        .height(h.dp)
-                                        .clip(RoundedCornerShape(2.dp))
-                                        .background(Color.White.copy(alpha = 0.8f))
-                                )
-                            }
-                        }
-
-                        Column {
-                            Text("00:16", color = Color.White, fontSize = 11.sp)
+                            Text(text = message.timestamp, fontSize = 10.sp, color = timeColor)
+                            MessageStatusIcon(status = message.status, isSelf = isSelf, timeColor = timeColor)
                         }
                     }
                 }
 
+                message.videoUrl != null -> {
+                    Column(modifier = Modifier.width(220.dp)) {
+                        VideoPlayerBubble(
+                            videoUrl = message.videoUrl,
+                            modifier = Modifier.fillMaxWidth()
+                        )
+                        Row(
+                            modifier = Modifier
+                                .align(Alignment.End)
+                                .padding(horizontal = 8.dp, vertical = 4.dp),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(text = message.timestamp, fontSize = 10.sp, color = timeColor)
+                            MessageStatusIcon(status = message.status, isSelf = isSelf, timeColor = timeColor)
+                        }
+                    }
+                }
+
+                message.isVoice || message.audioUrl != null -> {
+                    AudioMessageBubble(
+                        audioUrl  = message.audioUrl ?: "",
+                        isSelf    = isSelf,
+                        timestamp = message.timestamp,
+                        status    = message.status,
+                        modifier  = Modifier.width(240.dp)
+                    )
+                }
+
                 else -> {
-                    Column {
+                    Column(modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp)) {
                         Text(
                             text = message.text,
                             color = textColor,
@@ -106,15 +127,24 @@ fun ChatBubble(
                             lineHeight = 20.sp
                         )
                         Spacer(Modifier.height(4.dp))
-                        Text(
-                            text = message.timestamp,
-                            color = timeColor,
-                            fontSize = 10.sp,
-                            modifier = Modifier.align(Alignment.End)
-                        )
+                        Row(
+                            modifier = Modifier.align(Alignment.End),
+                            verticalAlignment = Alignment.CenterVertically,
+                            horizontalArrangement = Arrangement.spacedBy(4.dp)
+                        ) {
+                            Text(text = message.timestamp, fontSize = 10.sp, color = timeColor)
+                            MessageStatusIcon(status = message.status, isSelf = isSelf, timeColor = timeColor)
+                        }
                     }
                 }
             }
         }
+    }
+
+    if (showImageViewer && message.imageUrl != null) {
+        FullScreenImageViewer(
+            imageUrl  = message.imageUrl,
+            onDismiss = { showImageViewer = false }
+        )
     }
 }

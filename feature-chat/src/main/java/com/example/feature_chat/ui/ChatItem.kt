@@ -87,7 +87,6 @@ fun ChatItem(
                     )
 
                 Text(
-                    modifier = Modifier.padding(top = 3.dp),
                     text = message?:"",
                     fontSize = 10.sp,
                     color = SlateGray,

@@ -1,7 +1,7 @@
 package com.example.model.message
 
 data class MessageDto(
-    val id: Int,
+    val id: Long,
     val chat_id: Int,
     val sender_id: Int,
     val type: String,

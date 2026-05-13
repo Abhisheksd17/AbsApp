@@ -9,4 +9,6 @@ interface ChatListRepository {
     fun getChatsList(): Flow<NetworkResult<List<ChatList>>>
 
     suspend fun refreshChatsList()
+
+
 }

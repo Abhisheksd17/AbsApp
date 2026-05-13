@@ -32,7 +32,8 @@ fun SwipeableChatItem(
     unreadMsg: Boolean,
     msgCount: Int?,
     onMute: () -> Unit,
-    onDelete: () -> Unit
+    onDelete: () -> Unit,
+    onChatSelected : ()->Unit
 ) {
     val coroutineScope = rememberCoroutineScope()
     val offsetX = remember { Animatable(0f) }
@@ -43,7 +44,10 @@ fun SwipeableChatItem(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .onSizeChanged { } // placeholder; we measure button area below
+            .onSizeChanged { }
+            .clickable{
+                onChatSelected()
+            }
     ) {
         SwipeActionsBackground(
             modifier = Modifier

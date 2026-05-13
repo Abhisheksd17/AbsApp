@@ -67,5 +67,9 @@ dependencies {
 
     implementation(libs.coil.compose)
 
-    implementation("androidx.compose.material:material-icons-extended:1.7.8")
+    implementation(libs.compose.material.icons.extended)
+    implementation(libs.media3.exoplayer)
+    implementation(libs.media3.ui)
+    implementation(libs.accompanist.permissions)
+
 }

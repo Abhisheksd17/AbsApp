@@ -101,7 +101,8 @@ fun Contacts(
                     onRefresh = {
                         viewModel.syncRefreshContact()
                     },
-                    state = refreshState
+                    state = refreshState,
+                    modifier = Modifier.fillMaxSize()
                 ) {
                     when (val result = state) {
 

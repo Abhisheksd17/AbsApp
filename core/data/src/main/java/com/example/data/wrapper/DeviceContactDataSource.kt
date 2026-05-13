@@ -4,6 +4,7 @@ import android.content.Context
 import android.provider.ContactsContract
 import com.example.common.util.Utils
 import com.example.model.contact.Contact
+import com.google.i18n.phonenumbers.PhoneNumberUtil
 import dagger.hilt.android.qualifiers.ApplicationContext
 import javax.inject.Inject
 
@@ -44,10 +45,20 @@ class DeviceContactDataSource @Inject constructor(
             }
         }
 
-        return list
+        return list.distinctBy { it.phoneHash }
     }
 
     private fun normalize(phone: String): String {
-        return phone.replace("\\s".toRegex(), "")
+        return try {
+            val phoneUtil = PhoneNumberUtil.getInstance()
+            val parsed = phoneUtil.parse(phone, "IN")
+            phoneUtil.format(
+                parsed,
+                PhoneNumberUtil.PhoneNumberFormat.E164
+            )
+        } catch (e: Exception) {
+
+            phone.replace("\\D".toRegex(), "")
+        }
     }
 }
