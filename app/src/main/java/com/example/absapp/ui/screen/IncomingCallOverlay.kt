@@ -24,10 +24,12 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Call
 import androidx.compose.material.icons.rounded.CallEnd
+import androidx.compose.material.icons.rounded.Videocam
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -39,144 +41,206 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.common.viewmodel.CallerViewModel
 import com.example.domain.data.CallState
+import com.example.ui.theme.AcceptButtonColor
+import com.example.ui.theme.AvatarBackground
+import com.example.ui.theme.AvatarInnerRing
+import com.example.ui.theme.AvatarMiddleRing
+import com.example.ui.theme.AvatarOuterRing
+import com.example.ui.theme.DeclineButtonColor
+import com.example.ui.theme.GradientEnd
+import com.example.ui.theme.GradientStart
 
-/**
- * Root-level overlay that displays incoming call UI.
- *
- * Place this in Home() composable, listening to viewModel.callState.
- * When CallState.Incoming, this overlay appears on top of all navigation.
- */
+
 @Composable
 fun IncomingCallOverlay(
     callState: CallState,
     viewModel: CallerViewModel,
     onNavigateToCall: (CallState.Active) -> Unit,
 ) {
+
+    LaunchedEffect(callState) {
+        if (callState is CallState.Active) {
+            onNavigateToCall(callState)
+        }
+    }
+
+    val incomingEvent = (callState as? CallState.Incoming)?.event
+
     AnimatedVisibility(
-        visible  = callState is CallState.Incoming,
-        enter    = fadeIn(),
-        exit     = fadeOut(),
+        visible = callState is CallState.Incoming,
+        enter = fadeIn(),
+        exit = fadeOut(),
     ) {
-        val event = (callState as? CallState.Incoming)?.event ?: return@AnimatedVisibility
+        val event = incomingEvent ?: return@AnimatedVisibility
 
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        listOf(Color(0xFF0A0A1A), Color(0xFF1A1035))
+                        colors = listOf(GradientStart, GradientEnd)
                     )
                 )
         ) {
             Column(
-                modifier            = Modifier
+                modifier = Modifier
                     .fillMaxSize()
                     .padding(horizontal = 32.dp),
                 horizontalAlignment = Alignment.CenterHorizontally,
                 verticalArrangement = Arrangement.Center,
             ) {
 
-                PulsingAvatar(name = event.callerName)
+                EnhancedPulsingAvatar(name = event.callerName)
 
-                Spacer(Modifier.height(28.dp))
+                Spacer(Modifier.height(32.dp))
 
                 Text(
-                    text       = event.callerName,
-                    color      = Color.White,
-                    fontSize   = 28.sp,
+                    text = event.callerName,
+                    color = Color.White,
+                    fontSize = 32.sp,
                     fontWeight = FontWeight.SemiBold,
                 )
-                Spacer(Modifier.height(8.dp))
-                Text(
-                    text  = if (event.callType == "video") "Incoming video call" else "Incoming voice call",
-                    color = Color.White.copy(alpha = 0.6f),
-                    fontSize = 16.sp,
-                )
 
-                Spacer(Modifier.height(64.dp))
+                Spacer(Modifier.height(12.dp))
 
-                // Accept / Decline buttons
                 Row(
-                    horizontalArrangement = Arrangement.spacedBy(80.dp),
-                    verticalAlignment     = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    // Decline
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        FloatingActionButton(
-                            onClick = {
-                                viewModel.rejectCall(event)
-                            },
-                            containerColor = Color(0xFFFF3B30),
-                            contentColor   = Color.White,
-                            modifier       = Modifier.size(68.dp),
-                            shape          = CircleShape,
-                        ) {
-                            Icon(
-                                Icons.Rounded.CallEnd,
-                                contentDescription = "Decline",
-                                modifier = Modifier.size(30.dp),
-                            )
-                        }
-                        Spacer(Modifier.height(8.dp))
-                        Text("Decline", color = Color.White.copy(alpha = 0.7f), fontSize = 13.sp)
-                    }
+                    Icon(
+                        imageVector = if (event.callType == "video") Icons.Rounded.Videocam else Icons.Rounded.Call,
+                        contentDescription = null,
+                        tint = Color(0xFF64B5F6),
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Text(
+                        text = if (event.callType == "video") "Incoming video call" else "Incoming voice call",
+                        color = Color.White.copy(alpha = 0.7f),
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
 
-                    // Accept
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        FloatingActionButton(
-                            onClick = {
-                                viewModel.acceptCall(event)
-                            },
-                            containerColor = Color(0xFF34C759),
-                            contentColor   = Color.White,
-                            modifier       = Modifier.size(68.dp),
-                            shape          = CircleShape,
-                        ) {
-                            Icon(
-                                Icons.Rounded.Call,
-                                contentDescription = "Accept",
-                                modifier = Modifier.size(30.dp),
-                            )
-                        }
-                        Spacer(Modifier.height(8.dp))
-                        Text("Accept", color = Color.White.copy(alpha = 0.7f), fontSize = 13.sp)
-                    }
+                Spacer(Modifier.height(80.dp))
+
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(100.dp),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    CallActionButton(
+                        onClick = { viewModel.rejectCall(event) },
+                        backgroundColor = DeclineButtonColor,
+                        icon = Icons.Rounded.CallEnd,
+                        label = "Decline",
+                        iconSize = 32.dp
+                    )
+
+                    CallActionButton(
+                        onClick = { viewModel.acceptCall(event) },
+                        backgroundColor = AcceptButtonColor,
+                        icon = Icons.Rounded.Call,
+                        label = "Accept",
+                        iconSize = 32.dp
+                    )
                 }
             }
         }
     }
+}
 
-    if (callState is CallState.Active) {
-        onNavigateToCall(callState)
+@Composable
+private fun EnhancedPulsingAvatar(name: String) {
+    val infiniteTransition = rememberInfiniteTransition(label = "pulse")
+
+    val outerScale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.15f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1500, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "outerScale",
+    )
+
+    val middleScale by infiniteTransition.animateFloat(
+        initialValue = 1f,
+        targetValue = 1.1f,
+        animationSpec = infiniteRepeatable(
+            animation = tween(1200, easing = FastOutSlowInEasing),
+            repeatMode = RepeatMode.Reverse,
+        ),
+        label = "middleScale",
+    )
+
+    Box(contentAlignment = Alignment.Center) {
+        Box(
+            modifier = Modifier
+                .size(280.dp)
+                .scale(outerScale)
+                .background(AvatarOuterRing, CircleShape)
+        )
+
+        Box(
+            modifier = Modifier
+                .size(220.dp)
+                .scale(middleScale)
+                .background(AvatarMiddleRing, CircleShape)
+        )
+
+        Box(
+            modifier = Modifier
+                .size(170.dp)
+                .background(AvatarInnerRing, CircleShape)
+        )
+
+        Box(
+            modifier = Modifier
+                .size(140.dp)
+                .background(AvatarBackground, CircleShape)
+                .border(3.dp, Color(0xFF6C5CE7).copy(alpha = 0.4f), CircleShape),
+            contentAlignment = Alignment.Center,
+        ) {
+            Text(
+                text = name.firstOrNull()?.uppercase() ?: "U",
+                color = Color.White,
+                fontSize = 56.sp,
+                fontWeight = FontWeight.Bold,
+            )
+        }
     }
 }
 
 @Composable
-private fun PulsingAvatar(name: String) {
-    val pulseAnim = rememberInfiniteTransition(label = "pulse")
-    val pulseScale by pulseAnim.animateFloat(
-        initialValue   = 1f,
-        targetValue    = 1.15f,
-        animationSpec  = infiniteRepeatable(
-            animation  = tween(800, easing = FastOutSlowInEasing),
-            repeatMode = RepeatMode.Reverse,
-        ),
-        label = "pulseScale",
-    )
-
-    Box(
-        modifier = Modifier
-            .size(130.dp)
-            .scale(pulseScale)
-            .border(3.dp, Color(0xFF7C4DFF).copy(alpha = 0.5f), CircleShape)
-            .background(Color(0xFF3D2B80), CircleShape),
-        contentAlignment = Alignment.Center,
+private fun CallActionButton(
+    onClick: () -> Unit,
+    backgroundColor: Color,
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    iconSize: androidx.compose.ui.unit.Dp
+) {
+    Column(
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.spacedBy(12.dp)
     ) {
+        FloatingActionButton(
+            onClick = onClick,
+            containerColor = backgroundColor,
+            contentColor = Color.White,
+            modifier = Modifier.size(72.dp),
+            shape = CircleShape,
+        ) {
+            Icon(
+                imageVector = icon,
+                contentDescription = label,
+                modifier = Modifier.size(iconSize),
+            )
+        }
+
         Text(
-            text       = name.take(1).uppercase(),
-            color      = Color.White,
-            fontSize   = 52.sp,
-            fontWeight = FontWeight.Bold,
+            text = label,
+            color = Color.White.copy(alpha = 0.8f),
+            fontSize = 14.sp,
+            fontWeight = FontWeight.Medium
         )
     }
 }

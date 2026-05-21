@@ -25,17 +25,12 @@ android {
     }
 
     buildTypes {
+        debug {
+            isDebuggable = true
+        }
+
         release {
-            buildConfigField(
-                "String",
-                "SOCKET_BASE_URL",
-                "\"wss://absapp-backend.onrender.com\""
-            )
             isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
         }
     }
     compileOptions {
@@ -76,6 +71,8 @@ dependencies {
     implementation(libs.androidx.compose.ui.tooling.preview)
     implementation(libs.androidx.compose.material3)
     implementation(libs.androidx.ui.graphics)
+    implementation(libs.androidx.compose.runtime.tracing)
+    debugImplementation(libs.androidx.ui.test.manifest)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

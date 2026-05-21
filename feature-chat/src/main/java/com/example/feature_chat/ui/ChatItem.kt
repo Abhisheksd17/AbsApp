@@ -26,6 +26,7 @@ import com.example.ui.R as ui
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.common.util.Utils.formatTime
 import com.example.ui.theme.Black
 import com.example.ui.theme.CoolSlateGreen
 import com.example.ui.theme.ErrorRed
@@ -108,7 +109,7 @@ fun ChatItem(
                 )
                 {
                     Text(
-                        text = timesAgo?:"",
+                        text = formatTime(timesAgo)?:"",
                         fontSize = 10.sp,
                         fontFamily = carosLight
 

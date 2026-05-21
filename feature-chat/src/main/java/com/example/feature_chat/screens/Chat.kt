@@ -107,9 +107,7 @@ fun Chat(
                     when (val result = state) {
 
                         is NetworkResult.Loading -> {
-                            /*Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                CircularProgressIndicator()
-                            }*/
+
                         }
 
                         is NetworkResult.Success -> {

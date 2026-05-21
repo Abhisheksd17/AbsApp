@@ -43,3 +43,44 @@ val ErrorRed = Color(0xFFFF2D1B)
 
 //Blue
 val ReadBlue = Color(0xFF4FC3F7)
+
+
+val GradientStart = Color(0xFF1a1a2e)
+val GradientEnd = Color(0xFF0f0f1e)
+
+// Status bar colors
+val StatusBarBackground = Color.Black.copy(alpha = 0.4f)
+val StatusBarTextPrimary = Color.White
+val StatusBarTextSecondary = Color.White.copy(alpha = 0.7f)
+val ConnectingText = Color(0xFF64B5F6)
+val ConnectingDot = Color(0xFF64B5F6)
+
+// Waiting state colors
+val AvatarBackground = Color(0xFF6C5CE7).copy(alpha = 0.3f)
+val AvatarText = Color.White
+val PeerNameText = Color.White
+val WaitingStateText = Color.White.copy(alpha = 0.7f)
+val AnimatedCircleOuter = Color(0xFF6C5CE7).copy(alpha = 0.15f)
+val AnimatedCircleInner = Color(0xFF6C5CE7).copy(alpha = 0.2f)
+
+// Control button colors
+val ControlBarBackground = Color.Black.copy(alpha = 0.5f)
+val ControlButtonActive = Color.White.copy(alpha = 0.3f)
+val ControlButtonInactive = Color.White.copy(alpha = 0.15f)
+val ControlButtonIconActive = Color.White
+val ControlButtonIconInactive = Color.White.copy(alpha = 0.9f)
+val ControlButtonLabel = Color.White.copy(alpha = 0.7f)
+
+// Hang up button colors
+val HangUpButton = Color(0xFFE74C3C)
+val HangUpIcon = Color.White
+
+// Local video preview
+val LocalVideoBackground = Color.Black
+
+
+ val AvatarOuterRing = Color(0xFF6C5CE7).copy(alpha = 0.15f)
+ val AvatarMiddleRing = Color(0xFF6C5CE7).copy(alpha = 0.2f)
+ val AvatarInnerRing = Color(0xFF6C5CE7).copy(alpha = 0.3f)
+ val AcceptButtonColor = Color(0xFF34C759)
+ val DeclineButtonColor = Color(0xFFE74C3C)

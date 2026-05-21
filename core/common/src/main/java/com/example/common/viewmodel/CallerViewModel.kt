@@ -1,5 +1,6 @@
 package com.example.common.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.data.CallState
@@ -11,7 +12,6 @@ import com.example.model.call.CallTokenResponse
 import com.example.model.call.EndCallRequest
 import com.example.model.call.IncomingCallEvent
 import com.example.model.call.InitiateCallRequest
-import com.example.model.websocket.WsEvent
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -62,7 +62,6 @@ class CallerViewModel @Inject constructor(
     }
 
 
-    // ── Callee ────────────────────────────────────────────────────────────────
 
     fun acceptCall(event: IncomingCallEvent) {
         viewModelScope.launch {
@@ -91,14 +90,13 @@ class CallerViewModel @Inject constructor(
         }
     }
 
-    // ── Either side ───────────────────────────────────────────────────────────
 
     fun notifyCallEnded(peerId: Int, callId: String, reason: String = "ended") {
         viewModelScope.launch {
             repository.endCall(
                 EndCallRequest(peer_id = peerId, call_id = callId, reason = reason)
             ).collect { }
-            _callState.value = CallState.Idle
+            _callState.value = CallState.Ended
         }
     }
 
@@ -106,14 +104,15 @@ class CallerViewModel @Inject constructor(
         notifyCallEnded(event.callerId, event.callId, reason = "rejected")
 
     fun resetState() {
-        _callState.value = CallState.Idle
+        _callState.value = CallState.Ended
     }
 
-    // ── WS observers (repo already filtered + mapped) ─────────────────────────
 
     private fun observeIncomingCalls() {
         viewModelScope.launch {
             repository.observeIncomingCalls().collect { incoming ->
+                Log.d("CallerViewModel", incoming.toString())
+
                 _callState.value = CallState.Incoming(incoming)
             }
         }
@@ -122,7 +121,7 @@ class CallerViewModel @Inject constructor(
     private fun observeCallAccepted() {
         viewModelScope.launch {
             repository.observeCallAccepted().collect {
-                // Caller: Ringing → Active (reuse same params, Agora already joined)
+                Log.d("CallerViewModel", "Call accepted")
                 val ringing = _callState.value as? CallState.Ringing ?: return@collect
                 _callState.value = CallState.Active(ringing.params)
             }
@@ -132,7 +131,8 @@ class CallerViewModel @Inject constructor(
     private fun observeCallEnded() {
         viewModelScope.launch {
             repository.observeCallEnded().collect {
-                _callState.value = CallState.Idle
+                Log.d("CallerViewModel", "Call ENDED")
+                _callState.value = CallState.Ended
             }
         }
     }

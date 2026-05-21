@@ -5,6 +5,7 @@ import com.example.model.call.IncomingCallEvent
 
 sealed class CallState {
     object Idle                                  : CallState()
+    object Ended                                  : CallState()
     object Loading                               : CallState()
     data class Ringing(val params: CallParams)   : CallState()
     data class Incoming(val event: IncomingCallEvent) : CallState()

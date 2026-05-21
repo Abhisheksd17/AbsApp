@@ -19,7 +19,6 @@ import androidx.navigation.navArgument
 import com.example.absapp.ui.components.IncomingCallOverlay
 import com.example.common.navigation.Screen
 import com.example.common.viewmodel.CallerViewModel
-import com.example.domain.data.CallState
 import com.example.feature_call.screens.Call
 import com.example.feature_chat.screens.Chat
 import com.example.feature_chat.screens.Conversation
@@ -44,15 +43,7 @@ fun Home() {
 
     val showBottomBar = shouldShowBottomBar(currentRoute)
 
-    // ── Root-level incoming call overlay ──────────────────────────────────────
-    IncomingCallOverlay(
-        callState = callState,
-        viewModel = callViewModel,
-        onNavigateToCall = { activeState ->
-            currentCallParams = activeState.params
-            navController.navigate(Screen.Calls.route)
-        }
-    )
+
 
     Scaffold(
         bottomBar = {
@@ -66,7 +57,8 @@ fun Home() {
             navController = navController,
             startDestination = Screen.Chats.route,
             modifier = Modifier.padding(padding)
-        ) {
+        )
+        {
 
             composable(Screen.Chats.route) {
                 Chat(
@@ -78,14 +70,29 @@ fun Home() {
                 )
             }
 
-            composable(Screen.Calls.route) {
+            composable(
+                route = Screen.Calls.route,
+                arguments = listOf(
+                    navArgument("params") {
+                        type = NavType.StringType
+                    }
+                )
+            ) { backStackEntry ->
+
+                val paramsArg =
+                    backStackEntry.arguments?.getString("params")
+
                 currentCallParams?.let { params ->
+
                     Call(
                         params = params,
                         onCallEnded = {
-                            currentCallParams = null
-                            callViewModel.resetState()
+
                             navController.popBackStack()
+
+                            currentCallParams = null
+
+                            callViewModel.resetState()
                         }
                     )
                 }
@@ -119,15 +126,24 @@ fun Home() {
                     userId = userId,
                     onNavigateToCall = { params ->
                         currentCallParams = params
-                        navController.navigate(Screen.Calls.route)
+                        navController.navigate(Screen.Calls.createRoute("active"))
                     }
                 )
             }
         }
+
+        IncomingCallOverlay(
+            callState = callState,
+            viewModel = callViewModel,
+            onNavigateToCall = { activeState ->
+                currentCallParams = activeState.params
+                navController.navigate(Screen.Calls.route)
+            }
+        )
     }
 }
 
-val hiddenRoutes = listOf("conversation")
+val hiddenRoutes = listOf("conversation","calls")
 
 fun shouldShowBottomBar(route: String?): Boolean {
     return route?.let {

@@ -16,12 +16,10 @@ import javax.inject.Inject
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
     private val chatListRepository: ChatListRepository,
-    private val dataStore: DataStore
 ): ViewModel() {
 
     init {
         viewModelScope.launch {
-
             getChatList()
         }
     }

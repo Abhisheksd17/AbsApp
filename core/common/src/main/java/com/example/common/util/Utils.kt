@@ -26,11 +26,20 @@ object Utils {
             .joinToString("") { "%02x".format(it) }
     }
 
-    fun formatTime(isoTime: String): String {
-        val instant = java.time.Instant.parse(isoTime)
-        val formatter = java.time.format.DateTimeFormatter.ofPattern("hh:mm a")
-            .withZone(java.time.ZoneId.systemDefault())
-        return formatter.format(instant)
+    fun formatTime(isoTime: String?): String {
+        if (isoTime.isNullOrBlank()) return ""
+        return try {
+            val instant = java.time.Instant.parse(isoTime)
+            val formatter =
+                java.time.format.DateTimeFormatter
+                    .ofPattern("hh:mm a")
+                    .withZone(java.time.ZoneId.systemDefault())
+
+            formatter.format(instant)
+
+        } catch (e: Exception) {
+            ""
+        }
     }
 
     suspend fun showSnackBar(

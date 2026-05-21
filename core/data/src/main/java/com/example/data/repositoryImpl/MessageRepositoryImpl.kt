@@ -102,9 +102,9 @@ class MessageRepositoryImpl @Inject constructor(
      */
     private suspend fun handleIncomingMessage(payload: WsNewMessage) {
         val entity = MessageEntity(
-            localId = 0,              // Room auto-generates; ignored on upsert
+            localId = 0,
             serverId = payload.msgId,
-            clientId = null,           // socket never carries clientId
+            clientId = null,
             chatId = payload.chatId,
             senderId = payload.senderId,
             type = payload.type,

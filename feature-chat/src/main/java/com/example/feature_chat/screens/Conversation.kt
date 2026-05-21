@@ -1,5 +1,6 @@
 package com.example.feature_chat.screens
 
+import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -52,6 +53,16 @@ fun Conversation(userId: Int?,
         else -> emptyList()
     }
 
+    val reversedMessages = remember(messages) {
+        messages.reversed()
+    }
+
+    LaunchedEffect(Unit) {
+        if (reversedMessages.isNotEmpty()) {
+            listState.scrollToItem(0)
+        }
+    }
+
     LaunchedEffect(userId) {
         userId?.let {
             chatViewModel.loadOrCreateChat(it)
@@ -66,27 +77,45 @@ fun Conversation(userId: Int?,
         }
     }
 
+    var isLoadingMore by remember { mutableStateOf(false) }
+
     LaunchedEffect(listState) {
-
         snapshotFlow {
-            listState.layoutInfo.visibleItemsInfo.firstOrNull()?.index
-        }.collect { index ->
+            listState.isScrollInProgress to listState.firstVisibleItemIndex
+        }
+            .collect { (isScrolling, index) ->
 
-            if (index == 0 ) {
-                chatId?.let {
-                    viewModel.refreshChats(it)
+                Log.d("Conversation", "Index: $index, Scrolling: $isScrolling")
+
+                // Only trigger when user is actively scrolling
+                if (!isScrolling) return@collect
+
+                val shouldLoadMore = index >= messages.lastIndex - 3
+
+                if (shouldLoadMore && !isLoadingMore && messages.isNotEmpty()) {
+                    isLoadingMore = true
+
+                    Log.d("Conversation", "Loading more messages")
+
+                    chatId?.let {
+                        viewModel.refreshChats(it)
+                    }
                 }
+            }
+    }
+
+// Reset loading flag when messages update
+    LaunchedEffect(messages.size) {
+        isLoadingMore = false
+    }
+
+    LaunchedEffect(reversedMessages.size) {
+        if (reversedMessages.isNotEmpty() && listState.layoutInfo.totalItemsCount > 0) {
+            scope.launch {
+                listState.scrollToItem(0)
             }
         }
     }
-
-    LaunchedEffect(messages.size) {
-        if (messages.isNotEmpty()) {
-            scope.launch { listState.animateScrollToItem(messages.size - 1) }
-        }
-    }
-
-
 
     LaunchedEffect(messageText.value) {
         val cId = chatId ?: return@LaunchedEffect
@@ -105,26 +134,19 @@ fun Conversation(userId: Int?,
         }
     }
 
-
     LaunchedEffect(callState) {
-
         when (val state = callState) {
-
             is CallState.Ringing -> {
-
                 onNavigateToCall(
                     state.params
                 )
             }
-
             is CallState.Error -> {
-
                 showSnackBar(
                     snackbarHostState,
                     state.message
                 )
             }
-
             else -> Unit
         }
     }
@@ -167,7 +189,6 @@ fun Conversation(userId: Int?,
                 MessageInputBar(
                     message         = messageText.value,
                     onMessageChange = { messageText.value = it },
-
                     onSend = {
                         val text = messageText.value.trim()
                         val cId  = chatId ?: return@MessageInputBar
@@ -186,7 +207,6 @@ fun Conversation(userId: Int?,
                         messageText.value = ""
                         replyingTo = null
                     },
-
                     onMediaPicked = { media ->
                         val cId = chatId ?: return@MessageInputBar
                         viewModel.uploadMedia(
@@ -196,13 +216,11 @@ fun Conversation(userId: Int?,
                         )
                         replyingTo = null
                     },
-
                     onPhotoCaptured = { uri ->
                         val cId = chatId ?: return@MessageInputBar
                         viewModel.uploadMedia(uri = uri, chatId = cId, type = "image")
                         replyingTo = null
                     },
-
                     onVoiceRecorded = { file ->
                         val uri = FileProvider.getUriForFile(
                             context,
@@ -217,16 +235,13 @@ fun Conversation(userId: Int?,
             }
         }
     ) { scaffoldPadding ->
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(scaffoldPadding)
         ) {
             when (val s = state) {
-
                 is NetworkResult.Loading -> {  }
-
                 is NetworkResult.Error -> {
                     Column(
                         modifier            = Modifier.align(Alignment.Center),
@@ -242,9 +257,8 @@ fun Conversation(userId: Int?,
                         }
                     }
                 }
-
                 else -> {
-                    if (messages.isEmpty()) {
+                    if (reversedMessages.isEmpty()) {
                         Text(
                             text     = "No messages yet. Say hello! 👋",
                             modifier = Modifier.align(Alignment.Center),
@@ -258,9 +272,10 @@ fun Conversation(userId: Int?,
                                 .fillMaxSize()
                                 .padding(horizontal = 8.dp),
                             contentPadding      = PaddingValues(vertical = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(2.dp)
+                            verticalArrangement = Arrangement.spacedBy(2.dp),
+                            reverseLayout = true  // ✅ Key change: reverse layout
                         ) {
-                            items(messages, key = { it.serverId ?: it.localId }) { message ->
+                            items(reversedMessages, key = { it.serverId ?: it.localId }) { message ->
                                 val isSelf = message.senderId == viewModel.userId
                                 SwipeableMessageItem(onSwipeToReply = {
                                     replyingTo = message.toChatMessage()
