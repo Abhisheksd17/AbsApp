@@ -3,6 +3,7 @@ package com.example.absapp.ui.screen
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -18,7 +19,9 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.absapp.ui.components.IncomingCallOverlay
 import com.example.common.navigation.Screen
+import com.example.common.util.NotificationDestination
 import com.example.common.viewmodel.CallerViewModel
+import com.example.common.viewmodel.NotificationViewModel
 import com.example.feature_call.screens.Call
 import com.example.feature_chat.screens.Chat
 import com.example.feature_chat.screens.Conversation
@@ -41,9 +44,31 @@ fun Home() {
         mutableStateOf<CallParams?>(null)
     }
 
+    val notifViewModel: NotificationViewModel = hiltViewModel()
+
+
     val showBottomBar = shouldShowBottomBar(currentRoute)
 
 
+    LaunchedEffect(Unit) {
+        notifViewModel.destination.collect { dest ->
+            when (dest) {
+                is NotificationDestination.OpenConversation ->
+                    navController.navigate(
+                        Screen.Conversation.createRoute(dest.userId)
+                    )
+
+                is NotificationDestination.OpenCall ->{
+
+                    currentCallParams = CallParams.fromRoute(dest.params)
+                    navController.navigate(Screen.Calls.createRoute(dest.params))
+                }
+
+
+                null -> Unit
+            }
+        }
+    }
 
     Scaffold(
         bottomBar = {
@@ -79,19 +104,17 @@ fun Home() {
                 )
             ) { backStackEntry ->
 
-                val paramsArg =
-                    backStackEntry.arguments?.getString("params")
+                val paramsArg = backStackEntry.arguments?.getString("params")
 
-                currentCallParams?.let { params ->
+                val resolvedParams = currentCallParams
+                    ?: paramsArg?.let { CallParams.fromRoute(it) }
 
+                resolvedParams?.let { params ->
                     Call(
                         params = params,
                         onCallEnded = {
-
                             navController.popBackStack()
-
                             currentCallParams = null
-
                             callViewModel.resetState()
                         }
                     )

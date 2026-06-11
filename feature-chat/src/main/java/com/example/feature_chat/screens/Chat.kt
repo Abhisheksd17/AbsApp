@@ -1,6 +1,7 @@
 package com.example.feature_chat.screens
 import android.app.Activity
 import android.util.Log
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -29,9 +30,10 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.common.R
-import com.example.domain.data.NetworkResult
+import com.example.domain.data.ChatUiState
 import com.example.ui.screen.HomeTopBar
 import com.example.feature_chat.ui.SwipeableChatItem
 import com.example.feature_chat.viewmodel.ChatListViewModel
@@ -45,16 +47,19 @@ fun Chat(
 ) {
 
     val viewModel: ChatListViewModel = hiltViewModel()
-    val state by viewModel.chatListState.collectAsState()
+    val state by viewModel.chatListState.collectAsStateWithLifecycle()
     var isSearch by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
-
+    val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+        viewModel.networkEvent.collect { errorMessage ->
+            Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
+        }
         viewModel.fetchChatList()
     }
 
-    val context = LocalContext.current
+
 
     BackHandler {
         (context as? Activity)?.finish()
@@ -106,41 +111,46 @@ fun Chat(
 
                     when (val result = state) {
 
-                        is NetworkResult.Loading -> {
+                         is ChatUiState.Loading -> {
 
                         }
 
-                        is NetworkResult.Success -> {
+                        is ChatUiState.Success -> {
 
-                            val chats = result.data ?: emptyList()
+                            if (result.chats.isEmpty()) {
+                                Text("No Chats Found")
+                            } else{
+                                val chats = result.chats
 
+                                LazyColumn {
+                                    items(chats, key = { it.chatId }) { item ->
 
-                            LazyColumn {
-                                items(chats, key = { it.chatId }) { item ->
+                                        SwipeableChatItem(
+                                            imageUri = item.profileUrl ?: "",
+                                            onImageSelected = {},
+                                            name = item.title,
+                                            message = item.lastMsgPreview ?: "",
+                                            timesAgo = item.lastMsgAt?.toString() ?: "",
+                                            unreadMsg = item.unreadCount > 0,
+                                            msgCount = item.unreadCount,
+                                            onMute = {},
+                                            onDelete = {},
+                                            onChatSelected = {
+                                                onOpenConversation(item.userId?:return@SwipeableChatItem)
+                                            }
+                                        )
 
-                                    SwipeableChatItem(
-                                        imageUri = item.profileUrl ?: "",
-                                        onImageSelected = {},
-                                        name = item.title,
-                                        message = item.lastMsgPreview ?: "",
-                                        timesAgo = item.lastMsgAt?.toString() ?: "",
-                                        unreadMsg = item.unreadCount > 0,
-                                        msgCount = item.unreadCount,
-                                        onMute = {},
-                                        onDelete = {},
-                                        onChatSelected = {
-                                            onOpenConversation(item.userId?:return@SwipeableChatItem)
-                                        }
-                                    )
-
-                                    Spacer(modifier = Modifier.height(8.dp))
+                                        Spacer(modifier = Modifier.height(8.dp))
+                                    }
                                 }
                             }
+
+
                         }
 
-                        is NetworkResult.Error -> {
+                        is ChatUiState.Error -> {
                             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text(result.message ?: "Error")
+                                Text(result.message)
                             }
                         }
 

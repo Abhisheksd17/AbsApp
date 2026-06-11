@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "946872386896",
+    "project_id": "pushnotification-f205c",
+    "storage_bucket": "pushnotification-f205c.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:946872386896:android:fb2ca4c03c5cf2c5251855",
+        "android_client_info": {
+          "package_name": "com.example.absapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC-o3ylzLEzRZInhi6nPlaBiVaLcGutJ-k"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

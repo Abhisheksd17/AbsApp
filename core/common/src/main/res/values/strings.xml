@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="connect_friends_easily_and_quickly">Connect friends easily &amp; quickly</string>
+    <string name="app_name">AbsApp</string>
     <string name="our_chat">Our chat app is the perfect way to stay connected with friends and family</string>
     <string name="sign_up">Sign Up</string>
     <string name="existing_account">Existing account?</string>
@@ -44,5 +45,17 @@
     <string name="storage_data_desc">Network usage, storage usage</string>
     <string name="invite_friend">Invite a friend</string>
     <string name="invite_friend_desc">Invite a friend to chat</string>
+    <string name="notification_you">You</string>
+    <string name="notification_channel_messages">Messages</string>
+    <string name="notification_channel_calls">Calls</string>
+    <string name="notification_channel_missed_calls">Missed Calls</string>
+    <string name="notification_new_message">New Message</string>
+    <string name="notification_incoming_call">Incoming Call</string>
+    <string name="notification_missed_call">Missed Call</string>
+    <string name="notification_answer">Answer</string>
+    <string name="notification_decline">Decline</string>
+    <string name="notification_calling_you">is calling you</string>
+    <string name="notification_summary">Summary</string>
+    <string name="notification_incoming_voice_call">Incoming voice and video calls</string>
 
 </resources>

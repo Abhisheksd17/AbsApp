@@ -38,6 +38,7 @@ import com.example.common.navigati.navigation.LocalNavigator
 import com.example.common.navigation.Screen
 import com.example.domain.data.NetworkResult
 import com.example.feature_auth.viewmodel.ContactViewModel
+import com.example.feature_auth.viewmodel.FcmViewModel
 import com.example.feature_auth.viewmodel.LoginViewModel
 import com.example.model.event.AuthEvent
 import com.example.model.login.UserResponse
@@ -52,8 +53,12 @@ import com.example.ui.theme.TealGreen
 import com.example.ui.R as ui
 import com.example.common.R as common
 import com.example.ui.theme.White
+import com.google.firebase.messaging.FirebaseMessaging
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import java.io.File
+import javax.inject.Inject
 
 @Composable
 fun UpdateProfile(){
@@ -71,6 +76,9 @@ fun UpdateProfile(){
     var userName by remember { mutableStateOf("") }
     var status by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val tokenViewModel: FcmViewModel = hiltViewModel()
+
+
     val userProfile by viewModel.userProfile
         .collectAsStateWithLifecycle(
             initialValue = UserResponse(
@@ -200,6 +208,13 @@ fun UpdateProfile(){
 
             is NetworkResult.Success -> {
                 viewModel.connectSocket()
+                FirebaseMessaging.getInstance().token
+                    .addOnSuccessListener { token ->
+                        CoroutineScope(Dispatchers.IO).launch {
+                            tokenViewModel.registerFcmToken(token)
+                        }
+
+                    }
             }
 
             is NetworkResult.Error -> {

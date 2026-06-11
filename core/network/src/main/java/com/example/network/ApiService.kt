@@ -22,8 +22,10 @@ import com.example.model.login.VerifyOtpRequest
 import com.example.model.media.MediaUploadRequest
 import com.example.model.media.MediaUploadResponse
 import com.example.model.message.SendMessageResponse
+import com.example.model.notification.TokenRequest
 import okhttp3.MultipartBody
 import retrofit2.http.Body
+import retrofit2.http.DELETE
 import retrofit2.http.GET
 import retrofit2.http.Multipart
 import retrofit2.http.POST
@@ -102,5 +104,11 @@ interface ApiService {
 
     @POST("call/call/end")
     suspend fun endCall(@Body body: EndCallRequest):retrofit2.Response<ApiResponse<Unit>>
+
+    @POST("me/fcm-token")
+    suspend  fun registerFcmToken(@Body body: TokenRequest): retrofit2.Response<ApiResponse<Unit>>
+
+    @DELETE("me/fcm-token")
+    suspend fun deRegisterFcmToken(@Body body: TokenRequest): retrofit2.Response<ApiResponse<Unit>>
 
 }

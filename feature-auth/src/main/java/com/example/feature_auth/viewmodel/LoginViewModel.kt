@@ -50,9 +50,9 @@ class LoginViewModel @Inject constructor(
     }
 
     fun connectSocket(){
-        viewModelScope.launch {
+
             authRepository.connectWebSocket(SOCKET_URL)
-        }
+
 
     }
 

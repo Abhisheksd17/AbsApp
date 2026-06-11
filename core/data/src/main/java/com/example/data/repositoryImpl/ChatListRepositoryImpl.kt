@@ -29,27 +29,21 @@ class ChatListRepositoryImpl @Inject constructor(
 
 
 
-    override fun getChatsList(): Flow<NetworkResult<List<ChatList>>> {
+    override fun getChatsList(): Flow<List<ChatList>> {
         return dao.observeChats()
-            .map<List<ChatListEntity>, NetworkResult<List<ChatList>>> { entities ->
-                val domainList = mapper.entityListToDomainList(entities)
-                NetworkResult.Success(domainList)
-            }
-            .catch { e->
-                emit(NetworkResult.Error<List<ChatList>>(e.message ?: "DB error"))
-            }
-
+            .map { mapper.entityListToDomainList(it) }
     }
-    override suspend fun refreshChatsList() {
+
+
+    override suspend fun refreshChatsList(): NetworkResult<Unit> {
         val result = safeApiCall { api.getChatList() }
-
         if (result is NetworkResult.Success) {
-            result.data?.let { chatListResponse ->
-                val entities = mapper.dtoToEntityList(chatListResponse)
-                dao.insertChatList(entities)
+            result.data?.let { dto ->
+                dao.insertChatList(mapper.dtoToEntityList(dto))
             }
+            return NetworkResult.Success(Unit)
         }
-
+        return NetworkResult.Error(result.message ?: "Network Fetch Failed")
     }
 
 

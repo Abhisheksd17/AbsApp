@@ -6,12 +6,14 @@ import com.example.data.repositoryImpl.ChatListRepositoryImpl
 import com.example.data.repositoryImpl.ChatRepositoryImpl
 import com.example.data.repositoryImpl.MessageRepositoryImpl
 import com.example.data.repositoryImpl.ContactRepositoryImpl
+import com.example.data.repositoryImpl.TokenRepositoryImpl
 import com.example.domain.repository.AuthRepository
 import com.example.domain.repository.CallRepository
 import com.example.domain.repository.ChatListRepository
 import com.example.domain.repository.ChatRepository
 import com.example.domain.repository.MessageRepository
 import com.example.domain.repository.ContactRepository
+import com.example.domain.repository.TokenRepository
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -57,6 +59,13 @@ abstract class RepositoryModule {
     abstract fun bindCallRepository(
         impl: CallRepositoryImpl
     ): CallRepository
+
+
+    @Binds
+    @Singleton
+    abstract fun bindTokenRepository(
+        impl: TokenRepositoryImpl
+    ): TokenRepository
 
 
 

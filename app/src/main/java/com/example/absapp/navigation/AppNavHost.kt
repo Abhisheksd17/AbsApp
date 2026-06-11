@@ -2,6 +2,9 @@ package com.example.absapp.navigation
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
@@ -9,6 +12,7 @@ import com.example.absapp.ui.screen.Home
 import com.example.absapp.ui.screen.Splash
 import com.example.common.navigation.NavAction
 import com.example.common.navigation.Screen
+import com.example.common.viewmodel.NotificationViewModel
 import com.example.feature_auth.ui.OnBoarding
 import com.example.feature_auth.ui.OtpVerification
 import com.example.feature_auth.ui.SignIn
@@ -17,7 +21,20 @@ import com.example.feature_auth.ui.UpdateProfile
 
 @Composable
 fun AppNavHost(navigator: AppNavigator) {
+
+    val notifViewModel: NotificationViewModel = hiltViewModel()
+    val destination by notifViewModel.destination.collectAsStateWithLifecycle(null)
     val navController = rememberNavController()
+
+
+    LaunchedEffect(destination) {
+        if (destination != null &&
+            navController.currentDestination?.route != Screen.Home.route) {
+            navController.navigate(Screen.Home.route) {
+                popUpTo(0) { inclusive = true }
+            }
+        }
+    }
     LaunchedEffect(Unit) {
         navigator.events.collect { action ->
 

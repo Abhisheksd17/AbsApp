@@ -6,9 +6,6 @@ import kotlinx.coroutines.flow.Flow
 
 interface ChatListRepository {
 
-    fun getChatsList(): Flow<NetworkResult<List<ChatList>>>
-
-    suspend fun refreshChatsList()
-
-
+    fun getChatsList(): Flow<List<ChatList>>
+    suspend fun refreshChatsList(): NetworkResult<Unit>
 }
