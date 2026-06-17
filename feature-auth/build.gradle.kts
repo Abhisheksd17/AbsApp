@@ -72,4 +72,8 @@ dependencies {
 
     implementation(libs.work.runtime)
     implementation(libs.hilt.work)
+
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
 }

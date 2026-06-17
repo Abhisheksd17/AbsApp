@@ -63,6 +63,5 @@ dependencies {
 
     implementation(libs.cloudinary.android)
 
-    implementation(libs.libphonenumber.v81355)
-
+    implementation(libs.libphonenumber)
 }

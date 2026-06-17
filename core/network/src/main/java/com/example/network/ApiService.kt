@@ -105,7 +105,7 @@ interface ApiService {
     @POST("call/call/end")
     suspend fun endCall(@Body body: EndCallRequest):retrofit2.Response<ApiResponse<Unit>>
 
-    @POST("me/fcm-token")
+    @POST("/users/me/fcm-token")
     suspend  fun registerFcmToken(@Body body: TokenRequest): retrofit2.Response<ApiResponse<Unit>>
 
     @DELETE("me/fcm-token")

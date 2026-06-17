@@ -64,7 +64,6 @@ import javax.inject.Inject
 fun UpdateProfile(){
 
 
-
     val context = LocalContext.current
     val viewModel: LoginViewModel = hiltViewModel()
     val contactViewModel: ContactViewModel = hiltViewModel()
@@ -77,6 +76,8 @@ fun UpdateProfile(){
     var status by remember { mutableStateOf("") }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
     val tokenViewModel: FcmViewModel = hiltViewModel()
+
+
 
 
     val userProfile by viewModel.userProfile
@@ -207,14 +208,19 @@ fun UpdateProfile(){
             }
 
             is NetworkResult.Success -> {
-                viewModel.connectSocket()
-                FirebaseMessaging.getInstance().token
-                    .addOnSuccessListener { token ->
-                        CoroutineScope(Dispatchers.IO).launch {
-                            tokenViewModel.registerFcmToken(token)
-                        }
+                LaunchedEffect(Unit) {
+                    viewModel.connectSocket()
+                    try {
+                        FirebaseMessaging.getInstance().token
+                            .addOnSuccessListener { token ->
 
+                                    tokenViewModel.registerFcmToken(token)
+
+                            }
+                    } catch (e: Exception) {
+                        Log.e("UpdateProfile", "Firebase error", e)
                     }
+                }
             }
 
             is NetworkResult.Error -> {

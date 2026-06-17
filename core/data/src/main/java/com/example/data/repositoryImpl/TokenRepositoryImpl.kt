@@ -1,5 +1,6 @@
 package com.example.data.repositoryImpl
 
+import android.util.Log
 import com.example.domain.repository.TokenRepository
 import com.example.model.notification.TokenRequest
 import com.example.network.ApiService
@@ -10,8 +11,15 @@ class TokenRepositoryImpl @Inject constructor(
 ): TokenRepository {
 
 
-    override suspend  fun register(token: String) {
-        apiService.registerFcmToken(TokenRequest(token))
+    override suspend  fun register(token: String, userId: Int) {
+        try {
+            Log.d("FCM", "Before API")
+            val response =  apiService.registerFcmToken(TokenRequest(token, userId))
+            Log.d("FCM", "Code=${response.code()}")
+        }catch (e:Exception){
+            e.printStackTrace()
+        }
+
     }
 
 }

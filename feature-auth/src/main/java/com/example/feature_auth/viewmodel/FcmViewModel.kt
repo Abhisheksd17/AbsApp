@@ -2,19 +2,28 @@ package com.example.feature_auth.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.common.datastore.DataStore
 import com.example.domain.repository.TokenRepository
+import com.example.domain.usecase.FcmUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class FcmViewModel @Inject constructor(
-    private val repository: TokenRepository
+    private val fcmManager: FcmUseCase,
+    private val dataStore: DataStore
 ) : ViewModel(){
 
-    suspend  fun registerFcmToken(token: String) {
+    fun registerFcmToken(token: String) {
+        viewModelScope.launch {
+            val userId = dataStore.getUserId() ?: return@launch
 
-           repository.register(token)
+            dataStore.saveFcmToken(token)
 
+            fcmManager.registerToken(token, userId)
+        }
     }
+
+
 }

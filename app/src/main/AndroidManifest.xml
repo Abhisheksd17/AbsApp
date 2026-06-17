@@ -41,7 +41,7 @@
         </activity>
 
         <service
-            android:name=".MyFirebaseMessagingService"
+            android:name="com.example.feature_notifications.FirebaseService"
             android:exported="false">
 
             <intent-filter>

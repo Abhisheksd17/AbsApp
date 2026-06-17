@@ -31,8 +31,6 @@ class AbsApplication : Application(), Configuration.Provider {
             mainActivity = MainActivity::class.java
         )
 
-        FirebaseApp.initializeApp(this)
-
         NotificationHelper.createChannels(this)
         MediaManager.init(this, config)
         net.sqlcipher.database.SQLiteDatabase.loadLibs(this)

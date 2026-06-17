@@ -9,6 +9,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -64,7 +66,7 @@ fun SignUp(){
             .background(White).fillMaxSize()
     ){
         Column(
-            modifier = Modifier.padding(top=17.dp).fillMaxSize()
+            modifier = Modifier.padding(top=17.dp).fillMaxSize().verticalScroll(rememberScrollState())
         )
         {
             Icon(

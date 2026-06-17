@@ -38,30 +38,36 @@ android {
 
 dependencies {
 
-    implementation(project(":core:model"))
+
+    api(project(":core:model"))
     implementation(project(":core:domain"))
 
+    // Compose
+    implementation(platform(libs.androidx.compose.bom))
 
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    implementation(libs.androidx.ui.graphics)
-    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.ui)
+    implementation(libs.androidx.compose.ui.graphics)
+    implementation(libs.androidx.compose.ui.tooling.preview)
+
     implementation(libs.androidx.material3)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.activity.compose)
 
+    implementation(libs.androidx.compose.runtime)
+    implementation(libs.androidx.compose.foundation)
+    implementation(libs.androidx.compose.foundation.layout)
+    implementation(libs.androidx.compose.ui.text)
+
+    debugImplementation(libs.androidx.compose.ui.tooling)
+
+    // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+
+    androidTestImplementation(libs.hilt.android.testing)
+    kaptAndroidTest(libs.hilt.compiler)
+
+    // Image Loading
+    implementation(libs.coil.compose)
+
     implementation(libs.androidx.datastore.preferences)
-
-    implementation(libs.okhttp.v532)
-    implementation(libs.kotlinx.coroutines.core.v1102)
-    implementation(libs.kotlinx.coroutines.android.v1102)
-
-    implementation(libs.work.runtime)
-    implementation(libs.hilt.work)
-    kapt(libs.hilt.compiler)
-    kapt(libs.androidx.hilt.compiler)
 }

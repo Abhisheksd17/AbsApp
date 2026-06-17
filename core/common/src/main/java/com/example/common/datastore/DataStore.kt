@@ -17,6 +17,7 @@ import javax.inject.Inject
 
 private val Context.dataStore by preferencesDataStore(name = "user_prefs")
 private val TOKEN_KEY = stringPreferencesKey("auth_token")
+private val FCM_KEY = stringPreferencesKey("fcm_token")
 private val NUMBER_KEY = stringPreferencesKey("num_token")
 
 
@@ -64,6 +65,18 @@ class DataStore @Inject constructor(
             prefs[NUMBER_KEY] = number
         }
     }
+
+    suspend fun saveFcmToken(number: String){
+        context.dataStore.edit { prefs ->
+            prefs[FCM_KEY] = number
+        }
+    }
+
+    suspend fun getFcmToken(): String? {
+        return context.dataStore.data.firstOrNull()?.get(FCM_KEY)
+
+    }
+
 
 
 

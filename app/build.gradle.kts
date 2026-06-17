@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.hilt)
     id("kotlin-kapt")
     alias(libs.plugins.kotlin.serialization)
+    id("com.google.gms.google-services")
 }
 
 android {
@@ -93,7 +94,6 @@ dependencies {
     implementation(libs.androidx.navigation.dynamic.features.fragment)
     androidTestImplementation(libs.androidx.navigation.testing)
 
-    implementation(libs.kotlinx.serialization.json.v173)
     implementation(libs.androidx.core.splashscreen)
 
     implementation(libs.android.database.sqlcipher)
@@ -105,6 +105,9 @@ dependencies {
 
     implementation(libs.cloudinary.android)
     implementation(libs.compose.material.icons.extended)
+
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.messaging)
 
 
 }
