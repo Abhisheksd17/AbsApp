@@ -53,10 +53,11 @@ fun Chat(
     val context = LocalContext.current
 
     LaunchedEffect(Unit) {
+        viewModel.fetchChatList()
         viewModel.networkEvent.collect { errorMessage ->
             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
         }
-        viewModel.fetchChatList()
+
     }
 
 
@@ -118,13 +119,15 @@ fun Chat(
                         is ChatUiState.Success -> {
 
                             if (result.chats.isEmpty()) {
-                                Text("No Chats Found")
+                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                    Text(stringResource(R.string.no_chats_found))
+                                }
+
                             } else{
                                 val chats = result.chats
 
                                 LazyColumn {
                                     items(chats, key = { it.chatId }) { item ->
-
                                         SwipeableChatItem(
                                             imageUri = item.profileUrl ?: "",
                                             onImageSelected = {},

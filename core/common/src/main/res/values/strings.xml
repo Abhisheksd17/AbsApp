@@ -28,6 +28,7 @@
     <string name="enter_digit">Enter the 6-digit code sent to your mobile number.</string>
     <string name="create_acc">Create and Account</string>
     <string name="verify">Verify</string>
+    <string name="no_chats_found">No Chats Found</string>
     <string name="update_profile">Update Profile</string>
     <string name="forgot_password">Forgot password?</string>
     <string name="signup_with_mobile">Sign up with Mobile No.</string>

@@ -38,7 +38,7 @@ fun SwipeableChatItem(
     val coroutineScope = rememberCoroutineScope()
     val offsetX = remember { Animatable(0f) }
 
-    val revealWidth = 140f  // in px approx; will be overridden by measured dp->px below
+    val revealWidth = 140f
     var revealWidthPx by remember { mutableFloatStateOf(0f) }
 
     Box(

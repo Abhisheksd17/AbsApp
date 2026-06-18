@@ -104,7 +104,6 @@ fun Conversation(userId: Int?,
             }
     }
 
-// Reset loading flag when messages update
     LaunchedEffect(messages.size) {
         isLoadingMore = false
     }

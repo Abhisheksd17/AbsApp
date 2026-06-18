@@ -26,6 +26,7 @@ import com.example.ui.R as ui
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.common.util.Utils.formatTime
 import com.example.ui.theme.Black
 import com.example.ui.theme.CoolSlateGreen
@@ -61,10 +62,13 @@ fun ChatItem(
                 modifier = Modifier.size(52.dp)
             ) {
 
-                Image(
-                    painter = painterResource(id = ui.drawable.defaut_profile_ic),
+                AsyncImage(
+                    model = imageUri,
                     contentDescription = null,
-                    modifier = Modifier.matchParentSize()
+                    modifier = Modifier.matchParentSize(),
+                    placeholder = painterResource(id = ui.drawable.defaut_profile_ic),
+                    error = painterResource(id = ui.drawable.defaut_profile_ic),
+                    fallback = painterResource(id =ui.drawable.defaut_profile_ic )
                 )
 
                 Box(

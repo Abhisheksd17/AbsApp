@@ -1,5 +1,6 @@
 package com.example.data.repositoryImpl
 
+import android.util.Log
 import com.example.common.datastore.DataStore
 import com.example.data.mapper.ChatListMapper
 import com.example.data.wrapper.BaseApiResponse
@@ -36,8 +37,10 @@ class ChatListRepositoryImpl @Inject constructor(
 
 
     override suspend fun refreshChatsList(): NetworkResult<Unit> {
+        Log.d("Chat", "LaunchedEffect triggered3")
         val result = safeApiCall { api.getChatList() }
         if (result is NetworkResult.Success) {
+            Log.d("Chat", "LaunchedEffect triggered4")
             result.data?.let { dto ->
                 dao.insertChatList(mapper.dtoToEntityList(dto))
             }
