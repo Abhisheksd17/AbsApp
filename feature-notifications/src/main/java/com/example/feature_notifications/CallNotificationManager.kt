@@ -57,7 +57,7 @@ object CallNotificationManager {
         val avatarUrl   = data["caller_avatar_url"]
 
         scope.launch {
-            val avatar = NotificationHelper.loadAvatar(avatarUrl)
+            val avatar = NotificationHelper.loadAvatar(context,avatarUrl)
 
             val callTypeLabel = if (callType == "video") "Video call" else "Voice call"
             val extras = mapOf(
@@ -93,7 +93,7 @@ object CallNotificationManager {
             val builder = NotificationHelper.baseBuilder(context, CHANNEL_CALLS)
                 .setContentTitle(callerName)
                 .setContentText(callTypeLabel)
-                .setOngoing(true)          // not dismissible by swipe
+                .setOngoing(true)
                 .setAutoCancel(false)
                 .setCategory(NotificationCompat.CATEGORY_CALL)
                 .setPriority(NotificationCompat.PRIORITY_MAX)

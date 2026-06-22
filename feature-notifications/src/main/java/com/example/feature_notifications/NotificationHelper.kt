@@ -6,10 +6,11 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
-import android.graphics.BitmapFactory
+import android.graphics.drawable.BitmapDrawable
 import android.os.Build
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
+import coil.ImageLoader
 import com.example.feature_notifications.NotificationConstants.CHANNEL_CALLS
 import com.example.feature_notifications.NotificationConstants.CHANNEL_CALLS_NAME
 import com.example.feature_notifications.NotificationConstants.CHANNEL_MESSAGES
@@ -18,14 +19,11 @@ import com.example.feature_notifications.NotificationConstants.CHANNEL_MISSED_CA
 import com.example.feature_notifications.NotificationConstants.CHANNEL_MISSED_CALLS_NAME
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
-import java.net.URL
 import com.example.ui.R
+import coil.request.ImageRequest
 
 object NotificationHelper {
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Channel registration — call once from Application.onCreate()
-    // ─────────────────────────────────────────────────────────────────────────
 
     fun createChannels(context: Context) {
         if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) return
@@ -67,9 +65,6 @@ object NotificationHelper {
         )
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Base builder — shared config applied to every notification
-    // ─────────────────────────────────────────────────────────────────────────
 
     fun baseBuilder(
         context: Context,
@@ -81,9 +76,6 @@ object NotificationHelper {
             .setLocalOnly(false)
             .setDefaults(NotificationCompat.DEFAULT_ALL)
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Pending intent helpers
-    // ─────────────────────────────────────────────────────────────────────────
 
     /**
      * Tapping a notification opens the target Activity with the supplied extras.
@@ -147,12 +139,25 @@ object NotificationHelper {
     // Avatar loader — returns null on any failure (never throws)
     // ─────────────────────────────────────────────────────────────────────────
 
-    suspend fun loadAvatar(url: String?): Bitmap? {
+    suspend fun loadAvatar(
+        context: Context,
+        url: String?
+    ): Bitmap? {
+
         if (url.isNullOrBlank()) return null
+
         return withContext(Dispatchers.IO) {
             runCatching {
-                val stream = URL(url).openStream()
-                BitmapFactory.decodeStream(stream)
+                val loader = ImageLoader(context)
+
+                val request = ImageRequest.Builder(context)
+                    .data(url)
+                    .allowHardware(false)
+                    .build()
+
+                val result = loader.execute(request)
+
+                (result.drawable as? BitmapDrawable)?.bitmap
             }.getOrNull()
         }
     }

@@ -48,7 +48,7 @@ object MessageNotificationManager {
         val avatarUrl   = data["sender_avatar_url"]
 
         scope.launch {
-            val avatar = NotificationHelper.loadAvatar(avatarUrl)
+            val avatar = NotificationHelper.loadAvatar(context, avatarUrl)
 
             // Accumulate messages per chat so MessagingStyle shows a thread
             val list = pendingMessages.getOrPut(chatId) { mutableListOf() }
