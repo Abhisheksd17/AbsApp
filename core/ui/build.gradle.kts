@@ -56,8 +56,12 @@ android {
         // Hilt
         implementation(libs.hilt.android)
         kapt(libs.hilt.compiler)
+
+        // Hilt Testing
         androidTestImplementation(libs.hilt.android.testing)
         kaptAndroidTest(libs.hilt.compiler)
+        testImplementation(libs.hilt.android.testing)
+        kaptTest(libs.hilt.compiler)
 
         implementation(libs.coil.compose)
     }

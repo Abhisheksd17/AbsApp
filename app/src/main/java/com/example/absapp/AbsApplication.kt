@@ -5,6 +5,7 @@ import androidx.hilt.work.HiltWorkerFactory
 import androidx.work.Configuration
 import androidx.work.WorkManager
 import com.cloudinary.android.MediaManager
+import com.example.feature_notifications.CallNotificationObserver
 import com.example.feature_notifications.NotificationActivityProvider
 import com.example.feature_notifications.NotificationHelper
 import com.google.firebase.FirebaseApp
@@ -17,6 +18,10 @@ class AbsApplication : Application(), Configuration.Provider {
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
 
+    @Inject
+    lateinit var callNotificationObserver: CallNotificationObserver
+
+
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()
             .setWorkerFactory(workerFactory)
@@ -27,6 +32,7 @@ class AbsApplication : Application(), Configuration.Provider {
         val config = mapOf(
             "cloud_name" to "dujzbrfam"
         )
+        callNotificationObserver.start()
         NotificationActivityProvider.register(
             mainActivity = MainActivity::class.java
         )

@@ -4,6 +4,7 @@ import android.Manifest
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
+import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -64,22 +65,44 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun handleNotificationIntent(intent: Intent?) {
-       when(intent?.getStringExtra("type")){
-           "chat" -> {
-               val userId = intent.getStringExtra(EXTRA_CHAT_ID)?.toIntOrNull() ?: return
-               if (userId != -1)
-                   notifViewModel.onNotification(
-                       NotificationDestination.OpenConversation(userId)
-                   )
-           }
-           "call" -> {
-               val params = intent.getStringExtra("params") ?: return
-               notifViewModel.onNotification(
-                   NotificationDestination.OpenCall(params)
-               )
-           }
-       }
 
+        Log.d("NOTIFICATION_DEBUG", "Intent = $intent")
+
+        intent?.extras?.keySet()?.forEach { key ->
+            Log.d(
+                "NOTIFICATION_DEBUG",
+                "Extra: $key = ${intent.extras?.get(key)}"
+            )
         }
+
+        Log.d(
+            "NOTIFICATION_DEBUG",
+            "type = ${intent?.getStringExtra("type")}"
+        )
+
+        Log.d(
+            "NOTIFICATION_DEBUG",
+            "params = ${intent?.getStringExtra("params")}"
+        )
+
+        when(intent?.getStringExtra("type")) {
+            "chat" -> {
+                val userId = intent.getStringExtra(EXTRA_CHAT_ID)?.toIntOrNull() ?: return
+                Log.d("NOTIFICATION_DEBUG", "userId = $userId")
+                if (userId != -1) {
+                    notifViewModel.onNotification(
+                        NotificationDestination.OpenConversation(userId)
+                    )
+                }
+            }
+
+            "call" -> {
+                val params = intent.getStringExtra("params") ?: return
+                notifViewModel.onNotification(
+                    NotificationDestination.OpenCall(params)
+                )
+            }
+        }
+    }
 }
 

@@ -23,10 +23,10 @@ object NotificationConstants {
     const val TYPE_CALL_ENDED   = "call_ended"
 
     // ── Intent actions ────────────────────────────────────────────────────────
-    const val ACTION_ACCEPT_CALL  = "com.yourapp.action.ACCEPT_CALL"
-    const val ACTION_DECLINE_CALL = "com.yourapp.action.DECLINE_CALL"
-    const val ACTION_OPEN_CHAT    = "com.yourapp.action.OPEN_CHAT"
-    const val ACTION_DISMISS_CALL = "com.yourapp.action.DISMISS_CALL"
+    const val ACTION_ACCEPT_CALL  = "com.absapp.action.ACCEPT_CALL"
+    const val ACTION_DECLINE_CALL = "com.absapp.action.DECLINE_CALL"
+    const val ACTION_OPEN_CHAT    = "com.absapp.action.OPEN_CHAT"
+    const val ACTION_DISMISS_CALL = "com.absapp.action.DISMISS_CALL"
 
     // ── Intent extra keys ─────────────────────────────────────────────────────
     const val EXTRA_CALL_ID           = "call_id"

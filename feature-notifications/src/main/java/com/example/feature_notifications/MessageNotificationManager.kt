@@ -16,29 +16,16 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import com.example.common.R
 
-/**
- * Handles all chat message notifications.
- *
- * Each chat gets its own notification (keyed by chat_id).
- * When more than one chat has a pending notification a summary
- * notification is shown so the OS can collapse them into a group.
- *
- * Uses MessagingStyle so Android displays the conversation thread
- * inline on lock-screen and in the notification shade (like WhatsApp).
- */
+
 object MessageNotificationManager {
 
-    // In-memory store: chat_id → list of (sender, text) pairs
-    // Reset when the user opens the app / clears notifications.
+
     private val pendingMessages = mutableMapOf<Int, MutableList<PendingMessage>>()
 
     private val scope = CoroutineScope(SupervisorJob() + Dispatchers.Main)
 
 
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Public entry point — called from FirebaseService
-    // ─────────────────────────────────────────────────────────────────────────
 
     fun show(context: Context, data: Map<String, String?>) {
         val chatId      = data["chat_id"]?.toIntOrNull()     ?: return
@@ -50,7 +37,6 @@ object MessageNotificationManager {
         scope.launch {
             val avatar = NotificationHelper.loadAvatar(context, avatarUrl)
 
-            // Accumulate messages per chat so MessagingStyle shows a thread
             val list = pendingMessages.getOrPut(chatId) { mutableListOf() }
             list.add(PendingMessage(senderName, bodyPreview, System.currentTimeMillis()))
 
@@ -62,30 +48,22 @@ object MessageNotificationManager {
         }
     }
 
-    /**
-     * Call this when the user opens a chat to clear its pending notification.
-     */
+
     fun clearChat(context: Context, chatId: Int) {
         pendingMessages.remove(chatId)
         NotificationHelper.cancel(context, chatId)
 
         if (pendingMessages.size <= 1) {
-            // Only one (or zero) chat left — dismiss the summary too
             NotificationHelper.cancel(context, SUMMARY_ID)
         }
     }
 
-    /**
-     * Call on logout / clear-all.
-     */
+
     fun clearAll(context: Context) {
         pendingMessages.clear()
         NotificationHelper.cancelAll(context)
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Per-chat MessagingStyle notification
-    // ─────────────────────────────────────────────────────────────────────────
 
     private fun showConversationNotification(
         context: Context,
@@ -140,13 +118,9 @@ object MessageNotificationManager {
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-        // Show the individual chat notification — notification ID = chat_id
         NotificationHelper.notify(context, chatId, builder)
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Group summary (required by Android for grouped notifications)
-    // ─────────────────────────────────────────────────────────────────────────
 
     private fun showGroupSummary(context: Context) {
         val totalUnread   = pendingMessages.values.sumOf { it.size }
@@ -155,7 +129,7 @@ object MessageNotificationManager {
             R.string.notification_summary,
             totalUnread,
             chatCount,
-        ) // e.g. "5 messages in 2 chats"
+        )
 
         val inboxStyle = NotificationCompat.InboxStyle()
             .setBigContentTitle(summaryText)
@@ -175,7 +149,6 @@ object MessageNotificationManager {
         NotificationHelper.notify(context, SUMMARY_ID, builder)
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
 
     private const val SUMMARY_ID = 9999
 

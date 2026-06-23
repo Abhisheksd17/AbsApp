@@ -44,7 +44,6 @@
             </intent-filter>
         </activity>
 
-        <!-- Use only one FirebaseService -->
         <service
             android:name="com.example.feature_notifications.FirebaseService"
             android:exported="false">

@@ -5,6 +5,7 @@ import android.media.AudioAttributes
 import android.media.Ringtone
 import android.media.RingtoneManager
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import com.example.feature_notifications.NotificationConstants.CHANNEL_CALLS
 import com.example.feature_notifications.NotificationConstants.ACTION_ACCEPT_CALL
@@ -133,7 +134,7 @@ object CallNotificationManager {
         val callId      = data["call_id"]          ?: return
         val reason      = data["reason"]           ?: NotificationConstants.REASON_ENDED
         val callerName  = data["caller_name"].orEmpty()
-
+        Log.d("CallReceiver", "dismissCall() reason=$reason")
         stopRingtone()
         NotificationHelper.cancel(context, NOTIFICATION_ID_INCOMING_CALL)
 
@@ -142,10 +143,7 @@ object CallNotificationManager {
         }
     }
 
-    /**
-     * Call this from your BroadcastReceiver (ACTION_ACCEPT_CALL / ACTION_DECLINE_CALL)
-     * and from IncomingCallActivity when the user taps a button.
-     */
+
     fun dismissIncomingCallNotification(context: Context) {
         stopRingtone()
         NotificationHelper.cancel(context, NOTIFICATION_ID_INCOMING_CALL)

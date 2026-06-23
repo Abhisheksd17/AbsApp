@@ -1,5 +1,6 @@
 package com.example.absapp.ui.screen
 
+import android.util.Log
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -52,6 +53,7 @@ fun Home() {
 
     LaunchedEffect(Unit) {
         notifViewModel.destination.collect { dest ->
+            Log.d("NOTIFICATION_DEBUG","got destination: $dest")
             when (dest) {
                 is NotificationDestination.OpenConversation ->
                     navController.navigate(
