@@ -13,15 +13,12 @@ import androidx.activity.viewModels
 import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.core.view.WindowCompat
-import androidx.lifecycle.lifecycleScope
 import com.example.absapp.navigation.AppNavHost
 import com.example.absapp.navigation.AppNavigator
-import com.example.common.navigati.navigation.LocalNavigator
 import com.example.absapp.ui.theme.AbsAppTheme
-import com.example.common.navigation.Screen
+import com.example.common.navigati.navigation.LocalNavigator
 import com.example.common.util.NotificationDestination
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.launch
 import javax.inject.Inject
 import com.example.common.viewmodel.NotificationViewModel
 import com.example.feature_notifications.NotificationConstants.EXTRA_CHAT_ID
@@ -43,6 +40,10 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
+
+        // Handle notification if app was started from one (Cold Start)
+        handleNotificationIntent(intent)
+
         setContent {
             LaunchedEffect(Unit) {
                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
@@ -61,48 +62,43 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+        setIntent(intent)
         handleNotificationIntent(intent)
     }
 
     private fun handleNotificationIntent(intent: Intent?) {
+        if (intent == null) return
 
-        Log.d("NOTIFICATION_DEBUG", "Intent = $intent")
+        Log.d("NOTIFICATION_DEBUG", "Processing Intent: $intent")
 
-        intent?.extras?.keySet()?.forEach { key ->
-            Log.d(
-                "NOTIFICATION_DEBUG",
-                "Extra: $key = ${intent.extras?.get(key)}"
-            )
+        intent.extras?.keySet()?.forEach { key ->
+            Log.d("NOTIFICATION_DEBUG", "Extra: $key = ${intent.extras?.get(key)}")
         }
 
-        Log.d(
-            "NOTIFICATION_DEBUG",
-            "type = ${intent?.getStringExtra("type")}"
-        )
+        val type = intent.getStringExtra("type")
+        Log.d("NOTIFICATION_DEBUG", "type = $type")
 
-        Log.d(
-            "NOTIFICATION_DEBUG",
-            "params = ${intent?.getStringExtra("params")}"
-        )
-
-        when(intent?.getStringExtra("type")) {
+        when(type) {
             "chat" -> {
-                val userId = intent.getStringExtra(EXTRA_CHAT_ID)?.toIntOrNull() ?: return
-                Log.d("NOTIFICATION_DEBUG", "userId = $userId")
-                if (userId != -1) {
+                val chatIdString = intent.getStringExtra(EXTRA_CHAT_ID)
+                Log.d("NOTIFICATION_DEBUG", "chatIdString = $chatIdString")
+                val chatId = chatIdString?.toIntOrNull()
+                if (chatId != null && chatId != -1) {
                     notifViewModel.onNotification(
-                        NotificationDestination.OpenConversation(userId)
+                        NotificationDestination.OpenConversation(chatId)
                     )
                 }
             }
 
             "call" -> {
-                val params = intent.getStringExtra("params") ?: return
-                notifViewModel.onNotification(
-                    NotificationDestination.OpenCall(params)
-                )
+                val params = intent.getStringExtra("params")
+                Log.d("NOTIFICATION_DEBUG", "params = $params")
+                if (params != null) {
+                    notifViewModel.onNotification(
+                        NotificationDestination.OpenCall(params)
+                    )
+                }
             }
         }
     }
 }
-

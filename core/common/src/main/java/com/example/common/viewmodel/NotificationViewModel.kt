@@ -14,13 +14,17 @@ import javax.inject.Singleton
 @Singleton
 class NotificationViewModel @Inject constructor() : ViewModel() {
 
-    private val _destination = MutableSharedFlow<NotificationDestination>(
-        extraBufferCapacity = 1,
+    private val _destination = MutableSharedFlow<NotificationDestination?>(
+        replay = 1,
         onBufferOverflow = BufferOverflow.DROP_OLDEST
     )
-    val destination: SharedFlow<NotificationDestination> = _destination.asSharedFlow()
+    val destination: SharedFlow<NotificationDestination?> = _destination.asSharedFlow()
 
     fun onNotification(dest: NotificationDestination) {
         viewModelScope.launch { _destination.emit(dest) }
+    }
+
+    fun clear() {
+        viewModelScope.launch { _destination.emit(null) }
     }
 }

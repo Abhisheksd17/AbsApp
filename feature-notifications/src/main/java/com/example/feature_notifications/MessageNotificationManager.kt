@@ -1,6 +1,7 @@
 package com.example.feature_notifications
 
 import android.content.Context
+import androidx.activity.ComponentActivity
 import androidx.core.app.NotificationCompat
 import androidx.core.app.Person
 import androidx.core.graphics.drawable.IconCompat

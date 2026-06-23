@@ -62,6 +62,7 @@ object CallNotificationManager {
 
             val callTypeLabel = if (callType == "video") "Video call" else "Voice call"
             val extras = mapOf(
+                "type" to "call",
                 EXTRA_CALL_ID           to callId,
                 EXTRA_CALLER_ID         to callerId,
                 EXTRA_CALLER_NAME       to callerName,
@@ -134,7 +135,6 @@ object CallNotificationManager {
         val callId      = data["call_id"]          ?: return
         val reason      = data["reason"]           ?: NotificationConstants.REASON_ENDED
         val callerName  = data["caller_name"].orEmpty()
-        Log.d("CallReceiver", "dismissCall() reason=$reason")
         stopRingtone()
         NotificationHelper.cancel(context, NOTIFICATION_ID_INCOMING_CALL)
 
