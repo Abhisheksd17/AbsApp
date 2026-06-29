@@ -22,6 +22,7 @@ import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import com.example.common.viewmodel.NotificationViewModel
 import com.example.feature_notifications.NotificationConstants.EXTRA_CHAT_ID
+import com.example.feature_notifications.NotificationConstants.SENDER_ID
 
 
 @AndroidEntryPoint
@@ -41,7 +42,6 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
         WindowCompat.setDecorFitsSystemWindows(window, false)
 
-        // Handle notification if app was started from one (Cold Start)
         handleNotificationIntent(intent)
 
         setContent {
@@ -62,6 +62,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onNewIntent(intent: Intent) {
         super.onNewIntent(intent)
+
         setIntent(intent)
         handleNotificationIntent(intent)
     }
@@ -80,7 +81,7 @@ class MainActivity : ComponentActivity() {
 
         when(type) {
             "chat" -> {
-                val chatIdString = intent.getStringExtra(EXTRA_CHAT_ID)
+                val chatIdString = intent.getStringExtra(SENDER_ID)
                 Log.d("NOTIFICATION_DEBUG", "chatIdString = $chatIdString")
                 val chatId = chatIdString?.toIntOrNull()
                 if (chatId != null && chatId != -1) {

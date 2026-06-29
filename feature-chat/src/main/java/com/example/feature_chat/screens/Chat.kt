@@ -57,7 +57,6 @@ fun Chat(
         viewModel.networkEvent.collect { errorMessage ->
             Toast.makeText(context, errorMessage, Toast.LENGTH_SHORT).show()
         }
-
     }
 
 

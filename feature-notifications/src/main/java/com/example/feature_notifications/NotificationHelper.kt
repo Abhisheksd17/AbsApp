@@ -8,6 +8,7 @@ import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.drawable.BitmapDrawable
 import android.os.Build
+import android.util.Log
 import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import coil.ImageLoader
@@ -86,6 +87,7 @@ object NotificationHelper {
         extras: Map<String, String> = emptyMap(),
         requestCode: Int,
     ): PendingIntent {
+        Log.d("NOTIF_DEBUG", "Target = ${targetClass.name}")
         val intent = Intent(context, targetClass).apply {
             flags = Intent.FLAG_ACTIVITY_SINGLE_TOP or Intent.FLAG_ACTIVITY_CLEAR_TOP
             extras.forEach { (k, v) -> putExtra(k, v) }

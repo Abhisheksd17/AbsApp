@@ -133,7 +133,7 @@ fun SignUp(){
                 onClick = {
                     if(isFormValid){
                         scope.launch {
-                            navigator.navigate(Screen.Home)
+                            navigator.navigate(Screen.Chats)
                         }
                     }
                 },

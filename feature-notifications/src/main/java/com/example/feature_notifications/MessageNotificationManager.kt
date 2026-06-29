@@ -16,6 +16,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 import com.example.common.R
+import com.example.feature_notifications.NotificationConstants.SENDER_ID
 
 
 object MessageNotificationManager {
@@ -31,6 +32,7 @@ object MessageNotificationManager {
     fun show(context: Context, data: Map<String, String?>) {
         val chatId      = data["chat_id"]?.toIntOrNull()     ?: return
         val messageId   = data["message_id"]?.toIntOrNull()  ?: return
+        val senderId   = data["sender_id"]?.toIntOrNull()  ?: return
         val senderName  = data["sender_name"].orEmpty()
         val bodyPreview = data["body_preview"].orEmpty()
         val avatarUrl   = data["sender_avatar_url"]
@@ -41,7 +43,7 @@ object MessageNotificationManager {
             val list = pendingMessages.getOrPut(chatId) { mutableListOf() }
             list.add(PendingMessage(senderName, bodyPreview, System.currentTimeMillis()))
 
-            showConversationNotification(context, chatId, senderName, avatarUrl, list, avatar?.let { IconCompat.createWithBitmap(it) })
+            showConversationNotification(context, senderId, senderName, avatarUrl, list, avatar?.let { IconCompat.createWithBitmap(it) })
 
             if (pendingMessages.size > 1) {
                 showGroupSummary(context)
@@ -68,7 +70,7 @@ object MessageNotificationManager {
 
     private fun showConversationNotification(
         context: Context,
-        chatId: Int,
+        senderId: Int,
         senderName: String,
         avatarUrl: String?,
         messages: List<PendingMessage>,
@@ -101,11 +103,11 @@ object MessageNotificationManager {
             targetClass = NotificationActivityProvider.getMainActivity(),
             extras = mapOf(
                 "type" to "chat",
-                EXTRA_CHAT_ID to chatId.toString(),
+                SENDER_ID to senderId.toString(),
                 EXTRA_SENDER_NAME to senderName,
                 EXTRA_SENDER_AVATAR_URL to (avatarUrl ?: ""),
             ),
-            requestCode = RC_OPEN_CHAT + chatId,
+            requestCode = RC_OPEN_CHAT + senderId,
         )
 
         val builder = NotificationHelper.baseBuilder(context, CHANNEL_MESSAGES)
@@ -119,7 +121,7 @@ object MessageNotificationManager {
             .setCategory(NotificationCompat.CATEGORY_MESSAGE)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)
 
-        NotificationHelper.notify(context, chatId, builder)
+        NotificationHelper.notify(context, senderId, builder)
     }
 
 

@@ -239,7 +239,7 @@ fun UpdateProfile(){
 
                     }
                     is AuthEvent.NavigateToHome -> {
-                        navigator.navigate(Screen.Home)
+                        navigator.navigate(Screen.Chats)
                     }
 
                     is AuthEvent.NavigateToUpdateProfile -> {

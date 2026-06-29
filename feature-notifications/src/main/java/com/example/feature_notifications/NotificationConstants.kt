@@ -36,6 +36,7 @@ object NotificationConstants {
     const val EXTRA_CHANNEL           = "channel"
     const val EXTRA_CALLER_AVATAR_URL = "caller_avatar_url"
     const val EXTRA_CHAT_ID           = "chat_id"
+    const val SENDER_ID           = "senderId"
     const val EXTRA_MESSAGE_ID        = "message_id"
     const val EXTRA_SENDER_NAME       = "sender_name"
     const val EXTRA_BODY_PREVIEW      = "body_preview"
