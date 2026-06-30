@@ -27,7 +27,6 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
-import kotlinx.coroutines.cancelChildren
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -54,16 +53,15 @@ class MessageRepositoryImpl @Inject constructor(
         consumeWsEvents()
     }
 
-    private val _isTyping =
-        MutableStateFlow(false)
+    private val _isTyping = MutableStateFlow(false)
+    override val isTyping = _isTyping.asStateFlow()
 
-    override val isTyping =
-        _isTyping.asStateFlow()
+    private val _isOnline=MutableStateFlow(false)
+    override val isOnline=_isOnline.asStateFlow()
 
-    var nextCursor: String? = null
-    val limit = 20
-
-
+    private var currentChatId: Int? = null
+    private var nextCursor: String? = null
+    private val limit = 20
 
     private fun consumeWsEvents() {
         repoScope.launch {
@@ -74,32 +72,20 @@ class MessageRepositoryImpl @Inject constructor(
                     is WsEvent.Typing -> {
                         _isTyping.value = event.isTyping
                     }
-                    is WsEvent.Connected    -> Log.d("MsgRepo", "WS connected")
-                    is WsEvent.Disconnected -> Log.d("MsgRepo", "WS disconnected")
+                    is WsEvent.Connected ->{
+                        _isOnline.value=true
+                        Log.d("MsgRepo", "WS connected")
+                    }
+                    is WsEvent.Disconnected -> {
+                        _isOnline.value=false
+                        Log.d("MsgRepo", "WS disconnected")
+                    }
                     else                    -> Unit
                 }
             }
         }
     }
 
-
-
-    // ─────────────────────────────────────────────
-    // WebSocket event handlers
-    // ─────────────────────────────────────────────
-
-    /**
-     * A new message arrived over the socket.
-     *
-     * Strategy:
-     *  - If we already have a row with this serverId (= we sent it and
-     *    mapClientToServer already ran), just update the status.
-     *  - Otherwise insert as a fresh incoming message.
-     *
-     * This prevents the duplicate-row bug where the local optimistic row
-     * and the socket-delivered row coexist because the socket payload
-     * carries no clientId.
-     */
     private suspend fun handleIncomingMessage(payload: WsNewMessage) {
         val entity = MessageEntity(
             localId = 0,
@@ -119,15 +105,9 @@ class MessageRepositoryImpl @Inject constructor(
             status = MessageStatus.SENT,
         )
         upsertIncomingMessage(entity)
-
         wsManager.sendAck(payload.msgId, "delivered")
     }
 
-    /**
-     * A delivery/read receipt arrived over the socket.
-     * We always identify the row by serverId here — clientId is irrelevant
-     * because the receipt only concerns a message already confirmed by the server.
-     */
     private suspend fun handleReceipt(payload: WsReceipt) {
         val newStatus = when (payload.status) {
             "delivered" -> MessageStatus.DELIVERED
@@ -140,42 +120,19 @@ class MessageRepositoryImpl @Inject constructor(
         )
     }
 
-    // ─────────────────────────────────────────────
-    // Core upsert logic
-    // ─────────────────────────────────────────────
-
-    /**
-     * Smart upsert for any message that arrives from the network
-     * (WebSocket or REST refresh) and therefore carries a serverId
-     * but no clientId.
-     *
-     * - Row already exists with this serverId  → update status only.
-     *   (This is our own optimistic row after mapClientToServer linked it.)
-     * - Row does not exist                     → insert as a new message
-     *   (Truly incoming message from another user, or a message we missed
-     *    while offline.)
-     */
     private suspend fun upsertIncomingMessage(entity: MessageEntity) {
         val serverId = entity.serverId ?: run {
-            // No serverId means we can't deduplicate — just insert.
             messageDao.insertMessages(listOf(entity))
             return
         }
 
         val exists = messageDao.countByServerId(serverId) > 0
         if (exists) {
-            // Row is already present (our own sent message).
-            // Only update the status; don't overwrite local fields.
             messageDao.updateStatusByServerId(serverId, entity.status)
         } else {
-            // Genuinely new row.
             messageDao.insertMessages(listOf(entity))
         }
     }
-
-    // ─────────────────────────────────────────────
-    // Message queries
-    // ─────────────────────────────────────────────
 
     override fun getChats(chatId: Int): Flow<NetworkResult<List<MessageWithUser>>> {
         return messageDao.getMessagesWithUser(chatId)
@@ -187,15 +144,13 @@ class MessageRepositoryImpl @Inject constructor(
             }
     }
 
-    /**
-     * Fetches a page of messages from the server and merges them into the
-     * local database without creating duplicates.
-     *
-     * Uses [upsertIncomingMessage] for each DTO so that:
-     *  - Messages we sent (already in DB with a serverId) are not duplicated.
-     *  - Messages we missed while offline are inserted fresh.
-     */
     override suspend fun refreshChats(chatId: Int) {
+        // Reset cursor if we are moving to a different chat
+        if (currentChatId != chatId) {
+            currentChatId = chatId
+            nextCursor = null
+        }
+
         val result = safeApiCall { api.getMessages(chatId, limit, nextCursor) }
 
         if (result is NetworkResult.Success) {
@@ -224,28 +179,6 @@ class MessageRepositoryImpl @Inject constructor(
         }
     }
 
-    // ─────────────────────────────────────────────
-    // Sending messages
-    // ─────────────────────────────────────────────
-
-    /**
-     * Full send flow:
-     *
-     * 1. Insert an optimistic local row immediately (status = SENDING).
-     *    The row is identified by [clientId] (a UUID the caller generated).
-     *    serverId is null at this point.
-     *
-     * 2. POST to the API.
-     *
-     * 3a. On success → call [mapClientToServer] which fills in the real
-     *     serverId and flips the status to SENT — all in one UPDATE.
-     *     Now the row is identifiable by both clientId AND serverId, so
-     *     subsequent WebSocket/receipt events won't create a duplicate.
-     *
-     * 3b. On failure → mark the row FAILED by clientId so the UI can
-     *     surface a retry option.
-     */
-
      override suspend fun uploadMedia( uri: Uri,chatId: Int,type:String){
         val result=cloudinaryService.upload(context,uri)
         result.secureUrl?.let {
@@ -258,10 +191,9 @@ class MessageRepositoryImpl @Inject constructor(
                 sha256 = result.sha256
             )
             when (val result = safeApiCall { api.uploadMedia(request) }){
-
                 is NetworkResult.Success->{
                     val response = result.data ?: return
-                    val request=SendMessageRequest(
+                    val sendRequest=SendMessageRequest(
                         chat_id = response.chat_id,
                         type = response.type,
                         body = response.url,
@@ -271,15 +203,13 @@ class MessageRepositoryImpl @Inject constructor(
                         is_forwarded = false
                     )
                     val userId = dataStore.getUserId() ?: return
-                    sendMessage(request, userId)
-
+                    sendMessage(sendRequest, userId)
                 }
-
-                is NetworkResult.Error->{}
                 else -> Unit
             }
         }
     }
+
     override suspend fun sendMessage(
         request: SendMessageRequest,
         currentUserId: Int,
@@ -296,7 +226,6 @@ class MessageRepositoryImpl @Inject constructor(
         messageDao.insertMessages(listOf(localMsg))
 
         when (val result = safeApiCall { api.sendMessage(request) }) {
-
             is NetworkResult.Success -> {
                 val response = result.data ?: return
                 messageDao.mapClientToServer(
@@ -305,35 +234,26 @@ class MessageRepositoryImpl @Inject constructor(
                     status   = MessageStatus.SENT,
                 )
             }
-
             is NetworkResult.Error -> {
                 messageDao.updateStatusByClientId(
                     clientId = request.client_id,
                     status   = MessageStatus.FAILED,
                 )
             }
-
             else -> Unit
         }
     }
 
-
-    override  suspend fun getChatUser(chatId: Int): Flow<UserUi?> {
+    override suspend fun getChatUser(chatId: Int): Flow<UserUi?> {
         return userDao.getUserForChat(chatId)
             .map { entity ->
                 entity?.let { mapper.toUserUi(it) }
             }
     }
 
-
-    // ─────────────────────────────────────────────
-    // Typing indicators (fire-and-forget)
-    // ─────────────────────────────────────────────
-
     override fun sendTyping(chatId: Int) {
         wsManager.sendTyping(chatId)
     }
-
 
     override fun sendStopTyping(chatId: Int){
         wsManager.sendStopTyping(chatId)

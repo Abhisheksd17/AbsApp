@@ -3,14 +3,16 @@ package com.example.feature_chat.screens
 import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.common.util.Utils.showSnackBar
@@ -22,6 +24,8 @@ import com.example.feature_chat.viewmodel.ChatViewModel
 import com.example.feature_chat.viewmodel.MessageViewModel
 import com.example.model.call.CallParams
 import com.example.model.message.SendMessageRequest
+import com.example.ui.theme.SlateGray
+import com.example.common.R as text
 import kotlinx.coroutines.launch
 import java.util.UUID
 
@@ -44,11 +48,13 @@ fun Conversation(userId: Int?,
     val scope       = rememberCoroutineScope()
     val Typing = remember { mutableStateOf(false) }
     val isTyping by viewModel.isTyping.collectAsState()
+    val isOnline by viewModel.isOnline.collectAsState()
     val snackbarHostState = remember {
         SnackbarHostState()
     }
 
     val messages = when (val s = state) {
+
         is NetworkResult.Success -> s.data ?: emptyList()
         else -> emptyList()
     }
@@ -159,7 +165,7 @@ fun Conversation(userId: Int?,
                 imageUri     = chatUser?.profileUrl ?: "",
                 name         = chatUser?.name ?: "",
                 status       = if (isTyping) "Typing..." else "",
-                isOnline     = true,
+                isOnline     = isOnline,
                 onBackClick  = {},
                 onCallClick  = {
                     callVm.initiateCall(
@@ -259,42 +265,83 @@ fun Conversation(userId: Int?,
                 else -> {
                     if (reversedMessages.isEmpty()) {
                         Text(
-                            text     = "No messages yet. Say hello! 👋",
+                            text     = stringResource(text.string.no_message),
                             modifier = Modifier.align(Alignment.Center),
                             style    = MaterialTheme.typography.bodyMedium,
                             color    = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                    } else {
+                    } else
+                    {
                         LazyColumn(
-                            state               = listState,
-                            modifier            = Modifier
+                            state = listState,
+                            modifier = Modifier
                                 .fillMaxSize()
                                 .padding(horizontal = 8.dp),
-                            contentPadding      = PaddingValues(vertical = 8.dp),
+                            contentPadding = PaddingValues(vertical = 8.dp),
                             verticalArrangement = Arrangement.spacedBy(2.dp),
-                            reverseLayout = true  // ✅ Key change: reverse layout
-                        ) {
-                            items(reversedMessages, key = { it.serverId ?: it.localId }) { message ->
+                            reverseLayout = true
+                        )
+                        {
+
+                            itemsIndexed(
+                                reversedMessages,
+                                key = { _, message -> message.serverId ?: message.localId }
+                            ) { index, message ->
+
+                                val currentDate = formatDateStamp(message.createdAt)
+
+                                val nextDate = reversedMessages
+                                    .getOrNull(index + 1)
+                                    ?.let { formatDateStamp(it.createdAt) }
+
+                                val showDate =
+                                    index == reversedMessages.lastIndex ||
+                                            currentDate != nextDate
+
+
+
                                 val isSelf = message.senderId == viewModel.userId
-                                SwipeableMessageItem(onSwipeToReply = {
-                                    replyingTo = message.toChatMessage()
-                                }) {
+
+                                SwipeableMessageItem(
+                                    onSwipeToReply = {
+                                        replyingTo = message.toChatMessage()
+                                    }
+                                ) {
                                     Column(
-                                        modifier            = Modifier.fillMaxWidth(),
+                                        modifier = Modifier.fillMaxWidth(),
                                         horizontalAlignment = if (isSelf) Alignment.End else Alignment.Start
                                     ) {
+
                                         message.replyToId?.let { replyId ->
                                             val original = messages.find { it.serverId == replyId }
                                             original?.let {
                                                 ReplyQuoteChip(
                                                     originalMessage = it.toChatMessage(),
-                                                    currentUserId   = viewModel.userId ?: 0,
-                                                    isSelfBubble    = isSelf
+                                                    currentUserId = viewModel.userId ?: 0,
+                                                    isSelfBubble = isSelf
                                                 )
                                                 Spacer(Modifier.height(2.dp))
                                             }
                                         }
-                                        ChatBubble(message = message.toChatMessage(), isSelf = isSelf)
+
+                                        ChatBubble(
+                                            message = message.toChatMessage(),
+                                            isSelf = isSelf
+                                        )
+                                        if (showDate) {
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .padding(vertical = 8.dp),
+                                                contentAlignment = Alignment.Center
+                                            ) {
+                                                Text(
+                                                    text = currentDate,
+                                                    color = SlateGray,
+                                                    fontSize = 10.sp
+                                                )
+                                            }
+                                        }
                                     }
                                 }
                             }

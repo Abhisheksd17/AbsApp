@@ -13,6 +13,7 @@ data class ChatMessage(
     val senderName: String,
     val text: String,
     val timestamp: String,
+    val dateStamp: String,
     val isVoice: Boolean = false,
     val imageUrl: String? = null,
     val videoUrl: String? = null,
@@ -27,6 +28,7 @@ fun MessageWithUser.toChatMessage() = ChatMessage(
     senderName = senderName ?: "Unknown",
     text       = if (type == "image" || type == "video" || type == "audio") "" else body ?: "",
     timestamp  = formatTimestamp(createdAt),
+    dateStamp  = formatDateStamp(createdAt),
     isVoice    = type == "audio" || type == "voice",
 
     imageUrl   = if (type == "image") body else null,
@@ -37,6 +39,11 @@ fun MessageWithUser.toChatMessage() = ChatMessage(
     status     = status,
 )
 
+fun formatDateStamp(epochMillis: Long): String {
+    val dateFormat = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    return dateFormat.format(Date(epochMillis))
+
+}
 fun formatTimestamp(epochMillis: Long): String {
     val sdf = SimpleDateFormat("hh:mm a", Locale.getDefault())
     return sdf.format(Date(epochMillis))

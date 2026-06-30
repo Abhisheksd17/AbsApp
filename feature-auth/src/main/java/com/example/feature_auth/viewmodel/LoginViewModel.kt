@@ -50,9 +50,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun connectSocket(){
-
             authRepository.connectWebSocket(SOCKET_URL)
-
 
     }
 

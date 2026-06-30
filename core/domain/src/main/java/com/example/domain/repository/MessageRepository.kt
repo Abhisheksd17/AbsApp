@@ -23,12 +23,13 @@ interface MessageRepository {
         currentUserId: Int
     )
 
-
     suspend fun getChatUser(chatId: Int): Flow<UserUi?>
 
     suspend fun uploadMedia( uri: Uri,chatId: Int,type:String)
 
     val isTyping: StateFlow<Boolean>
+
+    val isOnline:StateFlow<Boolean>
 
     fun sendTyping(chatId: Int)
 

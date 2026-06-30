@@ -57,6 +57,7 @@
     <string name="notification_decline">Decline</string>
     <string name="notification_calling_you">is calling you</string>
     <string name="notification_summary">Summary</string>
+    <string name="no_message">"No messages yet. Say hello! 👋"</string>
     <string name="notification_incoming_voice_call">Incoming voice and video calls</string>
 
 </resources>

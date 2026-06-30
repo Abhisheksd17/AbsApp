@@ -43,6 +43,7 @@ material3 = "1.4.0"
 coroutines = "1.10.2"
 runtimeVersion = "1.11.1"
 volley = "1.2.1"
+workRuntimeKtx = "2.11.2"
 
 [libraries]
 android-database-sqlcipher = { module = "net.zetetic:android-database-sqlcipher", version.ref = "androidDatabaseSqlcipher" }
@@ -113,6 +114,7 @@ androidx-compose-foundation-layout = { module = "androidx.compose.foundation:fou
 androidx-compose-ui-text = { module = "androidx.compose.ui:ui-text" }
 androidx-material3 = { module = "androidx.compose.material3:material3" }
 volley = { group = "com.android.volley", name = "volley", version.ref = "volley" }
+androidx-work-runtime-ktx = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "workRuntimeKtx" }
 
 
 [plugins]

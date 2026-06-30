@@ -20,6 +20,18 @@
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
         android:theme="@style/Theme.AbsApp">
+        <provider
+            android:name="androidx.startup.InitializationProvider"
+            android:authorities="${applicationId}.androidx-startup"
+            android:exported="false"
+            tools:node="merge">
+
+            <meta-data
+                android:name="androidx.work.WorkManagerInitializer"
+                android:value="androidx.startup"
+                tools:node="remove" />
+
+        </provider>
         
         <provider
             android:name="androidx.core.content.FileProvider"
@@ -37,6 +49,7 @@
             android:label="@string/app_name"
             android:showWhenLocked="true"
             android:turnScreenOn="true"
+            android:windowSoftInputMode="adjustNothing"
             android:theme="@style/Theme.AbsApp">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
