@@ -37,10 +37,8 @@ class ChatListRepositoryImpl @Inject constructor(
 
 
     override suspend fun refreshChatsList(): NetworkResult<Unit> {
-        Log.d("Chat", "LaunchedEffect triggered3")
         val result = safeApiCall { api.getChatList() }
         if (result is NetworkResult.Success) {
-            Log.d("Chat", "LaunchedEffect triggered4")
             result.data?.let { dto ->
                 dao.insertChatList(mapper.dtoToEntityList(dto))
             }

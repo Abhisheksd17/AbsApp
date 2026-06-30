@@ -5,7 +5,6 @@ import com.example.domain.data.NetworkResult
 import com.example.model.message.MessageWithUser
 import com.example.model.message.SendMessageRequest
 import com.example.model.message.UserUi
-import com.example.model.websocket.WsEvent
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.StateFlow
 

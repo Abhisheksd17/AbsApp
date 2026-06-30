@@ -68,7 +68,8 @@ class ChatMapper @Inject constructor() {
             id = entity.id,
             name = entity.name,
             profileUrl = entity.profileUrl ?: "",
-            chatId = entity.chatId
+            chatId = entity.chatId,
+            isOnline = entity.isOnline
         )
     }
 }

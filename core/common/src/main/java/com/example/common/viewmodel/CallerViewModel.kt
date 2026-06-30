@@ -112,7 +112,6 @@ class CallerViewModel @Inject constructor(
     private fun observeIncomingCalls() {
         viewModelScope.launch {
             repository.observeIncomingCalls().collect { incoming ->
-                Log.d("CallerViewModel", incoming.toString())
 
                 _callState.value = CallState.Incoming(incoming)
             }
@@ -122,7 +121,6 @@ class CallerViewModel @Inject constructor(
     private fun observeCallAccepted() {
         viewModelScope.launch {
             repository.observeCallAccepted().collect {
-                Log.d("CallerViewModel", "Call accepted")
                 val ringing = _callState.value as? CallState.Ringing ?: return@collect
                 _callState.value = CallState.Active(ringing.params)
             }
@@ -132,7 +130,6 @@ class CallerViewModel @Inject constructor(
     private fun observeCallEnded() {
         viewModelScope.launch {
             repository.observeCallEnded().collect {
-                Log.d("CallerViewModel", "Call ENDED")
                 _callState.value = CallState.Ended
             }
         }

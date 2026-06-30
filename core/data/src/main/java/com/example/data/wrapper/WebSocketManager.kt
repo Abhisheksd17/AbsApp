@@ -10,6 +10,7 @@ import com.example.model.websocket.WsIncomingCall
 import com.example.model.websocket.WsNewMessage
 import com.example.model.websocket.WsReceipt
 import com.example.model.websocket.WsTyping
+import com.example.model.websocket.WsUserStatus
 import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.*
 import kotlinx.serialization.json.*
@@ -124,6 +125,10 @@ class WebSocketManager @Inject constructor(
                 "stop_typing" -> {
                     val payload = json.decodeFromJsonElement<WsTyping>(obj)
                     scope.launch { _events.emit(WsEvent.Typing(payload, false)) }
+                }
+                "user_status" -> {
+                    val payload = json.decodeFromJsonElement<WsUserStatus>(obj)
+                    scope.launch { _events.emit(WsEvent.UserStatus(payload.user_id, payload.online)) }
                 }
                 "incoming_call" -> {
                     val payload = json.decodeFromJsonElement<WsIncomingCall>(obj)

@@ -5,4 +5,5 @@ data class UserUi(
     val name: String,
     val profileUrl: String?,
     val chatId: Int,
+    val isOnline: Boolean = false
 )

@@ -48,7 +48,7 @@ fun Conversation(userId: Int?,
     val scope       = rememberCoroutineScope()
     val Typing = remember { mutableStateOf(false) }
     val isTyping by viewModel.isTyping.collectAsState()
-    val isOnline by viewModel.isOnline.collectAsState()
+    val isOnline = chatUser?.isOnline ?: false
     val snackbarHostState = remember {
         SnackbarHostState()
     }
@@ -91,7 +91,6 @@ fun Conversation(userId: Int?,
         }
             .collect { (isScrolling, index) ->
 
-                Log.d("Conversation", "Index: $index, Scrolling: $isScrolling")
 
                 // Only trigger when user is actively scrolling
                 if (!isScrolling) return@collect
@@ -101,7 +100,6 @@ fun Conversation(userId: Int?,
                 if (shouldLoadMore && !isLoadingMore && messages.isNotEmpty()) {
                     isLoadingMore = true
 
-                    Log.d("Conversation", "Loading more messages")
 
                     chatId?.let {
                         viewModel.refreshChats(it)

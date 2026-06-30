@@ -70,19 +70,12 @@ class MainActivity : ComponentActivity() {
     private fun handleNotificationIntent(intent: Intent?) {
         if (intent == null) return
 
-        Log.d("NOTIFICATION_DEBUG", "Processing Intent: $intent")
-
-        intent.extras?.keySet()?.forEach { key ->
-            Log.d("NOTIFICATION_DEBUG", "Extra: $key = ${intent.extras?.get(key)}")
-        }
 
         val type = intent.getStringExtra("type")
-        Log.d("NOTIFICATION_DEBUG", "type = $type")
 
         when(type) {
             "chat" -> {
                 val chatIdString = intent.getStringExtra(SENDER_ID)
-                Log.d("NOTIFICATION_DEBUG", "chatIdString = $chatIdString")
                 val chatId = chatIdString?.toIntOrNull()
                 if (chatId != null && chatId != -1) {
                     notifViewModel.onNotification(
@@ -93,7 +86,6 @@ class MainActivity : ComponentActivity() {
 
             "call" -> {
                 val params = intent.getStringExtra("params")
-                Log.d("NOTIFICATION_DEBUG", "params = $params")
                 if (params != null) {
                     notifViewModel.onNotification(
                         NotificationDestination.OpenCall(params)

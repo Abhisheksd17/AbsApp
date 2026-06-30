@@ -21,14 +21,11 @@ class CallNotificationObserver @Inject constructor(
      fun start() {
         scope.launch {
             repository.observeCallAccepted().collect {
-                Log.d("CallNotificationObserver", "Call accepted")
                 CallNotificationManager.dismissIncomingCallNotification(context)
             }
         }
         scope.launch {
             repository.observeCallEnded().collect {
-                Log.d("CallNotificationObserver", "Call ended")
-
                 CallNotificationManager.dismissIncomingCallNotification(context)
             }
         }

@@ -8,5 +8,6 @@ data class UserEntity(
     @PrimaryKey val id: Int,
     val name: String,
     val profileUrl: String?,
-    val chatId:Int
+    val chatId: Int,
+    val isOnline: Boolean = false
 )

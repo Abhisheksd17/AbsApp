@@ -21,4 +21,7 @@ interface UserDao {
 
     @Query("SELECT * FROM users WHERE chatId = :chatId LIMIT 1")
     fun getUserForChat(chatId: Int): Flow<UserEntity?>
+
+    @Query("UPDATE users SET isOnline = :isOnline WHERE id = :userId")
+    suspend fun updateOnlineStatus(userId: Int, isOnline: Boolean)
 }

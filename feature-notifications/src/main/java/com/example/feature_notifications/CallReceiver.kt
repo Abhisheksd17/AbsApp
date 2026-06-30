@@ -32,7 +32,6 @@ class CallReceiver : BroadcastReceiver() {
         val callId = intent.getStringExtra(EXTRA_CALL_ID) ?: return
         val callerId = intent.getStringExtra(EXTRA_CALLER_ID)?.toIntOrNull() ?: 0
 
-        Log.d("CallReceiver", "Received action: $action for callId: $callId")
 
         CallNotificationManager.dismissIncomingCallNotification(context)
 
@@ -45,7 +44,6 @@ class CallReceiver : BroadcastReceiver() {
                 when (action) {
                     ACTION_ACCEPT_CALL -> {
                         callRepository.acceptCall(AcceptCallRequest(callerId, callId)).collect { result ->
-                            Log.d("CallReceiver", "Accept call result: $result")
                         }
                         CallNotificationManager.dismissIncomingCallNotification(context)
                         
@@ -65,7 +63,6 @@ class CallReceiver : BroadcastReceiver() {
                     }
                 }
             } catch (e: Exception) {
-                Log.e("CallReceiver", "Error processing call action", e)
             } finally {
                 pendingResult.finish()
             }

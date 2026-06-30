@@ -74,11 +74,12 @@ class MessageRepositoryImpl @Inject constructor(
                     }
                     is WsEvent.Connected ->{
                         _isOnline.value=true
-                        Log.d("MsgRepo", "WS connected")
+                    }
+                    is WsEvent.UserStatus -> {
+                        userDao.updateOnlineStatus(event.userId, event.isOnline)
                     }
                     is WsEvent.Disconnected -> {
                         _isOnline.value=false
-                        Log.d("MsgRepo", "WS disconnected")
                     }
                     else                    -> Unit
                 }
@@ -168,6 +169,7 @@ class MessageRepositoryImpl @Inject constructor(
                                 name       = user.name,
                                 profileUrl = user.profile_pic,
                                 chatId     = user.chat_id,
+                                isOnline   = user.isOnline
                             )
                         )
                     }
