@@ -1,5 +1,6 @@
 package com.example.feature_profile.screens
 
+import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,8 +12,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -21,13 +25,20 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.common.navigati.navigation.LocalNavigator
+import com.example.common.navigation.Screen
 import com.example.feature_profile.ui.ProfileBoard
 import com.example.feature_profile.ui.ProfileMenu
+import com.example.feature_profile.viewmodel.ProfileDetailsViewModel
+import com.example.model.login.UserResponse
 import com.example.ui.screen.HomeTopBar
 import com.example.ui.theme.LightGrayBackground
 import com.example.ui.theme.SlateGray
 import com.example.ui.theme.SoftLightGray
 import com.example.ui.theme.White
+import kotlinx.coroutines.launch
 import com.example.common.R as common
 import com.example.ui.R as ui
 
@@ -35,9 +46,30 @@ import com.example.ui.R as ui
 @Composable
 fun Profile(){
 
-
+    val viewModel: ProfileDetailsViewModel = hiltViewModel()
     var isSearch by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }
+    var userName by remember{ mutableStateOf("") }
+    var status by remember{ mutableStateOf("") }
+    var avatarUrl by remember { mutableStateOf("") }
+    val navigator = LocalNavigator.current
+    val scope= rememberCoroutineScope()
+    val userProfile by  viewModel.userProfile.collectAsStateWithLifecycle(
+        initialValue = UserResponse(
+        display_name = "",
+        avatar_key = null,
+        status_text = null,
+        id = 0,
+        is_online = false,
+        last_seen_at = null
+    ))
+
+    LaunchedEffect(userProfile.id) {
+        Log.d("Profiless", "Profile: ${userProfile.id}${userProfile.display_name}${userProfile.status_text}${userProfile.avatar_key}")
+        userName = userProfile.display_name
+        status = userProfile.status_text ?: ""
+        avatarUrl= userProfile.avatar_key ?: ""
+    }
 
     Box(
         modifier = Modifier
@@ -79,10 +111,19 @@ fun Profile(){
 
 
                 ProfileBoard(
-                    imageUri = "",
-                    onImageSelected = {},
-                    name = "John Doe",
-                    status = "Available"
+                    imageUri = avatarUrl,
+                    onImageSelected = {
+                        scope.launch {
+                            navigator.navigate(Screen.Update)
+                        }
+                    },
+                    name = userName,
+                    status = status,
+                    onProfileSelcted = {
+                        scope.launch {
+                            navigator.navigate(Screen.Update)
+                        }
+                    }
                 )
 
                 HorizontalDivider(

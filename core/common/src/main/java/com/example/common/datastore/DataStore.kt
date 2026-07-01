@@ -20,9 +20,6 @@ private val TOKEN_KEY = stringPreferencesKey("auth_token")
 private val FCM_KEY = stringPreferencesKey("fcm_token")
 private val NUMBER_KEY = stringPreferencesKey("num_token")
 
-
-
-
 private val ACCESS_TOKEN= stringPreferencesKey("access_token")
 private val USER_ID = intPreferencesKey("user_id")
 private val DISPLAY_NAME = stringPreferencesKey("display_name")
@@ -35,7 +32,7 @@ class DataStore @Inject constructor(
 
 
 
-    suspend fun saveUserData(
+    suspend fun saveUserToken(
         authResponse: AuthResponse
     ) {
 
@@ -45,13 +42,24 @@ class DataStore @Inject constructor(
 
             pref[USER_ID] = authResponse.user_id
 
+        }
+    }
+
+
+    suspend fun saveUserData(
+        authResponse: UserResponse
+    ) {
+
+        context.dataStore.edit { pref ->
+
+            pref[USER_ID] = authResponse.id
             pref[DISPLAY_NAME] = authResponse.display_name
 
             authResponse.status_text?.let {
                 pref[STATUS_TEXT] = it
             } ?: pref.remove(STATUS_TEXT)
 
-            authResponse.profile_url?.let {
+            authResponse.avatar_key?.let {
                 pref[PROFILE_URL] = it
             } ?: pref.remove(PROFILE_URL)
 

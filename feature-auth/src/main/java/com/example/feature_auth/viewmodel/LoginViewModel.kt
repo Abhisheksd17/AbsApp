@@ -83,7 +83,7 @@ class LoginViewModel @Inject constructor(
                 if (response is NetworkResult.Success) {
 
                     response.data?.let { user ->
-                        datastore.saveUserData(user)
+                        datastore.saveUserToken(user)
                     }
                     _event.emit(AuthEvent.NavigateToUpdateProfile)
                 }
@@ -105,7 +105,7 @@ class LoginViewModel @Inject constructor(
             if (file != null) {
                 val uploadResponse = authRepository.uploadAvatar(file)
                 if (uploadResponse.status == 0) {
-                    avatarKey = uploadResponse.data?.avatar_key
+                    avatarKey = uploadResponse.data?.avatar_url
                 } else {
                     _profileState.value = NetworkResult.Error("Image upload failed")
                     return@launch
@@ -118,6 +118,9 @@ class LoginViewModel @Inject constructor(
 
                 _profileState.value = response
                 if(response is NetworkResult.Success){
+                    response.data?.let { user ->
+                        datastore.saveUserData(user)
+                    }
 
                     _event.emit(AuthEvent.NavigateToHome)
                 }

@@ -3,8 +3,6 @@ package com.example.feature_notifications
 import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
-import android.util.Log
-import com.example.domain.data.CallState
 import com.example.domain.repository.CallRepository
 import com.example.feature_notifications.NotificationConstants.ACTION_ACCEPT_CALL
 import com.example.feature_notifications.NotificationConstants.ACTION_DECLINE_CALL

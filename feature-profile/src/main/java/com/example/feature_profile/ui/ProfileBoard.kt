@@ -31,10 +31,11 @@ fun ProfileBoard(
     onImageSelected: (String) -> Unit,
     name: String,
     status: String,
+    onProfileSelcted:()->Unit
 ){
 
         Row(
-            modifier = Modifier.padding(horizontal = 24.dp).padding(bottom = 20.dp)
+            modifier = Modifier.padding(horizontal = 24.dp).padding(bottom = 20.dp).clickable{onProfileSelcted()}
         ) {
             if (!imageUri.isNullOrEmpty()) {
                 AsyncImage(

@@ -56,6 +56,7 @@ dependencies {
     // Hilt
     implementation(libs.hilt.android)
     kapt(libs.hilt.compiler)
+    implementation(libs.hilt.navigation.compose)
 
     //coroutines
     implementation(libs.coroutines.core)
@@ -64,6 +65,7 @@ dependencies {
     implementation(libs.lifecycle.runtime.ktx)
 
     implementation(libs.coil.compose)
+
 
     
 }

@@ -4,7 +4,6 @@ import android.Manifest
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
-import android.util.Log
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
@@ -21,7 +20,6 @@ import com.example.common.util.NotificationDestination
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 import com.example.common.viewmodel.NotificationViewModel
-import com.example.feature_notifications.NotificationConstants.EXTRA_CHAT_ID
 import com.example.feature_notifications.NotificationConstants.SENDER_ID
 
 
