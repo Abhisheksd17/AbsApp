@@ -19,6 +19,8 @@ import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.stateIn
 import android.net.Uri
+import androidx.work.Constraints
+import androidx.work.NetworkType
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import androidx.work.workDataOf
@@ -84,8 +86,12 @@ class MessageViewModel @Inject constructor(
             "is_forwarded" to messageRequest.is_forwarded,
             "userId" to (userId ?: 0)
         )
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
 
         val request = OneTimeWorkRequestBuilder<MessageSyncWorker>()
+            .setConstraints(constraints)
             .setInputData(inputData)
             .build()
 
@@ -98,7 +104,11 @@ class MessageViewModel @Inject constructor(
             "chatId" to chatId,
             "type" to type
         )
+        val constraints = Constraints.Builder()
+            .setRequiredNetworkType(NetworkType.CONNECTED)
+            .build()
         val request=OneTimeWorkRequestBuilder<UploadMediaSyncWorker>()
+            .setConstraints(constraints)
             .setInputData(inputData)
             .build()
         workManager.enqueue(request)

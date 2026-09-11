@@ -1,5 +1,7 @@
 package com.example.model.websocket
 
+import com.example.model.chatlist.ChatDetails
+
 sealed class WsEvent {
     data class NewMessage(val payload: WsNewMessage) : WsEvent()
     data class Receipt(val payload: WsReceipt) : WsEvent()
@@ -13,4 +15,6 @@ sealed class WsEvent {
     data class CallEnded(val payload: WsCallEnded) : WsEvent()
 
     data class CallSignal(val payload: WsCallSignal) : WsEvent()
+
+    data class NewChat(val payload: WsNewChat) : WsEvent()
 }

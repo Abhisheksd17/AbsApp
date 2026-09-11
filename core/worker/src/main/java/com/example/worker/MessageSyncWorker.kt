@@ -8,6 +8,7 @@ import com.example.model.message.SendMessageRequest
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.io.IOException
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltWorker
 class MessageSyncWorker @AssistedInject constructor(
@@ -48,6 +49,7 @@ class MessageSyncWorker @AssistedInject constructor(
         } catch (e: IOException) {
             Result.retry()
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             Result.failure()
         }
     }

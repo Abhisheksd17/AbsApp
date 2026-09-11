@@ -12,9 +12,9 @@ class ChatMapper @Inject constructor() {
 
     fun dtoToEntity(messageDto: MessageDto): MessageEntity {
         return MessageEntity(
-            localId     = 0,                    // Room auto-generates
-            serverId    = messageDto.id,         // backend msg_id → serverId
-            clientId    = null,  // may be null for others' messages
+            localId     = 0,
+            serverId    = messageDto.id,
+            clientId    = null,
             chatId      = messageDto.chat_id,
             senderId    = messageDto.sender_id,
             type        = messageDto.type,

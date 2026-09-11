@@ -19,18 +19,18 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 @InstallIn(SingletonComponent::class)
 object NetworkModule {
 
-    private const val BASE_URL = "https://absapp-backend.onrender.com"
 
     @Provides
     @Singleton
     fun provideTokenInterceptor(
-        dataStore: DataStore,
+        dataStore: DataStore
     ): TokenInterceptor = TokenInterceptor(dataStore)
 
     @Provides
     @Singleton
     fun provideOkHttpClient(
-        tokenInterceptor: TokenInterceptor
+        tokenInterceptor: TokenInterceptor,
+        tokenAuthenticator: TokenAuthenticator
     ): OkHttpClient {
 
         val logging = HttpLoggingInterceptor()
@@ -38,6 +38,7 @@ object NetworkModule {
 
         return OkHttpClient.Builder()
             .addInterceptor(tokenInterceptor)
+            .authenticator(tokenAuthenticator)
             .addInterceptor(logging)
             .build()
     }
@@ -46,7 +47,7 @@ object NetworkModule {
     @Singleton
     fun provideRetrofit(client: OkHttpClient): Retrofit {
         return Retrofit.Builder()
-            .baseUrl(BASE_URL)
+            .baseUrl(BuildConfig.BASE_URL)
             .addConverterFactory(GsonConverterFactory.create())
             .client(client)
             .build()

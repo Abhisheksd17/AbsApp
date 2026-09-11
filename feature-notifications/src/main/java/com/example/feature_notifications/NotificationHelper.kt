@@ -78,9 +78,7 @@ object NotificationHelper {
             .setDefaults(NotificationCompat.DEFAULT_ALL)
 
 
-    /**
-     * Tapping a notification opens the target Activity with the supplied extras.
-     */
+
     fun contentIntent(
         context: Context,
         targetClass: Class<*>,
@@ -100,9 +98,7 @@ object NotificationHelper {
         )
     }
 
-    /**
-     * Action button or broadcast-based intent (used for call accept / decline).
-     */
+
     fun broadcastIntent(
         context: Context,
         action: String,
@@ -121,9 +117,6 @@ object NotificationHelper {
         )
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Show / cancel
-    // ─────────────────────────────────────────────────────────────────────────
 
     fun notify(context: Context, id: Int, builder: NotificationCompat.Builder) {
         NotificationManagerCompat.from(context).notify(id, builder.build())
@@ -137,9 +130,6 @@ object NotificationHelper {
         NotificationManagerCompat.from(context).cancelAll()
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Avatar loader — returns null on any failure (never throws)
-    // ─────────────────────────────────────────────────────────────────────────
 
     suspend fun loadAvatar(
         context: Context,
@@ -164,9 +154,6 @@ object NotificationHelper {
         }
     }
 
-    // ─────────────────────────────────────────────────────────────────────────
-    // Internal
-    // ─────────────────────────────────────────────────────────────────────────
 
     private fun pendingIntentFlags(): Int =
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M)

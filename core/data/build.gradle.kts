@@ -8,9 +8,7 @@ plugins {
 
 android {
     namespace = "com.example.data"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 36
 
     defaultConfig {
         minSdk = 24
@@ -64,4 +62,8 @@ dependencies {
     implementation(libs.cloudinary.android)
 
     implementation(libs.libphonenumber)
+
+    // Firebase
+    implementation(platform(libs.firebase.bom))
+    implementation(libs.firebase.perf)
 }

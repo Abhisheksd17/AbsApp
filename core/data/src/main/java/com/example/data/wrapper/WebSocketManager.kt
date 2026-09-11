@@ -2,11 +2,13 @@ package com.example.data.wrapper
 
 
 import android.util.Log
+import com.example.model.chatlist.ChatDetails
 import com.example.model.websocket.WsCallAccepted
 import com.example.model.websocket.WsCallEnded
 import com.example.model.websocket.WsCallSignal
 import com.example.model.websocket.WsEvent
 import com.example.model.websocket.WsIncomingCall
+import com.example.model.websocket.WsNewChat
 import com.example.model.websocket.WsNewMessage
 import com.example.model.websocket.WsReceipt
 import com.example.model.websocket.WsTyping
@@ -17,8 +19,6 @@ import kotlinx.serialization.json.*
 import okhttp3.*
 import javax.inject.Inject
 import javax.inject.Singleton
-
-
 
 @Singleton
 class WebSocketManager @Inject constructor(
@@ -161,6 +161,15 @@ class WebSocketManager @Inject constructor(
                         _events.emit(
                             WsEvent.CallSignal(payload)
                         )
+                    }
+                }
+                "chat_created" -> {
+                    val data = obj["data"]
+                    if (data != null) {
+                        val payload = json.decodeFromJsonElement<WsNewChat>(data)
+                        scope.launch {
+                            _events.emit(WsEvent.NewChat(payload))
+                        }
                     }
                 }
 

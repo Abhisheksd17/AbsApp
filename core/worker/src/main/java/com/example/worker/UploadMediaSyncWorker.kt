@@ -9,6 +9,7 @@ import com.example.domain.repository.MessageRepository
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
 import java.io.IOException
+import kotlin.coroutines.cancellation.CancellationException
 
 @HiltWorker
 class UploadMediaSyncWorker@AssistedInject constructor(
@@ -34,6 +35,7 @@ class UploadMediaSyncWorker@AssistedInject constructor(
         } catch (e: IOException) {
             Result.retry()
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             Result.failure()
         }
     }

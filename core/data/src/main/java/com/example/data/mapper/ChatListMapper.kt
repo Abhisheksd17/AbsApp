@@ -51,5 +51,20 @@ class ChatListMapper @Inject constructor() {
         return entities.map { dtoToEntity(it) }
     }
 
+    fun wsDtoToEntity(dto: com.example.model.websocket.WsNewChat): ChatListEntity {
+        return ChatListEntity(
+            chatId = dto.chat_id,
+            title = dto.title,
+            userId = dto.user_id,
+            profileUrl = dto.profile_url,
+            type = dto.type,
+            lastMsgPreview = dto.last_msg_preview,
+            lastMsgAt = dto.last_msg_at,
+            lastMsgSenderId = dto.last_msg_sender_id,
+            unreadCount = dto.unread_count ?: 0,
+            peerOnline = dto.peer_online
+        )
+    }
+
 
 }

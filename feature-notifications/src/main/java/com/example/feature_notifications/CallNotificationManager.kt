@@ -30,19 +30,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.launch
 
-/**
- * Manages incoming call and call-end notifications.
- *
- * Incoming call:
- *  - Full-screen Intent opens IncomingCallActivity on locked/dozing device.
- *  - High-priority notification with Accept / Decline action buttons.
- *  - Device ringtone starts automatically.
- *
- * Call ended / rejected / missed:
- *  - Dismisses the incoming call notification.
- *  - Stops the ringtone.
- *  - For REASON_MISSED shows a missed-call notification.
- */
+
 object CallNotificationManager {
 
     private var ringtone: Ringtone? = null

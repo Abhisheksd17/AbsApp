@@ -3,6 +3,7 @@ package com.example.data.wrapper
 import com.example.domain.data.NetworkResult
 import com.example.model.ApiResponse
 import retrofit2.Response
+import kotlin.coroutines.cancellation.CancellationException
 
 open class BaseApiResponse {
 
@@ -37,6 +38,7 @@ open class BaseApiResponse {
             }
 
         } catch (e: Exception) {
+            if (e is CancellationException) throw e
             NetworkResult.Error(e.message ?: "Unknown error")
         }
     }

@@ -14,7 +14,6 @@ class TokenRepositoryImpl @Inject constructor(
     override suspend  fun register(token: String, userId: Int) {
         try {
             val response =  apiService.registerFcmToken(TokenRequest(token, userId))
-            Log.d("FCM", "Code=${response.code()}")
         }catch (e:Exception){
             e.printStackTrace()
         }

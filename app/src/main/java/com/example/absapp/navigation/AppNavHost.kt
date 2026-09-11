@@ -130,7 +130,7 @@ fun AppNavHost(navigator: AppNavigator) {
             startDestination = Screen.Splash.route,
             modifier = Modifier.padding(padding)
         ) {
-            // Auth Flow
+
             composable(Screen.Splash.route) { Splash() }
             composable(Screen.OnBoarding.route) { OnBoarding() }
             composable(Screen.SignIn.route) { SignIn() }

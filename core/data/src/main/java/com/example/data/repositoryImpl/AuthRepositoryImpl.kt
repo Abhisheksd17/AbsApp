@@ -1,6 +1,5 @@
 package com.example.data.repositoryImpl
 
-import android.util.Log
 import com.example.common.datastore.DataStore
 import com.example.data.wrapper.BaseApiResponse
 import com.example.data.wrapper.WebSocketManager
@@ -19,7 +18,7 @@ import com.example.model.login.AvatarResponse
 import com.example.model.login.UpdateProfileRequest
 import com.example.model.login.UserResponse
 import com.example.model.login.VerifyOtpRequest
-import dagger.hilt.android.qualifiers.ApplicationContext
+import com.google.firebase.perf.FirebasePerformance
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancelChildren
@@ -40,10 +39,13 @@ class AuthRepositoryImpl @Inject constructor(
     private val repoScope = CoroutineScope(SupervisorJob() + Dispatchers.IO)
 
     override fun connectWebSocket(baseWsUrl: String) {
+        val trace = FirebasePerformance.getInstance().newTrace("load_users")
+
+        trace.start()
         repoScope.launch {
             val token = dataStore.getAccessToken() ?: return@launch
             wsManager.connect(token, baseWsUrl)
-
+            trace.stop()
         }
     }
 

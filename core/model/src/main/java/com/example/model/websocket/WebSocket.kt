@@ -25,6 +25,8 @@ data class WsNewMessage(
     @SerialName("is_forwarded") val isForwarded: Boolean = false,
 )
 
+
+
 @Serializable
 data class WsReceipt(
     val event: String,
@@ -70,4 +72,18 @@ data class WsCallSignal(
     val from: Int,
     val signal: String,
     val call_id: String
+)
+
+@Serializable
+data class WsNewChat(
+    val chat_id: Int,
+    val type: String,
+    val title: String,
+    val user_id: Int?,
+    val profile_url: String?,
+    val last_msg_preview: String?,
+    val last_msg_at: Long?,
+    val last_msg_sender_id: Int?,
+    val unread_count: Int?,
+    val peer_online: Boolean?
 )

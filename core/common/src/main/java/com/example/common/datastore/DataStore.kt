@@ -21,6 +21,7 @@ private val FCM_KEY = stringPreferencesKey("fcm_token")
 private val NUMBER_KEY = stringPreferencesKey("num_token")
 
 private val ACCESS_TOKEN= stringPreferencesKey("access_token")
+private val REFRESH_TOKEN = stringPreferencesKey("refresh_token")
 private val USER_ID = intPreferencesKey("user_id")
 private val DISPLAY_NAME = stringPreferencesKey("display_name")
 private val STATUS_TEXT = stringPreferencesKey("status_text")
@@ -30,8 +31,6 @@ class DataStore @Inject constructor(
     @ApplicationContext private val context: Context
 ) {
 
-
-
     suspend fun saveUserToken(
         authResponse: AuthResponse
     ) {
@@ -39,7 +38,7 @@ class DataStore @Inject constructor(
         context.dataStore.edit { pref ->
 
             pref[ACCESS_TOKEN] = authResponse.access_token
-
+            pref[REFRESH_TOKEN] = authResponse.refresh_token
             pref[USER_ID] = authResponse.user_id
 
         }
@@ -105,6 +104,10 @@ class DataStore @Inject constructor(
         return context.dataStore.data.firstOrNull()?.get(ACCESS_TOKEN)
     }
 
+    suspend fun getRefreshToken(): String? {
+        return context.dataStore.data.firstOrNull()?.get(REFRESH_TOKEN)
+    }
+
     suspend fun getUserId(): Int? {
         return context.dataStore.data.firstOrNull()?.get(USER_ID)
     }
@@ -123,6 +126,8 @@ class DataStore @Inject constructor(
 
     suspend fun clearToken() {
         context.dataStore.edit { prefs ->
+            prefs.remove(ACCESS_TOKEN)
+            prefs.remove(REFRESH_TOKEN)
             prefs.remove(TOKEN_KEY)
         }
     }

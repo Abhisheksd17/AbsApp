@@ -146,7 +146,6 @@ class MessageRepositoryImpl @Inject constructor(
     }
 
     override suspend fun refreshChats(chatId: Int) {
-        // Reset cursor if we are moving to a different chat
         if (currentChatId != chatId) {
             currentChatId = chatId
             nextCursor = null

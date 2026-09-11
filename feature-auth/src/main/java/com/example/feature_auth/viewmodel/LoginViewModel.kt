@@ -7,6 +7,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.common.datastore.DataStore
 import com.example.domain.data.NetworkResult
 import com.example.domain.repository.AuthRepository
+import com.example.feature_auth.BuildConfig
 import com.example.model.event.AuthEvent
 import com.example.model.login.AuthResponse
 import com.example.model.login.OtpRequest
@@ -14,7 +15,6 @@ import com.example.model.login.UpdateProfileRequest
 import com.example.model.login.UserResponse
 import com.example.model.login.VerifyOtpRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asSharedFlow
@@ -24,7 +24,6 @@ import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
 
-const val SOCKET_URL = "wss://absapp-backend.onrender.com"
 @HiltViewModel
 class LoginViewModel @Inject constructor(
     private val authRepository: AuthRepository,
@@ -50,7 +49,7 @@ class LoginViewModel @Inject constructor(
     }
 
     fun connectSocket(){
-            authRepository.connectWebSocket(SOCKET_URL)
+            authRepository.connectWebSocket(BuildConfig.SOCKET_URL)
 
     }
 
@@ -130,5 +129,3 @@ class LoginViewModel @Inject constructor(
 
         }
     }
-
-

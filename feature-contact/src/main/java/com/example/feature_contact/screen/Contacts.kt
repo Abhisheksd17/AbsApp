@@ -124,13 +124,13 @@ fun Contacts(
                                         name = item.name,
                                         status = item.status,
                                         onChatSelected = {
-                                            Log.d("passing",item.id.toString())
                                             onOpenConversation(item.id)
                                         }
 
                                     )
                                 }
                             }
+
                         }
 
                         is NetworkResult.Error -> {

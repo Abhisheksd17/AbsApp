@@ -23,7 +23,9 @@ import com.example.model.media.MediaUploadRequest
 import com.example.model.media.MediaUploadResponse
 import com.example.model.message.SendMessageResponse
 import com.example.model.notification.TokenRequest
+import com.example.model.login.RefreshTokenRequest
 import okhttp3.MultipartBody
+import retrofit2.Call
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -41,10 +43,17 @@ interface ApiService {
         @Body request: OtpRequest
     ): retrofit2.Response<ApiResponse<Unit>>
 
+
+
     @POST("/users/verify-otp")
     suspend fun verifyOtp(
         @Body request: VerifyOtpRequest
     ): retrofit2.Response<ApiResponse<AuthResponse>>
+
+    @POST("/users/refresh-token")
+    fun refreshToken(
+        @Body request: RefreshTokenRequest
+    ): Call<ApiResponse<AuthResponse>>
 
     @GET("/users/me")
     suspend fun getMe(): retrofit2.Response<ApiResponse<UserResponse>>

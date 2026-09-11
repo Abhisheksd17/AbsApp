@@ -17,6 +17,7 @@ interface ContactDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAll(list: List<ContactEntity>)
 
+
     @Transaction
     suspend fun replaceAll(list: List<ContactEntity>) {
         clearAll()
