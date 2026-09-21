@@ -15,10 +15,8 @@ class AbsApplication : Application(), Configuration.Provider {
 
     @Inject
     lateinit var workerFactory: HiltWorkerFactory
-
     @Inject
     lateinit var callNotificationObserver: CallNotificationObserver
-
 
     override val workManagerConfiguration: Configuration
         get() = Configuration.Builder()

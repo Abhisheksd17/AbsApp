@@ -42,6 +42,7 @@ dependencies {
     implementation(project(":core:model"))
     implementation(project(":core:database"))
     implementation(project(":core:common"))
+    implementation(project(":core:websocket"))
 
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)
@@ -60,7 +61,6 @@ dependencies {
     kapt(libs.hilt.compiler)
 
     implementation(libs.cloudinary.android)
-
     implementation(libs.libphonenumber)
 
     // Firebase

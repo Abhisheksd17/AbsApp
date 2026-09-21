@@ -21,7 +21,8 @@ import dagger.hilt.components.SingletonComponent
 import javax.inject.Singleton
 
 @Module
- abstract class RepositoryModule {
+@InstallIn(SingletonComponent::class)
+abstract class RepositoryModule {
 
     @Binds
     @Singleton

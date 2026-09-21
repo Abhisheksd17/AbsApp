@@ -49,7 +49,6 @@ class FirebaseService : FirebaseMessagingService() {
     override fun onNewToken(token: String) {
         super.onNewToken(token)
 
-        Log.d(TAG, "FCM token refreshed")
         CoroutineScope(Dispatchers.IO).launch {
             val lastToken = dataStore.getFcmToken()
             if(lastToken == token){
