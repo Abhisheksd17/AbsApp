@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color.Companion.Black
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.common.R
 import com.example.domain.data.NetworkResult
 import com.example.feature_contact.ui.ContactItem
@@ -44,7 +45,7 @@ fun Contacts(
 
     val viewModel: ContactViewModel = hiltViewModel()
 
-    val state by viewModel.contactListState.collectAsState()
+    val state by viewModel.contactListState.collectAsStateWithLifecycle()
 
     var isSearch by rememberSaveable { mutableStateOf(false) }
     var query by rememberSaveable { mutableStateOf("") }

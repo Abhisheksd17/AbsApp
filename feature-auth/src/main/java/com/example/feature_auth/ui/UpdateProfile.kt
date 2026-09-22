@@ -69,7 +69,7 @@ fun UpdateProfile(){
     val contactViewModel: ContactViewModel = hiltViewModel()
     val scope = rememberCoroutineScope()
     val navigator = LocalNavigator.current
-    val state by viewModel.profileState.collectAsState()
+    val state by viewModel.profileState.collectAsStateWithLifecycle()
     var showErrorDialog by remember { mutableStateOf(false) }
     var errorMessage by remember { mutableStateOf("") }
     var userName by remember { mutableStateOf("") }

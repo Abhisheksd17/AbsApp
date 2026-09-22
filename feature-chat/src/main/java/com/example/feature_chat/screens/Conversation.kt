@@ -15,6 +15,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.common.util.Utils.showSnackBar
 import com.example.common.viewmodel.CallerViewModel
 import com.example.domain.data.CallState
@@ -34,20 +35,20 @@ fun Conversation(userId: Int?,
                  onNavigateToCall: (CallParams) -> Unit) {
 
     val viewModel: MessageViewModel = hiltViewModel()
-    val state       by viewModel.chatState.collectAsState()
+    val state       by viewModel.chatState.collectAsStateWithLifecycle()
     val chatViewModel: ChatViewModel = hiltViewModel()
-    val chatId      by chatViewModel.chatId.collectAsState()
-    val chatUser    by viewModel.chatUser.collectAsState()
+    val chatId      by chatViewModel.chatId.collectAsStateWithLifecycle()
+    val chatUser    by viewModel.chatUser.collectAsStateWithLifecycle()
     val context     = LocalContext.current
     val callVm: CallerViewModel = hiltViewModel()
-    val callState by callVm.callState.collectAsState()
+    val callState by callVm.callState.collectAsStateWithLifecycle()
 
     val messageText = remember { mutableStateOf("") }
     var replyingTo  by remember { mutableStateOf<ChatMessage?>(null) }
     val listState   = rememberLazyListState()
     val scope       = rememberCoroutineScope()
     val Typing = remember { mutableStateOf(false) }
-    val isTyping by viewModel.isTyping.collectAsState()
+    val isTyping by viewModel.isTyping.collectAsStateWithLifecycle()
     val isOnline = chatUser?.isOnline ?: false
     val snackbarHostState = remember {
         SnackbarHostState()
