@@ -60,8 +60,8 @@ fun Conversation(userId: Int?,
         else -> emptyList()
     }
 
-    val reversedMessages = remember(messages) {
-        messages.reversed()
+    val reversedMessages by remember {
+        derivedStateOf { messages.reversed() }
     }
 
     LaunchedEffect(Unit) {
@@ -85,6 +85,14 @@ fun Conversation(userId: Int?,
     }
 
     var isLoadingMore by remember { mutableStateOf(false) }
+    val shouldLoadMore by remember {
+        derivedStateOf {
+            val lastIndex = listState.layoutInfo.totalItemsCount - 1
+            val firstVisible = listState.firstVisibleItemIndex
+            firstVisible >= lastIndex - 3
+        }
+    }
+
 
     LaunchedEffect(listState) {
         snapshotFlow {
@@ -92,16 +100,11 @@ fun Conversation(userId: Int?,
         }
             .collect { (isScrolling, index) ->
 
-
-                // Only trigger when user is actively scrolling
                 if (!isScrolling) return@collect
 
-                val shouldLoadMore = index >= messages.lastIndex - 3
 
                 if (shouldLoadMore && !isLoadingMore && messages.isNotEmpty()) {
                     isLoadingMore = true
-
-
                     chatId?.let {
                         viewModel.refreshChats(it)
                     }
