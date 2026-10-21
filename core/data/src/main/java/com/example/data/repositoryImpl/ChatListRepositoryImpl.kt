@@ -8,7 +8,7 @@ import com.example.domain.data.ChatList
 import com.example.domain.data.NetworkResult
 import com.example.domain.repository.ChatListRepository
 import com.example.model.websocket.WsEvent
-import com.example.network.ApiService
+import com.example.network.ChatService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -18,7 +18,7 @@ import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 class ChatListRepositoryImpl @Inject constructor(
-    private val api: ApiService,
+    private val api: ChatService,
     private val dao: ChatListDao,
     private val mapper: ChatListMapper,
     private val wsManager: WebSocketManager,

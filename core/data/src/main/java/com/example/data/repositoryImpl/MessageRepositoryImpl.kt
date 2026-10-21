@@ -20,7 +20,7 @@ import com.example.model.message.SendMessageRequest
 import com.example.model.message.UserUi
 import com.example.model.websocket.WsNewMessage
 import com.example.model.websocket.WsReceipt
-import com.example.network.ApiService
+import com.example.network.ChatService
 import com.example.websocket.WebSocketManager
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.CoroutineScope
@@ -36,7 +36,7 @@ import java.util.UUID
 import javax.inject.Inject
 
 class MessageRepositoryImpl @Inject constructor(
-    private val api: ApiService,
+    private val api: ChatService,
     private val messageDao: MessageDao,
     private val mapper: ChatMapper,
     private val userDao: UserDao,

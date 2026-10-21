@@ -30,6 +30,7 @@ import javax.inject.Inject
 import javax.inject.Singleton
 import okhttp3.WebSocketListener
 import kotlinx.serialization.json.decodeFromJsonElement
+import kotlin.time.Duration.Companion.milliseconds
 
 @Singleton
 class WebSocketManager @Inject constructor(
@@ -82,24 +83,24 @@ class WebSocketManager @Inject constructor(
 
         webSocket = okHttpClient.newWebSocket(request, object : WebSocketListener() {
 
-            override fun onOpen(ws: WebSocket, response: Response) {
+            override fun onOpen(webSocket: WebSocket, response: Response) {
                 isConnected = true
                 reconnectDelayMs = 2_000L
                 Log.d(tag, "WS connected")
                 scope.launch { _events.emit(WsEvent.Connected) }
             }
 
-            override fun onMessage(ws: WebSocket, text: String) {
+            override fun onMessage(webSocket: WebSocket, text: String) {
                 handleRaw(text)
             }
 
-            override fun onFailure(ws: WebSocket, t: Throwable, response: Response?) {
+            override fun onFailure(webSocket: WebSocket, t: Throwable, response: Response?) {
                 Log.e(tag, "WS failure: ${t.message}")
                 isConnected = false
                 scheduleReconnect(token, baseWsUrl)
             }
 
-            override fun onClosed(ws: WebSocket, code: Int, reason: String) {
+            override fun onClosed(webSocket: WebSocket, code: Int, reason: String) {
                 isConnected = false
                 scope.launch { _events.emit(WsEvent.Disconnected) }
                 if (shouldReconnect) scheduleReconnect(token, baseWsUrl)
@@ -202,7 +203,7 @@ class WebSocketManager @Inject constructor(
         if (!shouldReconnect) return
         scope.launch {
             Log.d(tag, "Reconnecting in ${reconnectDelayMs}ms")
-            delay(reconnectDelayMs)
+            delay(reconnectDelayMs.milliseconds)
             reconnectDelayMs = (reconnectDelayMs * 2).coerceAtMost(30_000L)
             openSocket(token, baseWsUrl)
         }

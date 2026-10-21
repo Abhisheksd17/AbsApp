@@ -3,7 +3,6 @@ package com.example.domain.repository
 import android.net.Uri
 import com.example.domain.data.NetworkResult
 import com.example.model.ApiResponse
-import com.example.model.Response
 import com.example.model.login.AuthResponse
 import com.example.model.login.AvatarResponse
 import com.example.model.login.OtpRequest
@@ -19,11 +18,6 @@ interface AuthRepository {
     suspend fun verifyOtp(request: VerifyOtpRequest): Flow<NetworkResult<AuthResponse>>
     suspend fun updateProfile(request: UpdateProfileRequest): Flow<NetworkResult<UserResponse>>
     suspend fun uploadAvatar(file: File): ApiResponse<AvatarResponse>
-
     fun connectWebSocket(baseUrl:String)
-
     fun disconnectWebSocket()
-
-
-
 }

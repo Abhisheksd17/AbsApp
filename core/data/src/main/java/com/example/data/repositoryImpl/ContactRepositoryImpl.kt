@@ -8,7 +8,7 @@ import com.example.domain.data.NetworkResult
 import com.example.domain.repository.ContactRepository
 import com.example.model.contact.ContactSyncRequest
 import com.example.model.contact.ContactDomain
-import com.example.network.ApiService
+import com.example.network.ChatService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.emitAll
@@ -20,7 +20,7 @@ import kotlin.collections.emptyList
 
 class ContactRepositoryImpl @Inject constructor(
     private val dao: ContactDao,
-    private val api: ApiService,
+    private val api: ChatService,
     private val mapper: ContactListMapper,
     private val deviceSource: DeviceContactDataSource
 ) : ContactRepository {

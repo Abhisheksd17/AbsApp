@@ -7,7 +7,7 @@ plugins {
     alias(libs.plugins.jetbrains.kotlin.jvm) apply false
     alias(libs.plugins.hilt) apply false
     alias(libs.plugins.ksp) apply false
-    id("com.google.gms.google-services") version "4.4.3" apply false
+    id("com.google.gms.google-services") version "4.5.0" apply false
     id("com.google.firebase.firebase-perf") version "2.0.2" apply false
 
 }

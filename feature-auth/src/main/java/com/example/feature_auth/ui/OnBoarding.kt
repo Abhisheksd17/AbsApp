@@ -36,6 +36,7 @@ import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import com.example.common.navigati.navigation.LocalNavigator
 import com.example.common.navigation.Screen
 import com.example.feature_auth.viewmodel.ContactViewModel
+import com.example.ui.screen.Button
 import com.example.ui.screen.Button.SocialIconButton
 import com.example.ui.screen.Button.SubmitButton
 import com.example.common.R as Common
@@ -56,7 +57,6 @@ fun OnBoarding(){
     val clicked by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val navigator = LocalNavigator.current
-
 
     Box(
         modifier = Modifier.fillMaxWidth().fillMaxHeight()
@@ -194,4 +194,6 @@ fun OnBoarding(){
 
         }
     }
+
+
 }

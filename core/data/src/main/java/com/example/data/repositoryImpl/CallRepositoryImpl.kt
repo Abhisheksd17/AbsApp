@@ -10,7 +10,7 @@ import com.example.model.call.EndCallRequest
 import com.example.model.call.IncomingCallEvent
 import com.example.model.call.InitiateCallRequest
 import com.example.model.websocket.WsEvent
-import com.example.network.ApiService
+import com.example.network.ChatService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
@@ -25,7 +25,7 @@ import javax.inject.Singleton
 
 @Singleton
 class CallRepositoryImpl @Inject constructor(
-    private val api:       ApiService,
+    private val api:       ChatService,
     private val wsManager: WebSocketManager,
 ) : CallRepository, BaseApiResponse() {
 

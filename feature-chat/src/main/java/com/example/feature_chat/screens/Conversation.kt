@@ -1,6 +1,5 @@
 package com.example.feature_chat.screens
 
-import android.util.Log
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
@@ -35,18 +34,18 @@ fun Conversation(userId: Int?,
                  onNavigateToCall: (CallParams) -> Unit) {
 
     val viewModel: MessageViewModel = hiltViewModel()
-    val state       by viewModel.chatState.collectAsStateWithLifecycle()
+    val state  by viewModel.chatState.collectAsStateWithLifecycle()
     val chatViewModel: ChatViewModel = hiltViewModel()
-    val chatId      by chatViewModel.chatId.collectAsStateWithLifecycle()
-    val chatUser    by viewModel.chatUser.collectAsStateWithLifecycle()
-    val context     = LocalContext.current
+    val chatId by chatViewModel.chatId.collectAsStateWithLifecycle()
+    val chatUser  by viewModel.chatUser.collectAsStateWithLifecycle()
+    val context = LocalContext.current
     val callVm: CallerViewModel = hiltViewModel()
     val callState by callVm.callState.collectAsStateWithLifecycle()
 
     val messageText = remember { mutableStateOf("") }
     var replyingTo  by remember { mutableStateOf<ChatMessage?>(null) }
-    val listState   = rememberLazyListState()
-    val scope       = rememberCoroutineScope()
+    val listState = rememberLazyListState()
+    val scope = rememberCoroutineScope()
     val Typing = remember { mutableStateOf(false) }
     val isTyping by viewModel.isTyping.collectAsStateWithLifecycle()
     val isOnline = chatUser?.isOnline ?: false
@@ -322,6 +321,7 @@ fun Conversation(userId: Int?,
                                                     currentUserId = viewModel.userId ?: 0,
                                                     isSelfBubble = isSelf
                                                 )
+
                                                 Spacer(Modifier.height(2.dp))
                                             }
                                         }

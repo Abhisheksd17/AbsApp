@@ -39,7 +39,17 @@ open class BaseApiResponse {
 
         } catch (e: Exception) {
             if (e is CancellationException) throw e
-            NetworkResult.Error(e.message ?: "Unknown error")
+            val errorMessage= when(e){
+                is java.net.UnknownHostException -> "No internet connection"
+                is java.net.SocketTimeoutException -> "Connection timeout"
+                is java.net.ConnectException -> "Connection error"
+                is java.net.NoRouteToHostException -> "No route to host"
+                is java.net.ProtocolException -> "Protocol error"
+                is java.net.UnknownServiceException -> "Unknown service error"
+                is java.net.SocketException -> "Socket error"
+                else -> e.message ?: "Unknown error"
+            }
+            NetworkResult.Error(errorMessage ?: "Unknown error")
         }
     }
 }

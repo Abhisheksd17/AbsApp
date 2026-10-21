@@ -1,6 +1,5 @@
 package com.example.network
 
-import android.content.Context
 import com.example.common.datastore.DataStore
 import com.example.common.datastore.TokenInterceptor
 import dagger.Module
@@ -11,8 +10,8 @@ import okhttp3.OkHttpClient
 import okhttp3.logging.HttpLoggingInterceptor
 import retrofit2.Retrofit
 import retrofit2.converter.gson.GsonConverterFactory
+import java.util.concurrent.TimeUnit
 import javax.inject.Singleton
-import dagger.hilt.android.qualifiers.ApplicationContext
 
 
 @Module
@@ -37,6 +36,9 @@ object NetworkModule {
         logging.level = HttpLoggingInterceptor.Level.BODY
 
         return OkHttpClient.Builder()
+            .connectTimeout(30, TimeUnit.SECONDS)
+            .readTimeout(60, TimeUnit.SECONDS)
+            .writeTimeout(60, TimeUnit.SECONDS)
             .addInterceptor(tokenInterceptor)
             .authenticator(tokenAuthenticator)
             .addInterceptor(logging)
@@ -55,8 +57,21 @@ object NetworkModule {
 
     @Provides
     @Singleton
-    fun provideApiService(retrofit: Retrofit): ApiService {
-        return retrofit.create(ApiService::class.java)
+    fun provideChatService(retrofit: Retrofit): ChatService {
+        return retrofit.create(ChatService::class.java)
+    }
+
+    @Provides
+    @Singleton
+    fun provideAuthService(retrofit: Retrofit): AuthService {
+        return retrofit.create(AuthService::class.java)
+    }
+
+
+    @Provides
+    @Singleton
+    fun provideAiService(retrofit: Retrofit): AiService {
+        return retrofit.create(AiService::class.java)
     }
 
 }

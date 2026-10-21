@@ -6,7 +6,6 @@ import com.example.domain.data.NetworkResult
 import com.example.domain.repository.AuthRepository
 import com.example.model.ApiResponse
 import com.example.model.login.OtpRequest
-import com.example.network.ApiService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -17,6 +16,7 @@ import com.example.model.login.AvatarResponse
 import com.example.model.login.UpdateProfileRequest
 import com.example.model.login.UserResponse
 import com.example.model.login.VerifyOtpRequest
+import com.example.network.AuthService
 import com.example.websocket.WebSocketManager
 import com.google.firebase.perf.FirebasePerformance
 import kotlinx.coroutines.CoroutineScope
@@ -30,7 +30,7 @@ import java.io.File
 
 
 class AuthRepositoryImpl @Inject constructor(
-    private val apiService: ApiService,
+    private val apiService: AuthService,
     private val dataStore: DataStore,
     private val wsManager: WebSocketManager,
 ) : AuthRepository, BaseApiResponse() {

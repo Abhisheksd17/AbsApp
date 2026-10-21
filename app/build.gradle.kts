@@ -1,9 +1,8 @@
 plugins {
     alias(libs.plugins.android.application)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
     alias(libs.plugins.hilt)
-    id("kotlin-kapt")
+    alias(libs.plugins.ksp)
     alias(libs.plugins.kotlin.serialization)
     id("com.google.gms.google-services")
     id("com.google.firebase.firebase-perf")
@@ -11,7 +10,7 @@ plugins {
 
 android {
     namespace = "com.example.absapp"
-    compileSdk = 36
+    compileSdk = 37
 
     defaultConfig {
         applicationId = "com.example.absapp"
@@ -27,14 +26,7 @@ android {
         localeFilters += "en"
     }
 
-    splits {
-        abi {
-            isEnable = true
-            reset()
-            include("armeabi-v7a", "arm64-v8a", "x86", "x86_64")
-            isUniversalApk = false
-        }
-    }
+
 
     buildTypes {
         debug {
@@ -54,12 +46,15 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
-    }
     buildFeatures {
         compose = true
         buildConfig = true
+    }
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
     }
 }
 
@@ -102,7 +97,7 @@ dependencies {
     debugImplementation(libs.androidx.compose.ui.test.manifest)
 
     implementation(libs.hilt.android)
-    kapt(libs.hilt.compiler)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.hilt.navigation.compose)
     implementation(libs.androidx.navigation.compose)
@@ -118,7 +113,7 @@ dependencies {
 
     implementation(libs.work.runtime)
     implementation(libs.hilt.work)
-    kapt(libs.androidx.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
 
     implementation(libs.cloudinary.android)
     implementation(libs.compose.material.icons.extended)

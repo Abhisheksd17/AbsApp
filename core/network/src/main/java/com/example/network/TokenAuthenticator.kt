@@ -13,7 +13,7 @@ import javax.inject.Provider
 
 class TokenAuthenticator @Inject constructor(
     private val dataStore: DataStore,
-    private val apiServiceProvider: Provider<ApiService>
+    private val apiServiceProvider: Provider<AuthService>
 ) : Authenticator {
 
 

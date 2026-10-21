@@ -7,7 +7,7 @@ import com.example.domain.repository.ChatRepository
 import com.example.model.chat.CreateChatRequest
 import com.example.model.chat.CreateChatResponse
 import com.example.model.chat.CreateGroupRequest
-import com.example.network.ApiService
+import com.example.network.ChatService
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
@@ -15,7 +15,7 @@ import kotlinx.coroutines.flow.flowOn
 import javax.inject.Inject
 
 class ChatRepositoryImpl @Inject constructor(
-    private val api: ApiService,
+    private val api: ChatService,
     private val userDao: UserDao
 ): ChatRepository, BaseApiResponse() {
 

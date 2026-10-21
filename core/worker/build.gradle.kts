@@ -1,15 +1,12 @@
 plugins {
     alias(libs.plugins.android.library)
-    alias(libs.plugins.kotlin.android)
     alias(libs.plugins.hilt)
-    id("kotlin-kapt")
+    alias(libs.plugins.ksp)
 }
 
 android {
     namespace = "com.example.worker"
-    compileSdk {
-        version = release(36)
-    }
+    compileSdk = 37
 
     defaultConfig {
         minSdk = 24
@@ -31,8 +28,11 @@ android {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
-    kotlinOptions {
-        jvmTarget = "11"
+}
+
+kotlin {
+    compilerOptions {
+        jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_11)
     }
 }
 
@@ -48,8 +48,8 @@ dependencies {
 
     implementation(libs.work.runtime)
     implementation(libs.hilt.work)
-    kapt(libs.hilt.compiler)
-    kapt(libs.androidx.hilt.compiler)
+    ksp(libs.hilt.compiler)
+    ksp(libs.androidx.hilt.compiler)
     implementation(libs.hilt.android)
 
 }

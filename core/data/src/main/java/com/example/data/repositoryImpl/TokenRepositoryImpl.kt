@@ -1,13 +1,12 @@
 package com.example.data.repositoryImpl
 
-import android.util.Log
 import com.example.domain.repository.TokenRepository
 import com.example.model.notification.TokenRequest
-import com.example.network.ApiService
+import com.example.network.AuthService
 import javax.inject.Inject
 
 class TokenRepositoryImpl @Inject constructor(
-    private val apiService: ApiService
+    private val apiService: AuthService
 ): TokenRepository {
 
 
