@@ -51,12 +51,6 @@ class ChatListRepositoryImpl @Inject constructor(
 
 
 
-
-
-
-
-
-
     override suspend fun refreshChatsList(): NetworkResult<Unit> {
         val result = safeApiCall { api.getChatList() }
         if (result is NetworkResult.Success) {

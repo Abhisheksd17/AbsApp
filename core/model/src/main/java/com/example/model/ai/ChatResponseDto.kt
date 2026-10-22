@@ -4,6 +4,7 @@ data class ChatResponse(
     val conversationId:String,
     val messageId:String,
     val role:String,
+    val message:String,
     val attachments:List<Attachment>,
     val status:String
 )

@@ -1,8 +1,7 @@
 package com.example.feature_auth.ui
 
-import android.Manifest
-import androidx.activity.compose.rememberLauncherForActivityResult
-import androidx.activity.result.contract.ActivityResultContracts
+import android.app.Activity
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +25,7 @@ import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Alignment.Companion.CenterHorizontally
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
@@ -57,6 +57,12 @@ fun OnBoarding(){
     val clicked by remember { mutableStateOf(false) }
     val scope = rememberCoroutineScope()
     val navigator = LocalNavigator.current
+    val context = LocalContext.current
+
+    BackHandler {
+        (context as? Activity)?.finish()
+    }
+
 
     Box(
         modifier = Modifier.fillMaxWidth().fillMaxHeight()
@@ -64,6 +70,7 @@ fun OnBoarding(){
                 brush = onBoardingGradient
             )
     )
+
     {
 
         Column(

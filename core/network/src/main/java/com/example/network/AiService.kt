@@ -2,10 +2,10 @@ package com.example.network
 
 import com.example.model.ApiResponse
 import com.example.model.ai.AllConversationResponse
-import com.example.model.ai.ChatMediaRequest
-import com.example.model.ai.ChatRequest
+import com.example.model.ai.ChatMediaRequestDto
+import com.example.model.ai.ChatRequestDto
 import com.example.model.ai.ChatResponse
-import com.example.model.ai.ConversationResponse
+import com.example.model.ai.ConversationResponseDto
 import com.example.model.ai.DeleteConversationResponse
 import retrofit2.http.Body
 import retrofit2.http.DELETE
@@ -17,12 +17,12 @@ interface AiService {
 
     @POST("/ai/chat")
     suspend fun chatWithAi(
-        @Body request: ChatRequest
+        @Body request: ChatRequestDto
     ): retrofit2.Response<ApiResponse<ChatResponse>>
 
     @POST("/ai/chat/multimodal")
     suspend fun chatWithAiMultiModal(
-        @Body request: ChatMediaRequest
+        @Body request: ChatMediaRequestDto
     ): retrofit2.Response<ApiResponse<ChatResponse>>
 
     @POST("ai/conversations")
@@ -33,7 +33,7 @@ interface AiService {
         @Query("conversation_id") conversationId: String,
         @Query("limit") limit: Int = 100,
         @Query("offset") offset: Int = 0
-    ):retrofit2.Response<ApiResponse<ConversationResponse>>
+    ):retrofit2.Response<ApiResponse<ConversationResponseDto>>
 
 
     @DELETE("ai/conversations")

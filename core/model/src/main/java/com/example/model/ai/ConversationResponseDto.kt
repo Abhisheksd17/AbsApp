@@ -1,6 +1,6 @@
 package com.example.model.ai
 
-data class ConversationResponse(
+data class ConversationResponseDto(
     val conversationId: String,
     val messages: List<ChatResponse>,
     val total: Int,

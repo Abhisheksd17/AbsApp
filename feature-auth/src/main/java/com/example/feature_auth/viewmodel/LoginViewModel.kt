@@ -15,14 +15,17 @@ import com.example.model.login.UpdateProfileRequest
 import com.example.model.login.UserResponse
 import com.example.model.login.VerifyOtpRequest
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asSharedFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 import java.io.File
 import javax.inject.Inject
+import kotlin.time.Duration.Companion.milliseconds
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
@@ -43,6 +46,9 @@ class LoginViewModel @Inject constructor(
     val event = _event.asSharedFlow()
 
     val userProfile = datastore.getUserProfile()
+
+    val _viewState= MutableStateFlow("Idle")
+    val viewState: StateFlow<String> = _viewState.asStateFlow()
 
     suspend fun getToken():String?{
         return datastore.getAccessToken()
@@ -67,7 +73,6 @@ class LoginViewModel @Inject constructor(
             }
         }
     }
-
 
     fun verifyOtp(otp: String) {
         viewModelScope.launch {

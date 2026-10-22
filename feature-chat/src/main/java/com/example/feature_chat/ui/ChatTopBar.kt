@@ -38,9 +38,9 @@ fun ChatTopBar(
     name: String ,
     status: String ,
     isOnline: Boolean,
-    onBackClick: () -> Unit = {},
-    onCallClick: () -> Unit = {},
-    onVideoClick: () -> Unit = {}
+    onBackClick: () -> Unit ,
+    onCallClick: () -> Unit,
+    onVideoClick: () -> Unit
 ) {
     Row(
         modifier = Modifier

@@ -1,6 +1,6 @@
 package com.example.model.ai
 
-data class ChatRequest(
+data class ChatRequestDto(
     val conversationId:String?,
     val message:String
 )
