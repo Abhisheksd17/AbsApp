@@ -31,7 +31,7 @@ class ChatListViewModel @Inject constructor(
         .catch { e -> emit(ChatUiState.Error(e.message ?: "Database Error")) }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.WhileSubscribed(5000),
+            started = SharingStarted.Lazily,
             initialValue = ChatUiState.Loading
         )
 

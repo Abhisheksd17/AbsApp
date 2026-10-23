@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -39,6 +40,7 @@ import com.example.feature_chat.ui.SwipeableChatItem
 import com.example.feature_chat.viewmodel.ChatListViewModel
 import com.example.ui.theme.Black
 import com.example.ui.theme.SoftLightGray
+import com.example.ui.theme.TealGreen
 import com.example.ui.theme.White
 
 @Composable
@@ -111,8 +113,13 @@ fun Chat(
 
                     when (val result = state) {
 
-                         is ChatUiState.Loading -> {
-
+                        is ChatUiState.Loading -> {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(color = TealGreen)
+                            }
                         }
 
                         is ChatUiState.Success -> {

@@ -2,6 +2,11 @@ package com.example.absapp.navigation
 
 import android.util.Log
 import androidx.activity.ComponentActivity
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -75,7 +80,6 @@ fun AppNavHost(navigator: AppNavigator) {
 
                 is NotificationDestination.OpenConversation -> {
                     navController.navigate(Screen.Conversation.createRoute(dest.userId)) {
-
                         popUpTo(navController.graph.startDestinationId) { inclusive = true }
                     }
                 }
@@ -120,7 +124,11 @@ fun AppNavHost(navigator: AppNavigator) {
 
     Scaffold(
         bottomBar = {
-            if (isBottomBarVisible) {
+            AnimatedVisibility(
+                visible = isBottomBarVisible,
+                enter = slideInVertically(initialOffsetY = { it }) + fadeIn(),
+                exit = slideOutVertically(targetOffsetY = { it }) + fadeOut()
+            ) {
                 HomeBottomBar(navController)
             }
         }

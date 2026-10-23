@@ -41,6 +41,8 @@
     <string name="notifications">Notifications</string>
     <string name="notifications_desc">Messages, group and others</string>
     <string name="help">Help</string>
+    <string name="absbot">AbsBot</string>
+    <string name="available">Available</string>
     <string name="help_desc">Help center, contact us, privacy policy</string>
     <string name="storage_data">Storage and data</string>
     <string name="storage_data_desc">Network usage, storage usage</string>
