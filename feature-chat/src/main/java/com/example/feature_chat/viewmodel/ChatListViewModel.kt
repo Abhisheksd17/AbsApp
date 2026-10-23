@@ -21,13 +21,22 @@ import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
+import kotlinx.coroutines.flow.combine
+
 @HiltViewModel
 class ChatListViewModel @Inject constructor(
     private val chatListRepository: ChatListRepository,
 ): ViewModel() {
 
-    val chatListState: StateFlow<ChatUiState> = chatListRepository.getChatsList()
-        .map { chats -> ChatUiState.Success(chats) as ChatUiState }
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    val chatListState: StateFlow<ChatUiState> = combine(
+        chatListRepository.getChatsList(),
+        _isRefreshing
+    ) { chats, refreshing ->
+        ChatUiState.Success(chats = chats, isRefreshing = refreshing) as ChatUiState
+    }
         .catch { e -> emit(ChatUiState.Error(e.message ?: "Database Error")) }
         .stateIn(
             scope = viewModelScope,
@@ -40,9 +49,14 @@ class ChatListViewModel @Inject constructor(
 
     fun fetchChatList() {
         viewModelScope.launch {
-            val result = chatListRepository.refreshChatsList()
-            if (result is NetworkResult.Error) {
-                _networkEvent.emit(result.message ?: "Failed to update chats")
+            _isRefreshing.value = true
+            try {
+                val result = chatListRepository.refreshChatsList()
+                if (result is NetworkResult.Error) {
+                    _networkEvent.emit(result.message ?: "Failed to update chats")
+                }
+            } finally {
+                _isRefreshing.value = false
             }
         }
     }

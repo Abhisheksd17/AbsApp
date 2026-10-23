@@ -9,6 +9,7 @@ import com.example.model.message.MessageWithUser
 import com.example.model.message.SendMessageRequest
 import com.example.model.message.UserUi
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -17,6 +18,7 @@ import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.flatMapLatest
+import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.stateIn
 import android.net.Uri
 import androidx.work.Constraints
@@ -33,24 +35,47 @@ import com.example.worker.UploadMediaSyncWorker
 class MessageViewModel @Inject constructor(
     private val repository: MessageRepository,
     private val workManager: WorkManager,
+    private val dataStore: DataStore
 ): ViewModel(){
 
-    private val _chatState = MutableStateFlow<NetworkResult<List<MessageWithUser>>>(NetworkResult.Idle())
-    val chatState = _chatState.asStateFlow()
-
-    var userId:Int?=0
+    var userId: Int? = 0
 
     private val _chatId = MutableStateFlow<Int?>(null)
     val chatId: StateFlow<Int?> = _chatId
 
-    val isTyping=repository.isTyping
+    @OptIn(ExperimentalCoroutinesApi::class)
+    val chatState: StateFlow<NetworkResult<List<MessageWithUser>>> = _chatId
+        .flatMapLatest { id ->
+            if (id == null) {
+                flowOf(NetworkResult.Loading())
+            } else {
+                repository.getChats(id)
+            }
+        }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(5000),
+            initialValue = NetworkResult.Loading()
+        )
 
-    val isOnline=repository.isOnline
+    val isTyping = repository.isTyping
 
-    fun setChatId(id: Int) {
-        _chatId.value = id
+    val isOnline = repository.isOnline
+
+    init {
+        viewModelScope.launch {
+            userId = dataStore.getUserId()
+        }
     }
 
+    fun setChatId(id: Int) {
+        if (_chatId.value != id) {
+            _chatId.value = id
+            refreshChats(id)
+        }
+    }
+
+    @OptIn(ExperimentalCoroutinesApi::class)
     val chatUser: StateFlow<UserUi?> = _chatId.filterNotNull().flatMapLatest { id ->
                 repository.getChatUser(id)
             }
@@ -60,17 +85,21 @@ class MessageViewModel @Inject constructor(
                 null
             )
 
-    fun getChatMessage(chatId: Int){
-        viewModelScope.launch {
-            repository.getChats(chatId).collect{ response ->
-                _chatState.value = response
-            }
-        }
+    private val _isRefreshing = MutableStateFlow(false)
+    val isRefreshing: StateFlow<Boolean> = _isRefreshing.asStateFlow()
+
+    fun getChatMessage(chatId: Int) {
+        setChatId(chatId)
     }
 
     fun refreshChats(chatId: Int){
         viewModelScope.launch {
-            repository.refreshChats(chatId)
+            _isRefreshing.value = true
+            try {
+                repository.refreshChats(chatId)
+            } finally {
+                _isRefreshing.value = false
+            }
         }
     }
 

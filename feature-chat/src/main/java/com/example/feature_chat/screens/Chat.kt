@@ -125,11 +125,20 @@ fun Chat(
                         is ChatUiState.Success -> {
 
                             if (result.chats.isEmpty()) {
-                                Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                    Text(stringResource(R.string.no_chats_found))
+                                if (result.isRefreshing) {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(color = TealGreen)
+                                    }
+                                } else {
+                                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                                        Text(stringResource(R.string.no_chats_found))
+                                    }
                                 }
 
-                            } else{
+                            } else {
                                 val chats = result.chats
 
                                 LazyColumn {

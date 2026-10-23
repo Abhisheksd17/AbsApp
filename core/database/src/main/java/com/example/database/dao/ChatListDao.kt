@@ -21,6 +21,9 @@ interface ChatListDao {
     @Query("SELECT * FROM chats ORDER BY lastMsgAt DESC")
     suspend fun getChatsOnce(): List<ChatListEntity>
 
+    @Query("SELECT chatId FROM chats WHERE userId = :userId LIMIT 1")
+    suspend fun getChatIdByUserId(userId: Int): Int?
+
     @Upsert
     suspend fun upsertChat(chat: ChatListEntity)
 

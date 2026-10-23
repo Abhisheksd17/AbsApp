@@ -17,6 +17,7 @@ import androidx.core.content.FileProvider
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.common.util.Utils.showSnackBar
+import com.example.common.navigati.navigation.LocalNavigator
 import com.example.common.viewmodel.CallerViewModel
 import com.example.domain.data.CallState
 import com.example.domain.data.NetworkResult
@@ -30,10 +31,12 @@ import com.example.common.R as text
 import kotlinx.coroutines.launch
 import java.util.UUID
 
+@OptIn(ExperimentalLayoutApi::class)
 @Composable
 fun Conversation(userId: Int?,
                  onNavigateToCall: (CallParams) -> Unit) {
 
+    val navigator   = LocalNavigator.current
     val viewModel: MessageViewModel = hiltViewModel()
     val state       by viewModel.chatState.collectAsStateWithLifecycle()
     val chatViewModel: ChatViewModel = hiltViewModel()
@@ -64,9 +67,27 @@ fun Conversation(userId: Int?,
         messages.reversed()
     }
 
-    LaunchedEffect(Unit) {
-        if (reversedMessages.isNotEmpty()) {
-            listState.scrollToItem(0)
+    var hasScrolledInitially by remember(chatId) { mutableStateOf(false) }
+
+    val latestMessageId = remember(reversedMessages) {
+        reversedMessages.firstOrNull()?.let { it.serverId ?: it.localId }
+    }
+
+    LaunchedEffect(latestMessageId) {
+        if (latestMessageId != null && reversedMessages.isNotEmpty()) {
+            if (!hasScrolledInitially) {
+                listState.scrollToItem(0)
+                hasScrolledInitially = true
+            } else if (listState.firstVisibleItemIndex <= 2) {
+                listState.animateScrollToItem(0)
+            }
+        }
+    }
+
+    val isImeVisible = WindowInsets.isImeVisible
+    LaunchedEffect(isImeVisible) {
+        if (isImeVisible && reversedMessages.isNotEmpty()) {
+            listState.animateScrollToItem(0)
         }
     }
 
@@ -79,8 +100,6 @@ fun Conversation(userId: Int?,
     LaunchedEffect(chatId) {
         chatId?.let {
             viewModel.setChatId(it)
-            viewModel.refreshChats(it)
-            viewModel.getChatMessage(it)
         }
     }
 
@@ -111,14 +130,6 @@ fun Conversation(userId: Int?,
 
     LaunchedEffect(messages.size) {
         isLoadingMore = false
-    }
-
-    LaunchedEffect(reversedMessages.size) {
-        if (reversedMessages.isNotEmpty() && listState.layoutInfo.totalItemsCount > 0) {
-            scope.launch {
-                listState.scrollToItem(0)
-            }
-        }
     }
 
     LaunchedEffect(messageText.value) {
@@ -159,13 +170,16 @@ fun Conversation(userId: Int?,
         modifier = Modifier
             .fillMaxSize()
             .imePadding(),
+        contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             ChatTopBar(
                 imageUri     = chatUser?.profileUrl ?: "",
                 name         = chatUser?.name ?: "",
                 status       = if (isTyping) "Typing..." else "",
                 isOnline     = isOnline,
-                onBackClick  = {},
+                onBackClick  = {
+                    scope.launch { navigator.pop() }
+                },
                 onCallClick  = {
                     callVm.initiateCall(
                         calleeId = userId?:0,
@@ -183,10 +197,14 @@ fun Conversation(userId: Int?,
             )
         },
         bottomBar = {
-            Column(modifier = Modifier.fillMaxWidth()) {
+            Column(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .navigationBarsPadding()
+            ) {
                 ReplyPreviewBar(
                     replyMessage  = replyingTo,
-                    currentUserId = viewModel.userId?.toInt() ?: 0,
+                    currentUserId = viewModel.userId ?: 0,
                     onDismiss     = { replyingTo = null }
                 )
 
@@ -210,6 +228,7 @@ fun Conversation(userId: Int?,
                         )
                         messageText.value = ""
                         replyingTo = null
+                        scope.launch { listState.animateScrollToItem(0) }
                     },
                     onMediaPicked = { media ->
                         val cId = chatId ?: return@MessageInputBar
@@ -244,107 +263,106 @@ fun Conversation(userId: Int?,
                 .fillMaxSize()
                 .padding(scaffoldPadding)
         ) {
-            when (val s = state) {
-                is NetworkResult.Loading -> {  }
-                is NetworkResult.Error -> {
-                    Column(
-                        modifier            = Modifier.align(Alignment.Center),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.spacedBy(8.dp)
-                    ) {
-                        Text(
-                            text  = s.message ?: "Something went wrong",
-                            color = MaterialTheme.colorScheme.error
-                        )
-                        Button(onClick = { chatId?.let { viewModel.getChatMessage(it) } }) {
-                            Text("Retry")
+            if (reversedMessages.isNotEmpty()) {
+                LazyColumn(
+                    state = listState,
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 8.dp),
+                    contentPadding = PaddingValues(vertical = 8.dp),
+                    verticalArrangement = Arrangement.spacedBy(2.dp),
+                    reverseLayout = true
+                ) {
+                    itemsIndexed(
+                        reversedMessages,
+                        key = { _, message -> message.serverId ?: message.localId }
+                    ) { index, message ->
+
+                        val currentDate = formatDateStamp(message.createdAt)
+
+                        val nextDate = reversedMessages
+                            .getOrNull(index + 1)
+                            ?.let { formatDateStamp(it.createdAt) }
+
+                        val showDate =
+                            index == reversedMessages.lastIndex ||
+                                    currentDate != nextDate
+
+                        val isSelf = message.senderId == viewModel.userId
+
+                        SwipeableMessageItem(
+                            onSwipeToReply = {
+                                replyingTo = message.toChatMessage()
+                            }
+                        ) {
+                            Column(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalAlignment = if (isSelf) Alignment.End else Alignment.Start
+                            ) {
+
+                                message.replyToId?.let { replyId ->
+                                    val original = messages.find { it.serverId == replyId }
+                                    original?.let {
+                                        ReplyQuoteChip(
+                                            originalMessage = it.toChatMessage(),
+                                            currentUserId = viewModel.userId ?: 0,
+                                            isSelfBubble = isSelf
+                                        )
+                                        Spacer(Modifier.height(2.dp))
+                                    }
+                                }
+
+                                ChatBubble(
+                                    message = message.toChatMessage(),
+                                    isSelf = isSelf
+                                )
+                                if (showDate) {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .padding(vertical = 8.dp),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        Text(
+                                            text = currentDate,
+                                            color = SlateGray,
+                                            fontSize = 10.sp
+                                        )
+                                    }
+                                }
+                            }
                         }
                     }
                 }
-                else -> {
-                    if (reversedMessages.isEmpty()) {
+            } else {
+                when (val s = state) {
+                    is NetworkResult.Loading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                    is NetworkResult.Error -> {
+                        Column(
+                            modifier            = Modifier.align(Alignment.Center),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.spacedBy(8.dp)
+                        ) {
+                            Text(
+                                text  = s.message ?: "Something went wrong",
+                                color = MaterialTheme.colorScheme.error
+                            )
+                            Button(onClick = { chatId?.let { viewModel.setChatId(it) } }) {
+                                Text("Retry")
+                            }
+                        }
+                    }
+                    else -> {
                         Text(
                             text     = stringResource(text.string.no_message),
                             modifier = Modifier.align(Alignment.Center),
                             style    = MaterialTheme.typography.bodyMedium,
                             color    = MaterialTheme.colorScheme.onSurfaceVariant
                         )
-                    } else
-                    {
-                        LazyColumn(
-                            state = listState,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .padding(horizontal = 8.dp),
-                            contentPadding = PaddingValues(vertical = 8.dp),
-                            verticalArrangement = Arrangement.spacedBy(2.dp),
-                            reverseLayout = true
-                        )
-                        {
-
-                            itemsIndexed(
-                                reversedMessages,
-                                key = { _, message -> message.serverId ?: message.localId }
-                            ) { index, message ->
-
-                                val currentDate = formatDateStamp(message.createdAt)
-
-                                val nextDate = reversedMessages
-                                    .getOrNull(index + 1)
-                                    ?.let { formatDateStamp(it.createdAt) }
-
-                                val showDate =
-                                    index == reversedMessages.lastIndex ||
-                                            currentDate != nextDate
-
-
-
-                                val isSelf = message.senderId == viewModel.userId
-
-                                SwipeableMessageItem(
-                                    onSwipeToReply = {
-                                        replyingTo = message.toChatMessage()
-                                    }
-                                ) {
-                                    Column(
-                                        modifier = Modifier.fillMaxWidth(),
-                                        horizontalAlignment = if (isSelf) Alignment.End else Alignment.Start
-                                    ) {
-
-                                        message.replyToId?.let { replyId ->
-                                            val original = messages.find { it.serverId == replyId }
-                                            original?.let {
-                                                ReplyQuoteChip(
-                                                    originalMessage = it.toChatMessage(),
-                                                    currentUserId = viewModel.userId ?: 0,
-                                                    isSelfBubble = isSelf
-                                                )
-                                                Spacer(Modifier.height(2.dp))
-                                            }
-                                        }
-
-                                        ChatBubble(
-                                            message = message.toChatMessage(),
-                                            isSelf = isSelf
-                                        )
-                                        if (showDate) {
-                                            Box(
-                                                modifier = Modifier
-                                                    .fillMaxWidth()
-                                                    .padding(vertical = 8.dp),
-                                                contentAlignment = Alignment.Center
-                                            ) {
-                                                Text(
-                                                    text = currentDate,
-                                                    color = SlateGray,
-                                                    fontSize = 10.sp
-                                                )
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
                     }
                 }
             }

@@ -1,6 +1,7 @@
 package com.example.data.repositoryImpl
 
 import com.example.data.wrapper.BaseApiResponse
+import com.example.database.dao.ChatListDao
 import com.example.database.dao.UserDao
 import com.example.domain.data.NetworkResult
 import com.example.domain.repository.ChatRepository
@@ -16,7 +17,8 @@ import javax.inject.Inject
 
 class ChatRepositoryImpl @Inject constructor(
     private val api: ChatService,
-    private val userDao: UserDao
+    private val userDao: UserDao,
+    private val chatListDao: ChatListDao
 ): ChatRepository, BaseApiResponse() {
 
 
@@ -51,6 +53,6 @@ class ChatRepositoryImpl @Inject constructor(
     }
 
     override suspend fun getChatByUserId(userId: Int): Int? {
-      return userDao.getChatId(userId)
+        return userDao.getChatId(userId) ?: chatListDao.getChatIdByUserId(userId)
     }
 }
