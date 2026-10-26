@@ -24,7 +24,7 @@ import com.example.database.entity.ChatEntity
         AiMessageEntity::class,
         AiAttachmentsEntity::class
     ],
-    version = 13,
+    version = 14,
     exportSchema = false
 )
 abstract class ChatRoomDataBase : RoomDatabase() {

@@ -32,7 +32,7 @@ import com.example.ui.theme.circularStd
 
 @Composable
 fun AiChatTopBar(
-    onBackClick : () -> Unit
+    onSideClick : () -> Unit
 ){
 
     Row(
@@ -43,11 +43,11 @@ fun AiChatTopBar(
         verticalAlignment = Alignment.CenterVertically
     ){
         Icon(
-            painter = painterResource(id = ui.drawable.back_ic),
+            painter = painterResource(id = ui.drawable.sidedrawer),
             contentDescription = null,
             modifier = Modifier
                 .size(24.dp)
-                .clickable { onBackClick() },
+                .clickable { onSideClick() },
             tint = Color.Unspecified
         )
 

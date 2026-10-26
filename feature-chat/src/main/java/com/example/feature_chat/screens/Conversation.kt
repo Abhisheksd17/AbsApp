@@ -168,6 +168,7 @@ fun Conversation(userId: Int?,
         modifier = Modifier
             .fillMaxSize()
             .imePadding(),
+        snackbarHost = { SnackbarHost(snackbarHostState) },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
             ChatTopBar(
@@ -228,18 +229,28 @@ fun Conversation(userId: Int?,
                         replyingTo = null
                         scope.launch { listState.animateScrollToItem(0) }
                     },
-                    onMediaPicked = { media ->
+                    onMediaPickedWithCaption = { media, caption ->
                         val cId = chatId ?: return@MessageInputBar
                         viewModel.uploadMedia(
                             uri = media.uri,
                             chatId = cId,
                             type = media.type
                         )
-                        replyingTo = null
-                    },
-                    onPhotoCaptured = { uri ->
-                        val cId = chatId ?: return@MessageInputBar
-                        viewModel.uploadMedia(uri = uri, chatId = cId, type = "image")
+                        val text = caption.trim()
+                        if (text.isNotBlank()) {
+                            viewModel.sendMessage(
+                                SendMessageRequest(
+                                    chat_id = cId,
+                                    type = "text",
+                                    body = text,
+                                    client_id = UUID.randomUUID().toString(),
+                                    media_id = null,
+                                    reply_to_id = replyingTo?.id,
+                                    is_forwarded = false
+                                )
+                            )
+                        }
+                        messageText.value = ""
                         replyingTo = null
                     },
                     onVoiceRecorded = { file ->

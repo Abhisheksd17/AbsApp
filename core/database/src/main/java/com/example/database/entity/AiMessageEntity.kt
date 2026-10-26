@@ -12,5 +12,6 @@ data class AiMessageEntity(
     val role: String,
     val message: String,
     val status: String,
-    val timestamp: Long = System.currentTimeMillis()
+    val isPinned: Boolean = false,
+    val timestamp: Long = System.currentTimeMillis(),
 )

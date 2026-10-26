@@ -1,10 +1,13 @@
 package com.example.data.repositoryImpl
 
+import android.util.Log
 import com.example.data.mapper.AiMapper
 import com.example.data.wrapper.BaseApiResponse
 import com.example.database.dao.AiDao
+import com.example.database.entity.AiMessageEntity
 import com.example.domain.data.NetworkResult
 import com.example.domain.repository.AiRepository
+import com.example.model.ai.AiConversationSummary
 import com.example.model.ai.AiMessageUiModel
 import com.example.model.ai.ChatMediaRequestDto
 import com.example.model.ai.ChatRequestDto
@@ -13,12 +16,16 @@ import com.example.network.AiService
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.onEach
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
 import javax.inject.Inject
+import kotlin.coroutines.cancellation.CancellationException
+
+private const val TAG = "AiRepositoryImpl"
 
 class AiRepostoryImpl @Inject constructor(
     private val apiService: AiService,
@@ -27,9 +34,32 @@ class AiRepostoryImpl @Inject constructor(
 ): AiRepository, BaseApiResponse() {
 
 
+    override fun getAllConversations(): Flow<List<AiConversationSummary>> {
+        Log.d(TAG, "getAllConversations: Started")
+
+        return aiDao.getAllConversations()
+            .onEach { conversations ->
+                Log.d(
+                    TAG,
+                    "getAllConversations: Success, count=${conversations.size}"
+                )
+            }
+            .catch { exception ->
+                Log.e(
+                    TAG,
+                    "getAllConversations: Failed - ${exception.message}",
+                    exception
+                )
+                throw exception
+            }
+    }
+
+    override suspend fun togglePinConversation(conversationId: String, isPinned: Boolean) {
+        aiDao.updatePinStatus(conversationId, isPinned)
+    }
 
     override fun getAiMessage(conversation: String): Flow<NetworkResult<List<AiMessageUiModel>>> {
-        return aiDao.getConversation(conversation)
+        return aiDao.getConversationMessage(conversation)
             .map { list ->
                 val uiModels = mapper.entityListToUiModelList(list)
                 NetworkResult.Success(uiModels) as NetworkResult<List<AiMessageUiModel>>
@@ -43,14 +73,16 @@ class AiRepostoryImpl @Inject constructor(
         chatRequestDto: ChatRequestDto
     ): NetworkResult<ChatResponse> {
 
-        with(mapper) {
-            val userMsg = chatRequestDto.toUserMessageEntity()
-            aiDao.insertMessageResponse(userMsg)
-        }
+        val conversationId = chatRequestDto.conversationId ?: ""
 
-        val result = safeApiCall {
-            apiService.chatWithAi(chatRequestDto)
-        }
+            with(mapper) {
+                val userMsg = chatRequestDto.toUserMessageEntity()
+                aiDao.insertMessageResponse(userMsg)
+            }
+
+            val result = safeApiCall {
+                apiService.chatWithAi(chatRequestDto)
+            }
 
         if (result is NetworkResult.Success) {
             result.data?.let { dto ->
@@ -61,13 +93,22 @@ class AiRepostoryImpl @Inject constructor(
                 return NetworkResult.Success(dto)
             }
         }
-
-        return NetworkResult.Error(
-            result.message ?: "Network Fetch Failed"
+        val errorMessage = result.message ?: "Network Fetch Failed"
+        aiDao.insertMessageResponse(
+            AiMessageEntity(
+                messageId = java.util.UUID.randomUUID().toString(),
+                conversationId = conversationId,
+                role = "assistant",
+                message = "⚠️ Error: $errorMessage",
+                status = "ERROR"
+            )
         )
+        return NetworkResult.Error(errorMessage)
+
     }
 
     override suspend fun sendAiAttachments(chatRequest: ChatMediaRequestDto): NetworkResult<ChatResponse> {
+        val conversationId = chatRequest.conversationId ?: ""
         with(mapper) {
             val userMsgId = java.util.UUID.randomUUID().toString()
             val userMsg = chatRequest.toUserMessageEntity(userMsgId)
@@ -106,7 +147,17 @@ class AiRepostoryImpl @Inject constructor(
                 return NetworkResult.Success(dto)
             }
         }
-        return NetworkResult.Error(result.message ?: "Network Fetch Failed")
+        val errorMessage = result.message ?: "Network Fetch Failed"
+        aiDao.insertMessageResponse(
+            AiMessageEntity(
+                messageId = java.util.UUID.randomUUID().toString(),
+                conversationId = conversationId,
+                role = "assistant",
+                message = "⚠️ Error: $errorMessage",
+                status = "ERROR"
+            )
+        )
+        return NetworkResult.Error(errorMessage)
     }
 
     private fun getMimeType(file: File): String {

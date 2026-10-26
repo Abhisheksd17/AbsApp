@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.domain.data.NetworkResult
 import com.example.domain.repository.AiRepository
+import com.example.model.ai.AiConversationSummary
 import com.example.model.ai.AiMessageUiModel
 import com.example.model.ai.ChatMediaRequestDto
 import com.example.model.ai.ChatRequestDto
@@ -35,6 +36,17 @@ class AiViewModel @Inject constructor(
     private val _errorEvent = MutableSharedFlow<String>()
     val errorEvent: SharedFlow<String> = _errorEvent.asSharedFlow()
 
+    private val _isSending = MutableStateFlow(false)
+    val isSending: StateFlow<Boolean> = _isSending.asStateFlow()
+
+    val conversations: StateFlow<List<AiConversationSummary>> =
+        aiRepository.getAllConversations()
+            .stateIn(
+                scope = viewModelScope,
+                started = SharingStarted.WhileSubscribed(5000),
+                initialValue = emptyList()
+            )
+
     @OptIn(ExperimentalCoroutinesApi::class)
     val message: StateFlow<NetworkResult<List<AiMessageUiModel>>> =
         _conversationId
@@ -47,6 +59,22 @@ class AiViewModel @Inject constructor(
                 initialValue = NetworkResult.Idle()
             )
 
+    fun startNewChat() {
+        _conversationId.value = UUID.randomUUID().toString()
+    }
+
+    fun selectConversation(id: String) {
+        if (id.isNotBlank()) {
+            _conversationId.value = id
+        }
+    }
+
+    fun togglePinConversation(conversationId: String, isPinned: Boolean) {
+        viewModelScope.launch {
+            aiRepository.togglePinConversation(conversationId, isPinned)
+        }
+    }
+
     fun setConversationId(id: String) {
         if (id.isNotBlank()) {
             _conversationId.value = id
@@ -55,21 +83,26 @@ class AiViewModel @Inject constructor(
 
     fun sendMessage(chatRequestDto: ChatRequestDto) {
         viewModelScope.launch {
-            val currentId = chatRequestDto.conversationId?.takeIf { it.isNotBlank() }
-                ?: _conversationId.value.ifBlank {
-                    UUID.randomUUID().toString().also { _conversationId.value = it }
-                }
-            val request = chatRequestDto.copy(conversationId = currentId)
-            when (val result = aiRepository.sendAiMessage(request)) {
-                is NetworkResult.Success -> {
-                    result.data?.conversationId?.takeIf { it.isNotBlank() }?.let { backendId ->
-                        _conversationId.value = backendId
+            _isSending.value = true
+            try {
+                val currentId = chatRequestDto.conversationId?.takeIf { it.isNotBlank() }
+                    ?: _conversationId.value.ifBlank {
+                        UUID.randomUUID().toString().also { _conversationId.value = it }
                     }
+                val request = chatRequestDto.copy(conversationId = currentId)
+                when (val result = aiRepository.sendAiMessage(request)) {
+                    is NetworkResult.Success -> {
+                        result.data?.conversationId?.takeIf { it.isNotBlank() }?.let { backendId ->
+                            _conversationId.value = backendId
+                        }
+                    }
+                    is NetworkResult.Error -> {
+                        _errorEvent.emit(result.message ?: "Failed to send message")
+                    }
+                    else -> Unit
                 }
-                is NetworkResult.Error -> {
-                    _errorEvent.emit(result.message ?: "Failed to send message")
-                }
-                else -> Unit
+            } finally {
+                _isSending.value = false
             }
         }
     }
@@ -91,21 +124,26 @@ class AiViewModel @Inject constructor(
 
     fun sendAttachments(chatRequest: ChatMediaRequestDto) {
         viewModelScope.launch {
-            val currentId = chatRequest.conversationId?.takeIf { it.isNotBlank() }
-                ?: _conversationId.value.ifBlank {
-                    UUID.randomUUID().toString().also { _conversationId.value = it }
-                }
-            val request = chatRequest.copy(conversationId = currentId)
-            when (val result = aiRepository.sendAiAttachments(request)) {
-                is NetworkResult.Success -> {
-                    result.data?.conversationId?.takeIf { it.isNotBlank() }?.let { backendId ->
-                        _conversationId.value = backendId
+            _isSending.value = true
+            try {
+                val currentId = chatRequest.conversationId?.takeIf { it.isNotBlank() }
+                    ?: _conversationId.value.ifBlank {
+                        UUID.randomUUID().toString().also { _conversationId.value = it }
                     }
+                val request = chatRequest.copy(conversationId = currentId)
+                when (val result = aiRepository.sendAiAttachments(request)) {
+                    is NetworkResult.Success -> {
+                        result.data?.conversationId?.takeIf { it.isNotBlank() }?.let { backendId ->
+                            _conversationId.value = backendId
+                        }
+                    }
+                    is NetworkResult.Error -> {
+                        _errorEvent.emit(result.message ?: "Failed to send attachments")
+                    }
+                    else -> Unit
                 }
-                is NetworkResult.Error -> {
-                    _errorEvent.emit(result.message ?: "Failed to send attachments")
-                }
-                else -> Unit
+            } finally {
+                _isSending.value = false
             }
         }
     }

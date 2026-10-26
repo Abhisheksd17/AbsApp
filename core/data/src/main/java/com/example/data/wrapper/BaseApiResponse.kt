@@ -2,6 +2,7 @@ package com.example.data.wrapper
 
 import com.example.domain.data.NetworkResult
 import com.example.model.ApiResponse
+import org.json.JSONObject
 import retrofit2.Response
 import kotlin.coroutines.cancellation.CancellationException
 
@@ -27,14 +28,15 @@ open class BaseApiResponse {
                         }
 
                     } else {
-                        NetworkResult.Error(body.message)
+                        NetworkResult.Error(body.message.ifBlank { "Server error (${body.status})" })
                     }
                 } else {
                     NetworkResult.Error("Empty response body")
                 }
 
             } else {
-                NetworkResult.Error(response.message())
+                val errorMsg = parseErrorMessage(response)
+                NetworkResult.Error(errorMsg)
             }
 
         } catch (e: Exception) {
@@ -51,5 +53,33 @@ open class BaseApiResponse {
             }
             NetworkResult.Error(errorMessage ?: "Unknown error")
         }
+    }
+
+    private fun <T : Any> parseErrorMessage(response: Response<ApiResponse<T>>): String {
+        val errorBodyStr = try {
+            response.errorBody()?.string()
+        } catch (_: Exception) {
+            null
+        }
+
+        if (!errorBodyStr.isNullOrBlank()) {
+            try {
+                val json = JSONObject(errorBodyStr)
+                if (json.has("message")) {
+                    val msg = json.optString("message")
+                    if (msg.isNotBlank()) {
+                        return msg
+                    }
+                }
+            } catch (_: Exception) {
+            }
+        }
+
+        val httpMsg = response.message()
+        if (!httpMsg.isNullOrBlank()) {
+            return httpMsg
+        }
+
+        return "Server Error (${response.code()})"
     }
 }

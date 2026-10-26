@@ -12,6 +12,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Close
+import androidx.compose.material.icons.filled.PlayArrow
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -21,10 +24,12 @@ import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.*
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
 import com.example.feature_chat.utils.formatRecordingTime
 import com.example.feature_chat.utils.rememberMediaPicker
 import com.example.feature_chat.utils.rememberVoiceRecorder
@@ -46,12 +51,15 @@ fun MessageInputBar(
     onMessageChange: (String) -> Unit,
     onSend: () -> Unit = {},
     onMediaPicked: (PickedMedia) -> Unit = {},
+    onMediaPickedWithCaption: (PickedMedia, String) -> Unit = { media, _ -> onMediaPicked(media) },
     onPhotoCaptured: (Uri) -> Unit = {},
     onVoiceRecorded: (File) -> Unit = {},
 ) {
+    var selectedMedia by remember { mutableStateOf<PickedMedia?>(null) }
+
     val (_, launchGallery, launchCamera) = rememberMediaPicker(
-        onMediaPicked   = onMediaPicked,
-        onPhotoCaptured = onPhotoCaptured,
+        onMediaPicked   = { media -> selectedMedia = media },
+        onPhotoCaptured = { uri -> selectedMedia = PickedMedia(uri = uri, type = "image") },
     )
     val cameraPermission = rememberPermissionState(Manifest.permission.CAMERA)
     val audioPermission  = rememberPermissionState(Manifest.permission.RECORD_AUDIO)
@@ -88,6 +96,70 @@ fun MessageInputBar(
             .fillMaxWidth()
             .background(LightGrayBackground)
     ) {
+        AnimatedVisibility(visible = selectedMedia != null) {
+            selectedMedia?.let { media ->
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(start = 24.dp, end = 24.dp, top = 12.dp, bottom = 4.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(72.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .border(1.dp, SlateGray, RoundedCornerShape(12.dp))
+                            .background(SoftLightGray)
+                    ) {
+                        AsyncImage(
+                            model = media.uri,
+                            contentDescription = "Selected media preview",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                        if (media.type == "video") {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .background(Color.Black.copy(alpha = 0.3f)),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.PlayArrow,
+                                    contentDescription = "Video",
+                                    tint = Color.White,
+                                    modifier = Modifier.size(28.dp)
+                                )
+                            }
+                        }
+                        Box(
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .padding(4.dp)
+                                .size(20.dp)
+                                .clip(CircleShape)
+                                .background(Color.Black.copy(alpha = 0.6f))
+                                .clickable { selectedMedia = null },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Close,
+                                contentDescription = "Remove media",
+                                tint = Color.White,
+                                modifier = Modifier.size(14.dp)
+                            )
+                        }
+                    }
+                    Spacer(Modifier.width(12.dp))
+                    Text(
+                        text = if (media.type == "video") "Video attached" else "Photo attached",
+                        color = SlateGray,
+                        fontSize = 13.sp
+                    )
+                }
+            }
+        }
+
         AnimatedVisibility(visible = recorderState.isRecording) {
             Row(
                 modifier = Modifier
@@ -155,7 +227,11 @@ fun MessageInputBar(
                         textStyle     = TextStyle(fontSize = 14.sp, color = Black),
                         decorationBox = { inner ->
                             if (message.isEmpty()) {
-                                Text("Write your message", color = SlateGray, fontSize = 12.sp)
+                                Text(
+                                    if (selectedMedia != null) "Add a caption..." else "Write your message",
+                                    color = SlateGray,
+                                    fontSize = 12.sp
+                                )
                             }
                             inner()
                         }
@@ -177,13 +253,21 @@ fun MessageInputBar(
 
             Spacer(Modifier.width(12.dp))
 
-            if (message.isNotBlank() && !recorderState.isRecording) {
+            if ((message.isNotBlank() || selectedMedia != null) && !recorderState.isRecording) {
                 Icon(
                     painter            = painterResource(ui.drawable.send_ic),
                     contentDescription = "Send",
                     modifier           = Modifier
                         .size(40.dp)
-                        .clickable { onSend() },
+                        .clickable {
+                            val currentMedia = selectedMedia
+                            if (currentMedia != null) {
+                                onMediaPickedWithCaption(currentMedia, message)
+                                selectedMedia = null
+                            } else {
+                                onSend()
+                            }
+                        },
                     tint = Color.Unspecified
                 )
             } else {
@@ -201,7 +285,6 @@ fun MessageInputBar(
                     )
                     Spacer(Modifier.width(12.dp))
                 }
-
 
                 Icon(
                     painter            = painterResource(ui.drawable.vr_ic),
@@ -234,7 +317,6 @@ fun MessageInputBar(
 
                                         if (!ptr.pressed) {
                                             if (dragOffsetX.value < cancelThresholdPx) {
-
                                                 stopRef.value()
                                             } else {
                                                 stopRef.value()
