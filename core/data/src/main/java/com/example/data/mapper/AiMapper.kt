@@ -19,7 +19,8 @@ class AiMapper @Inject constructor() {
             conversationId = conversationId ?: "",
             role = "user",
             message = message,
-            status = "SENT"
+            status = "SENT",
+            timestamp = System.currentTimeMillis()
         )
     }
 
@@ -29,7 +30,8 @@ class AiMapper @Inject constructor() {
             conversationId = conversationId ?: "",
             role = "user",
             message = message ?: "",
-            status = "SENT"
+            status = "SENT",
+            timestamp = System.currentTimeMillis()
         )
     }
 
@@ -52,7 +54,8 @@ class AiMapper @Inject constructor() {
             conversationId = conversationId,
             role = role,
             message = message,
-            status = status
+            status = status,
+            timestamp = System.currentTimeMillis()
         )
     }
 
@@ -80,6 +83,7 @@ class AiMapper @Inject constructor() {
             role = message.role,
             message = message.message,
             status = message.status,
+            timestamp = message.timestamp,
             attachments = attachments.map { attachment ->
                 AiAttachmentUiModel(
                     id = attachment.id,

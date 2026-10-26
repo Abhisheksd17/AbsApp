@@ -6,6 +6,7 @@ data class AiMessageUiModel(
     val role: String,
     val message: String,
     val status: String,
+    val timestamp: Long = System.currentTimeMillis(),
     val attachments: List<AiAttachmentUiModel> = emptyList()
 )
 

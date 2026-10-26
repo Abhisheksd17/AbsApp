@@ -301,14 +301,15 @@ fun AiConversation() {
                         ) {
                             items(messageList, key = { it.messageId }) { item ->
                                 val isSelf = item.role.equals("user", ignoreCase = true)
+                                val formattedTime = Utils.formatTime(item.timestamp)
                                 val chatMessage = ChatMessage(
                                     id = null,
                                     senderId = if (isSelf) 1 else 0,
                                     senderName = if (isSelf) "You" else "AI",
                                     text = item.message,
-                                    timestamp = "",
+                                    timestamp = formattedTime,
                                     dateStamp = "",
-                                    status = MessageStatus.SENT
+                                    status = if (item.status.equals("ERROR", ignoreCase = true)) MessageStatus.FAILED else MessageStatus.SENT
                                 )
                                 ChatBubble(
                                     message = chatMessage,

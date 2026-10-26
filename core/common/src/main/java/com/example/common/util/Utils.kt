@@ -29,14 +29,24 @@ object Utils {
     fun formatTime(isoTime: String?): String {
         if (isoTime.isNullOrBlank()) return ""
         return try {
-            val instant = java.time.Instant.parse(isoTime)
-            val formatter =
-                java.time.format.DateTimeFormatter
-                    .ofPattern("hh:mm a")
-                    .withZone(java.time.ZoneId.systemDefault())
+            val date = if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.O) {
+                java.util.Date.from(java.time.Instant.parse(isoTime))
+            } else {
+                java.text.SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss", java.util.Locale.getDefault()).parse(isoTime)
+            }
+            if (date != null) {
+                java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault()).format(date)
+            } else ""
+        } catch (_: Exception) {
+            ""
+        }
+    }
 
-            formatter.format(instant)
-
+    fun formatTime(timestampMs: Long): String {
+        if (timestampMs <= 0L) return ""
+        return try {
+            val sdf = java.text.SimpleDateFormat("hh:mm a", java.util.Locale.getDefault())
+            sdf.format(java.util.Date(timestampMs))
         } catch (e: Exception) {
             ""
         }
