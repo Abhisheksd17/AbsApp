@@ -35,23 +35,7 @@ class AiRepostoryImpl @Inject constructor(
 
 
     override fun getAllConversations(): Flow<List<AiConversationSummary>> {
-        Log.d(TAG, "getAllConversations: Started")
-
         return aiDao.getAllConversations()
-            .onEach { conversations ->
-                Log.d(
-                    TAG,
-                    "getAllConversations: Success, count=${conversations.size}"
-                )
-            }
-            .catch { exception ->
-                Log.e(
-                    TAG,
-                    "getAllConversations: Failed - ${exception.message}",
-                    exception
-                )
-                throw exception
-            }
     }
 
     override suspend fun togglePinConversation(conversationId: String, isPinned: Boolean) {
