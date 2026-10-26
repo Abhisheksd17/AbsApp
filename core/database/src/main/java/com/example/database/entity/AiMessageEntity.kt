@@ -11,5 +11,6 @@ data class AiMessageEntity(
     val conversationId: String,
     val role: String,
     val message: String,
-    val status: String
+    val status: String,
+    val timestamp: Long = System.currentTimeMillis()
 )

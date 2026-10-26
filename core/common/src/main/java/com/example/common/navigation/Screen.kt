@@ -18,6 +18,7 @@ sealed class Screen(val route: String) {
     object Conversation : Screen("conversation/{userId}") {
         fun createRoute(userId: Int) = "conversation/$userId"
     }
+    object AiChat:Screen("aichat")
 
 
 }

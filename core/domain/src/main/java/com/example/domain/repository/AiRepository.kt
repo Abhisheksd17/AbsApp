@@ -4,13 +4,14 @@ import com.example.domain.data.NetworkResult
 import com.example.model.ai.AiMessageUiModel
 import com.example.model.ai.ChatMediaRequestDto
 import com.example.model.ai.ChatRequestDto
+import com.example.model.ai.ChatResponse
+import kotlinx.coroutines.flow.Flow
 
 interface AiRepository {
 
-     suspend fun getAiMessage(conversation: String): NetworkResult<List<AiMessageUiModel>>
-
-    suspend fun sendAiMessage(chatRequestDto: ChatRequestDto):NetworkResult<Unit>
-    suspend fun sendAiAttachments(chatRequest: ChatMediaRequestDto):NetworkResult<Unit>
-    suspend fun deleteAiMessage(conversationId:String):NetworkResult<Unit>
+    fun getAiMessage(conversation: String = ""): Flow<NetworkResult<List<AiMessageUiModel>>>
+    suspend fun sendAiMessage(chatRequestDto: ChatRequestDto): NetworkResult<ChatResponse>
+    suspend fun sendAiAttachments(chatRequest: ChatMediaRequestDto): NetworkResult<ChatResponse>
+    suspend fun deleteAiMessage(conversationId: String): NetworkResult<Unit>
 
 }

@@ -2,6 +2,7 @@ package com.example.database.db
 
 import android.content.Context
 import androidx.room.Room
+import com.example.database.dao.AiDao
 import com.example.database.dao.MessageDao
 import com.example.database.dao.ChatListDao
 import com.example.database.dao.ContactDao
@@ -53,5 +54,8 @@ object DatabaseModule {
 
     @Provides
     fun provideMessageDao(db: ChatRoomDataBase): MessageDao = db.messageDao()
+
+    @Provides
+    fun provideAiDao(db: ChatRoomDataBase): AiDao = db.aiDao()
 
     }

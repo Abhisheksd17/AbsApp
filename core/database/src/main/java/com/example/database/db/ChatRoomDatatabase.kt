@@ -2,10 +2,13 @@ package com.example.database.db
 
 import androidx.room.Database
 import androidx.room.RoomDatabase
+import com.example.database.dao.AiDao
 import com.example.database.dao.MessageDao
 import com.example.database.dao.ChatListDao
 import com.example.database.dao.ContactDao
 import com.example.database.dao.UserDao
+import com.example.database.entity.AiAttachmentsEntity
+import com.example.database.entity.AiMessageEntity
 import com.example.database.entity.ChatListEntity
 import com.example.database.entity.ContactEntity
 import com.example.database.entity.UserEntity
@@ -18,8 +21,10 @@ import com.example.database.entity.ChatEntity
         ContactEntity::class,
         UserEntity::class,
         MessageEntity::class,
+        AiMessageEntity::class,
+        AiAttachmentsEntity::class
     ],
-    version = 12,
+    version = 13,
     exportSchema = false
 )
 abstract class ChatRoomDataBase : RoomDatabase() {
@@ -27,5 +32,6 @@ abstract class ChatRoomDataBase : RoomDatabase() {
     abstract fun contactDao(): ContactDao
     abstract fun userDao(): UserDao
     abstract fun messageDao(): MessageDao
+    abstract fun aiDao(): AiDao
 
 }

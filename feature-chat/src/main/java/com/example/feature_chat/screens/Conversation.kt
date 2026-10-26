@@ -111,8 +111,6 @@ fun Conversation(userId: Int?,
         }
             .collect { (isScrolling, index) ->
 
-
-                // Only trigger when user is actively scrolling
                 if (!isScrolling) return@collect
 
                 val shouldLoadMore = index >= messages.lastIndex - 3

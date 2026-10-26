@@ -56,7 +56,6 @@ fun ChatItem(
     ){
 
         Row(
-
         ) {
             Box(
                 modifier = Modifier.size(52.dp)

@@ -7,10 +7,18 @@ import com.example.domain.data.NetworkResult
 import com.example.domain.repository.AiRepository
 import com.example.model.ai.AiMessageUiModel
 import com.example.model.ai.ChatMediaRequestDto
-import com.example.network.AiService
-import javax.inject.Inject
 import com.example.model.ai.ChatRequestDto
-import kotlin.collections.map
+import com.example.model.ai.ChatResponse
+import com.example.network.AiService
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.catch
+import kotlinx.coroutines.flow.map
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
+import okhttp3.MultipartBody
+import okhttp3.RequestBody.Companion.asRequestBody
+import okhttp3.RequestBody.Companion.toRequestBody
+import java.io.File
+import javax.inject.Inject
 
 class AiRepostoryImpl @Inject constructor(
     private val apiService: AiService,
@@ -18,17 +26,27 @@ class AiRepostoryImpl @Inject constructor(
     private val mapper: AiMapper
 ): AiRepository, BaseApiResponse() {
 
-    override suspend fun getAiMessage(conversation: String): NetworkResult<List<AiMessageUiModel>> {
-        val result = aiDao.getConversation(conversation).filterNotNull()
-        val uiModels = with(mapper) {
-            messagedtoListToEntiryList(result)
-        }
-        return NetworkResult.Success(uiModels)
+
+
+    override fun getAiMessage(conversation: String): Flow<NetworkResult<List<AiMessageUiModel>>> {
+        return aiDao.getConversation(conversation)
+            .map { list ->
+                val uiModels = mapper.entityListToUiModelList(list)
+                NetworkResult.Success(uiModels) as NetworkResult<List<AiMessageUiModel>>
+            }
+            .catch { e ->
+                emit(NetworkResult.Error(e.message ?: "Unknown error"))
+            }
     }
 
     override suspend fun sendAiMessage(
         chatRequestDto: ChatRequestDto
-    ): NetworkResult<Unit> {
+    ): NetworkResult<ChatResponse> {
+
+        with(mapper) {
+            val userMsg = chatRequestDto.toUserMessageEntity()
+            aiDao.insertMessageResponse(userMsg)
+        }
 
         val result = safeApiCall {
             apiService.chatWithAi(chatRequestDto)
@@ -37,12 +55,11 @@ class AiRepostoryImpl @Inject constructor(
         if (result is NetworkResult.Success) {
             result.data?.let { dto ->
                 with(mapper) {
-                    aiDao.insertMessage(dto.toMessageEntity())
-                    aiDao.insertAttachments(dto.toAttachmentEntities())
+                    aiDao.insertMessageResponse(dto.toMessageEntity())
+                    aiDao.insertAttachmentsResponse(dto.toAttachmentEntities())
                 }
+                return NetworkResult.Success(dto)
             }
-
-            return NetworkResult.Success(Unit)
         }
 
         return NetworkResult.Error(
@@ -50,23 +67,66 @@ class AiRepostoryImpl @Inject constructor(
         )
     }
 
-    override suspend fun sendAiAttachments(chatRequest: ChatMediaRequestDto): NetworkResult<Unit> {
-        val result=safeApiCall { apiService.chatWithAiMultiModal(chatRequest) }
-        if(result is NetworkResult.Success){
-            result.data?.let{dto->
-                with(mapper) {
-                    aiDao.insertMessage(dto.toMessageEntity())
-                    aiDao.insertAttachments(dto.toAttachmentEntities())
-                }
+    override suspend fun sendAiAttachments(chatRequest: ChatMediaRequestDto): NetworkResult<ChatResponse> {
+        with(mapper) {
+            val userMsgId = java.util.UUID.randomUUID().toString()
+            val userMsg = chatRequest.toUserMessageEntity(userMsgId)
+            val userAttachments = chatRequest.toUserAttachmentEntities(userMsgId)
+            aiDao.insertMessageResponse(userMsg)
+            if (userAttachments.isNotEmpty()) {
+                aiDao.insertAttachmentsResponse(userAttachments)
             }
-            return NetworkResult.Success(Unit)
+        }
+
+        val conversationIdBody = chatRequest.conversationId?.takeIf { it.isNotBlank() }
+            ?.toRequestBody("text/plain".toMediaTypeOrNull())
+
+        val messageBody = chatRequest.message?.takeIf { it.isNotBlank() }
+            ?.toRequestBody("text/plain".toMediaTypeOrNull())
+
+        val fileParts = chatRequest.files.map { file ->
+            val mimeType = getMimeType(file)
+            val requestBody = file.asRequestBody(mimeType.toMediaTypeOrNull())
+            MultipartBody.Part.createFormData("files", file.name, requestBody)
+        }.takeIf { it.isNotEmpty() }
+
+        val result = safeApiCall {
+            apiService.chatWithAiMultiModal(
+                conversationId = conversationIdBody,
+                message = messageBody,
+                files = fileParts
+            )
+        }
+        if (result is NetworkResult.Success) {
+            result.data?.let { dto ->
+                with(mapper) {
+                    aiDao.insertMessageResponse(dto.toMessageEntity())
+                    aiDao.insertAttachmentsResponse(dto.toAttachmentEntities())
+                }
+                return NetworkResult.Success(dto)
+            }
         }
         return NetworkResult.Error(result.message ?: "Network Fetch Failed")
     }
 
+    private fun getMimeType(file: File): String {
+        val extension = file.extension.lowercase()
+        return when (extension) {
+            "jpg", "jpeg" -> "image/jpeg"
+            "png" -> "image/png"
+            "webp" -> "image/webp"
+            "gif" -> "image/gif"
+            "mp4" -> "video/mp4"
+            "mp3" -> "audio/mpeg"
+            "pdf" -> "application/pdf"
+            "txt" -> "text/plain"
+            else -> "application/octet-stream"
+        }
+    }
+
     override suspend fun deleteAiMessage(conversationId: String): NetworkResult<Unit> {
-        val result=safeApiCall { apiService.deleteConversation(conversationId) }
-        if(result is NetworkResult.Success){
+        val result = safeApiCall { apiService.deleteConversation(conversationId) }
+        if (result is NetworkResult.Success) {
             aiDao.deleteMessage(conversationId)
             return NetworkResult.Success(Unit)
         }
@@ -74,5 +134,5 @@ class AiRepostoryImpl @Inject constructor(
     }
 
 
-    }
+}
 

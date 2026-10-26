@@ -35,9 +35,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.example.common.R
 import com.example.domain.data.ChatUiState
-import com.example.ui.screen.HomeTopBar
+import com.example.feature_chat.ui.AiChat
 import com.example.feature_chat.ui.SwipeableChatItem
 import com.example.feature_chat.viewmodel.ChatListViewModel
+import com.example.ui.screen.HomeTopBar
 import com.example.ui.theme.Black
 import com.example.ui.theme.SoftLightGray
 import com.example.ui.theme.TealGreen
@@ -45,7 +46,8 @@ import com.example.ui.theme.White
 
 @Composable
 fun Chat(
-    onOpenConversation: (Int) -> Unit
+    onOpenConversation: (Int) -> Unit,
+    onOpenAiChat: () -> Unit = {}
 ) {
 
     val viewModel: ChatListViewModel = hiltViewModel()
@@ -61,11 +63,10 @@ fun Chat(
         }
     }
 
-
-
     BackHandler {
         (context as? Activity)?.finish()
     }
+
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -99,85 +100,89 @@ fun Chat(
                 Box(
                     modifier = Modifier
                         .align(Alignment.CenterHorizontally)
-                        .padding(top = 14.dp, bottom = 24.dp)
+                        .padding(top = 14.dp, bottom = 14.dp)
                         .width(30.dp)
                         .height(3.dp)
                         .clip(RoundedCornerShape(50))
                         .background(SoftLightGray.copy(alpha = 0.5f))
                 )
 
+                when (val result = state) {
 
-                Box(
-
-                ) {
-
-                    when (val result = state) {
-
-                        is ChatUiState.Loading -> {
-                            Box(
-                                modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(color = TealGreen)
-                            }
+                    is ChatUiState.Loading -> {
+                        Box(
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            CircularProgressIndicator(color = TealGreen)
                         }
+                    }
 
-                        is ChatUiState.Success -> {
+                    is ChatUiState.Success -> {
+                        val chats = result.chats
 
-                            if (result.chats.isEmpty()) {
+                        LazyColumn(modifier = Modifier.fillMaxSize()) {
+                            item {
+                                AiChat(onClick = onOpenAiChat)
+                                Spacer(modifier = Modifier.height(8.dp))
+                            }
+
+                            if (chats.isEmpty()) {
                                 if (result.isRefreshing) {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator(color = TealGreen)
+                                    item {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 32.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            CircularProgressIndicator(color = TealGreen)
+                                        }
                                     }
                                 } else {
-                                    Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                        Text(stringResource(R.string.no_chats_found))
+                                    item {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .padding(vertical = 32.dp),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(stringResource(R.string.no_chats_found))
+                                        }
                                     }
                                 }
-
                             } else {
-                                val chats = result.chats
+                                items(chats, key = { it.chatId }) { item ->
+                                    SwipeableChatItem(
+                                        imageUri = item.profileUrl ?: "",
+                                        onImageSelected = {},
+                                        name = item.title,
+                                        message = item.lastMsgPreview ?: "",
+                                        timesAgo = item.lastMsgAt?.toString() ?: "",
+                                        unreadMsg = item.unreadCount > 0,
+                                        msgCount = item.unreadCount,
+                                        onMute = {},
+                                        onDelete = {},
+                                        onChatSelected = {
+                                            onOpenConversation(item.userId ?: return@SwipeableChatItem)
+                                        }
+                                    )
 
-                                LazyColumn {
-                                    items(chats, key = { it.chatId }) { item ->
-                                        SwipeableChatItem(
-                                            imageUri = item.profileUrl ?: "",
-                                            onImageSelected = {},
-                                            name = item.title,
-                                            message = item.lastMsgPreview ?: "",
-                                            timesAgo = item.lastMsgAt?.toString() ?: "",
-                                            unreadMsg = item.unreadCount > 0,
-                                            msgCount = item.unreadCount,
-                                            onMute = {},
-                                            onDelete = {},
-                                            onChatSelected = {
-                                                onOpenConversation(item.userId?:return@SwipeableChatItem)
-                                            }
-                                        )
-
-                                        Spacer(modifier = Modifier.height(8.dp))
-                                    }
+                                    Spacer(modifier = Modifier.height(8.dp))
                                 }
                             }
-
-
                         }
-
-                        is ChatUiState.Error -> {
-                            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                                Text(result.message)
-                            }
-                        }
-
-                        else -> Unit
                     }
+
+                    is ChatUiState.Error -> {
+                        Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                            Text(result.message)
+                        }
+                    }
+
+                    else -> Unit
                 }
             }
-
-
         }
     }
 }

@@ -5,9 +5,46 @@ import com.example.database.entity.AiMessageEntity
 import com.example.database.entity.AiMessageWithAttachmentEntity
 import com.example.model.ai.AiAttachmentUiModel
 import com.example.model.ai.AiMessageUiModel
+import com.example.model.ai.ChatMediaRequestDto
+import com.example.model.ai.ChatRequestDto
 import com.example.model.ai.ChatResponse
+import java.util.UUID
+import javax.inject.Inject
 
-class AiMapper {
+class AiMapper @Inject constructor() {
+
+    fun ChatRequestDto.toUserMessageEntity(userMessageId: String = UUID.randomUUID().toString()): AiMessageEntity {
+        return AiMessageEntity(
+            messageId = userMessageId,
+            conversationId = conversationId ?: "",
+            role = "user",
+            message = message,
+            status = "SENT"
+        )
+    }
+
+    fun ChatMediaRequestDto.toUserMessageEntity(userMessageId: String = UUID.randomUUID().toString()): AiMessageEntity {
+        return AiMessageEntity(
+            messageId = userMessageId,
+            conversationId = conversationId ?: "",
+            role = "user",
+            message = message ?: "",
+            status = "SENT"
+        )
+    }
+
+    fun ChatMediaRequestDto.toUserAttachmentEntities(userMessageId: String): List<AiAttachmentsEntity> {
+        return files.map { file ->
+            AiAttachmentsEntity(
+                id = UUID.randomUUID().toString(),
+                messageId = userMessageId,
+                filename = file.name,
+                mimetype = file.extension,
+                size = file.length(),
+                status = "SENT"
+            )
+        }
+    }
 
     fun ChatResponse.toMessageEntity(): AiMessageEntity {
         return AiMessageEntity(
@@ -32,7 +69,7 @@ class AiMapper {
         }
     }
 
-    fun messagedtoListToEntiryList(messageList:List<AiMessageWithAttachmentEntity>):List<AiMessageUiModel>{
+    fun entityListToUiModelList(messageList: List<AiMessageWithAttachmentEntity>): List<AiMessageUiModel> {
         return messageList.map { it.toUiModel() }
     }
 

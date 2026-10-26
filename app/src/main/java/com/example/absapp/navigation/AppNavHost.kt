@@ -42,6 +42,7 @@ import com.example.feature_auth.ui.SignIn
 import com.example.feature_auth.ui.SignUp
 import com.example.feature_auth.ui.UpdateProfile
 import com.example.feature_call.screens.Call
+import com.example.feature_chat.screens.AiConversation
 import com.example.feature_chat.screens.Chat
 import com.example.feature_chat.screens.Conversation
 import com.example.feature_contact.screen.Contacts
@@ -72,6 +73,7 @@ fun AppNavHost(navigator: AppNavigator) {
         currentRoute == Screen.OnBoarding.route -> false
         currentRoute == Screen.Otp.route -> false
         currentRoute == Screen.Update.route -> false
+        currentRoute == Screen.AiChat.route -> false
         currentRoute.startsWith("conversation") -> false
         currentRoute.startsWith("calls/") && currentRoute != "calls/all" -> false
         else -> true
@@ -159,9 +161,14 @@ fun AppNavHost(navigator: AppNavigator) {
 
 
             composable(Screen.Chats.route) {
-                Chat(onOpenConversation = { userId ->
-                    navController.navigate(Screen.Conversation.createRoute(userId))
-                })
+                Chat(
+                    onOpenConversation = { userId ->
+                        navController.navigate(Screen.Conversation.createRoute(userId))
+                    },
+                    onOpenAiChat = {
+                        navController.navigate(Screen.AiChat.route)
+                    }
+                )
             }
 
             composable(
@@ -188,6 +195,7 @@ fun AppNavHost(navigator: AppNavigator) {
             }
 
             composable(Screen.Profile.route) { Profile() }
+            composable(Screen.AiChat.route) { AiConversation() }
 
             composable(Screen.Contacts.route) {
                 Contacts(onOpenConversation = { userId ->
