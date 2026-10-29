@@ -48,7 +48,7 @@ object CallNotificationManager {
         scope.launch {
             val avatar = NotificationHelper.loadAvatar(context,avatarUrl)
 
-            val callTypeLabel = if (callType == "video") "Video call" else "Voice call"
+            val callTypeLabel = if (callType == "video") context.getString(com.example.common.R.string.video_call) else context.getString(com.example.common.R.string.voice_call)
             val extras = mapOf(
                 "type" to "call",
                 EXTRA_CALL_ID           to callId,
@@ -96,7 +96,7 @@ object CallNotificationManager {
                     addAction(
                         NotificationCompat.Action.Builder(
                             com.example.ui.R.drawable.calling_ic,
-                            "Accept",
+                            context.getString(com.example.common.R.string.accept),
                             acceptIntent,
                         ).build()
                     )
@@ -104,7 +104,7 @@ object CallNotificationManager {
                     addAction(
                         NotificationCompat.Action.Builder(
                             com.example.ui.R.drawable.call_declined_ic,
-                            "Decline",
+                            context.getString(com.example.common.R.string.decline),
                             declineIntent,
                         ).build()
                     )
@@ -151,7 +151,7 @@ object CallNotificationManager {
         )
 
         val builder = NotificationHelper.baseBuilder(context, CHANNEL_MISSED_CALLS)
-            .setContentTitle("Missed call")
+            .setContentTitle(context.getString(com.example.common.R.string.notification_missed_call))
             .setContentText(callerName)
             .setSmallIcon(com.example.ui.R.drawable.call_missed_ic)
             .setPriority(NotificationCompat.PRIORITY_DEFAULT)

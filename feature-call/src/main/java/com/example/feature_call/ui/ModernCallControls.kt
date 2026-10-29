@@ -23,7 +23,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
+import com.example.common.R as common
 import com.example.ui.theme.ControlBarBackground
 import com.example.ui.theme.HangUpButton
 import com.example.ui.theme.HangUpIcon
@@ -63,7 +65,7 @@ import com.example.ui.theme.HangUpIcon
                 // Mute button
                 ControlButton(
                     icon = if (isMuted) Icons.Default.MicOff else Icons.Default.Mic,
-                    label = if (isMuted) "Unmute" else "Mute",
+                    label = if (isMuted) stringResource(common.string.unmute) else stringResource(common.string.mute),
                     isActive = isMuted,
                     onClick = onToggleMute
                 )
@@ -71,7 +73,7 @@ import com.example.ui.theme.HangUpIcon
                 // Speaker button
                 ControlButton(
                     icon = if (isSpeakerOn) Icons.Default.VolumeUp else Icons.Default.VolumeDown,
-                    label = "Speaker",
+                    label = stringResource(common.string.speaker),
                     isActive = !isSpeakerOn,
                     onClick = onToggleSpeaker
                 )
@@ -79,14 +81,14 @@ import com.example.ui.theme.HangUpIcon
                 if (isVideo) {
                     ControlButton(
                         icon = if (isCameraOn) Icons.Default.Videocam else Icons.Default.VideocamOff,
-                        label = "Camera",
+                        label = stringResource(common.string.camera),
                         isActive = !isCameraOn,
                         onClick = onToggleCamera
                     )
 
                     ControlButton(
                         icon = Icons.Default.Cameraswitch,
-                        label = "Flip",
+                        label = stringResource(common.string.flip),
                         isActive = false,
                         onClick = onSwitchCamera
                     )
@@ -102,7 +104,7 @@ import com.example.ui.theme.HangUpIcon
                 Box(contentAlignment = Alignment.Center) {
                     Icon(
                         imageVector = Icons.Default.CallEnd,
-                        contentDescription = "End Call",
+                        contentDescription = stringResource(common.string.end_call),
                         tint = HangUpIcon,
                         modifier = Modifier.size(32.dp)
                     )

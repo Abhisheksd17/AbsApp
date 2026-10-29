@@ -171,10 +171,11 @@ fun Conversation(userId: Int?,
         snackbarHost = { SnackbarHost(snackbarHostState) },
         contentWindowInsets = WindowInsets(0, 0, 0, 0),
         topBar = {
+            val typingText = stringResource(text.string.typing)
             ChatTopBar(
                 imageUri     = chatUser?.profileUrl ?: "",
                 name         = chatUser?.name ?: "",
-                status       = if (isTyping) "Typing..." else "",
+                status       = if (isTyping) typingText else "",
                 isOnline     = isOnline,
                 onBackClick  = {
                     scope.launch { navigator.pop() }
@@ -357,11 +358,11 @@ fun Conversation(userId: Int?,
                             verticalArrangement = Arrangement.spacedBy(8.dp)
                         ) {
                             Text(
-                                text  = s.message ?: "Something went wrong",
+                                text  = s.message ?: stringResource(text.string.something_went_wrong),
                                 color = MaterialTheme.colorScheme.error
                             )
                             Button(onClick = { chatId?.let { viewModel.setChatId(it) } }) {
-                                Text("Retry")
+                                Text(stringResource(text.string.retry))
                             }
                         }
                     }

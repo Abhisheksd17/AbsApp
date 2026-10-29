@@ -41,12 +41,14 @@ import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.common.R
 import com.example.common.util.Validator
 import com.example.ui.theme.ErrorRed
 import com.example.ui.theme.LightSageGray
@@ -139,7 +141,7 @@ object InputField {
             )
             if (showError) {
                 Text(
-                    text = "Invalid phone number",
+                    text = stringResource(R.string.invalid_phone_number),
                     color = ErrorRed,
                     fontSize = 12.sp,
                     fontFamily = carosThin,
@@ -204,7 +206,7 @@ object InputField {
 
             if (showError) {
                 Text(
-                    text = "Enter proper password",
+                    text = stringResource(R.string.enter_password),
                     color = ErrorRed,
                     fontSize = 12.sp,
                     fontFamily = carosThin,

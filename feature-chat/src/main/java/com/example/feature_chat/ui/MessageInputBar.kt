@@ -26,10 +26,12 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.*
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import com.example.common.R as common
 import com.example.feature_chat.utils.formatRecordingTime
 import com.example.feature_chat.utils.rememberMediaPicker
 import com.example.feature_chat.utils.rememberVoiceRecorder
@@ -113,7 +115,7 @@ fun MessageInputBar(
                     ) {
                         AsyncImage(
                             model = media.uri,
-                            contentDescription = "Selected media preview",
+                            contentDescription = stringResource(common.string.selected_media_preview),
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop
                         )
@@ -126,7 +128,7 @@ fun MessageInputBar(
                             ) {
                                 Icon(
                                     imageVector = Icons.Default.PlayArrow,
-                                    contentDescription = "Video",
+                                    contentDescription = stringResource(common.string.call),
                                     tint = Color.White,
                                     modifier = Modifier.size(28.dp)
                                 )
@@ -144,7 +146,7 @@ fun MessageInputBar(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Close,
-                                contentDescription = "Remove media",
+                                contentDescription = stringResource(common.string.remove_media),
                                 tint = Color.White,
                                 modifier = Modifier.size(14.dp)
                             )
@@ -152,7 +154,7 @@ fun MessageInputBar(
                     }
                     Spacer(Modifier.width(12.dp))
                     Text(
-                        text = if (media.type == "video") "Video attached" else "Photo attached",
+                        text = if (media.type == "video") stringResource(common.string.video_attached) else stringResource(common.string.photo_attached),
                         color = SlateGray,
                         fontSize = 13.sp
                     )
@@ -183,7 +185,7 @@ fun MessageInputBar(
                     )
                 }
                 Text(
-                    text  = if (isCancelMode) "Release to cancel" else "< Slide to cancel",
+                    text  = if (isCancelMode) stringResource(common.string.release_to_cancel) else stringResource(common.string.slide_to_cancel),
                     color = if (isCancelMode) Color.Red else SlateGray,
                     fontSize = 13.sp,
                 )
@@ -199,7 +201,7 @@ fun MessageInputBar(
 
             Icon(
                 painter            = painterResource(ui.drawable.attach_ic),
-                contentDescription = "Attach",
+                contentDescription = stringResource(common.string.attach),
                 modifier           = Modifier
                     .size(24.dp)
                     .clickable { launchGallery() },
@@ -228,7 +230,7 @@ fun MessageInputBar(
                         decorationBox = { inner ->
                             if (message.isEmpty()) {
                                 Text(
-                                    if (selectedMedia != null) "Add a caption..." else "Write your message",
+                                    if (selectedMedia != null) stringResource(common.string.add_caption) else stringResource(common.string.write_message),
                                     color = SlateGray,
                                     fontSize = 12.sp
                                 )
@@ -246,7 +248,7 @@ fun MessageInputBar(
                             .background(SoftLightGray),
                         contentAlignment = Alignment.Center
                     ) {
-                        Text("Recording…", color = SlateGray, fontSize = 13.sp)
+                        Text(stringResource(common.string.recording), color = SlateGray, fontSize = 13.sp)
                     }
                 }
             }
@@ -256,7 +258,7 @@ fun MessageInputBar(
             if ((message.isNotBlank() || selectedMedia != null) && !recorderState.isRecording) {
                 Icon(
                     painter            = painterResource(ui.drawable.send_ic),
-                    contentDescription = "Send",
+                    contentDescription = stringResource(common.string.send),
                     modifier           = Modifier
                         .size(40.dp)
                         .clickable {
@@ -274,7 +276,7 @@ fun MessageInputBar(
                 if (!recorderState.isRecording) {
                     Icon(
                         painter            = painterResource(ui.drawable.camera_ic),
-                        contentDescription = "Camera",
+                        contentDescription = stringResource(common.string.camera),
                         modifier           = Modifier
                             .size(24.dp)
                             .clickable {
@@ -288,7 +290,7 @@ fun MessageInputBar(
 
                 Icon(
                     painter            = painterResource(ui.drawable.vr_ic),
-                    contentDescription = "Record voice",
+                    contentDescription = stringResource(common.string.record_voice),
                     tint               = if (recorderState.isRecording) Color.Red
                     else Color.Unspecified,
                     modifier           = Modifier

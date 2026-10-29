@@ -20,9 +20,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 
+import com.example.common.R as common
 import com.example.ui.R as ui
 import com.example.ui.theme.CoolSlateGreen
 import com.example.ui.theme.White
@@ -67,7 +69,7 @@ fun HomeTopBar(
                 TextField(
                     value = query,
                     onValueChange = onQueryChange,
-                    placeholder = { Text("Search...", color = White) },
+                    placeholder = { Text(stringResource(common.string.search_placeholder), color = White) },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
                         focusedContainerColor = Color.Transparent,

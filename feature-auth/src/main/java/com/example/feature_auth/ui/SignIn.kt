@@ -134,7 +134,7 @@ fun SignIn(
                 )
 
                 Text(
-                    text = "OR",
+                    text = stringResource(common.string.or),
                     color = SlateGray,
                     fontSize = 14.sp,
                     fontFamily = carosMedium,

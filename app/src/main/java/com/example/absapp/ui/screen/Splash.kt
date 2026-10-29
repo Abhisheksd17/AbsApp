@@ -20,15 +20,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.example.absapp.R
 import com.example.absapp.ui.theme.White
+import com.example.common.R as common
 import com.example.common.navigati.navigation.LocalNavigator
 import com.example.common.navigation.Screen
 import com.example.common.viewmodel.NotificationViewModel
 import com.example.feature_auth.viewmodel.LoginViewModel
 import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
 @Composable
 fun Splash() {
@@ -52,7 +55,7 @@ fun Splash() {
     LaunchedEffect(Unit) {
         startAnimation = true
 
-        delay(500)
+        delay(200.milliseconds)
 
         if (notifViewModel.destination.replayCache.firstOrNull() != null) {
             return@LaunchedEffect
@@ -76,7 +79,7 @@ fun Splash() {
         Column(horizontalAlignment = Alignment.CenterHorizontally) {
             Image(
                 painter = painterResource(id = R.drawable.splash_ic),
-                contentDescription = "Logo",
+                contentDescription = stringResource(common.string.logo),
                 modifier = Modifier
                     .height(154.dp)
                     .fillMaxWidth()

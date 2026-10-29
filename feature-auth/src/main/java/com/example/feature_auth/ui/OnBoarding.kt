@@ -80,7 +80,7 @@ fun OnBoarding(){
         {
             Image(
                 painter = painterResource(Ui.drawable.onboarding_ic),
-                contentDescription = "OnBoarding",
+                contentDescription = stringResource(Common.string.onboarding),
                 modifier = Modifier.height(100.dp).width(100.dp)
             )
 
@@ -142,7 +142,7 @@ fun OnBoarding(){
                 )
 
                 Text(
-                    text = "OR",
+                    text = stringResource(Common.string.or),
                     color = PaleMintGray,
                     fontSize = 14.sp,
                     fontFamily = carosThin,

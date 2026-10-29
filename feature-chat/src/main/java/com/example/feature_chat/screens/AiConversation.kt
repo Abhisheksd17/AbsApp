@@ -45,12 +45,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.hilt.lifecycle.viewmodel.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.common.R
 import com.example.common.util.Utils
 import com.example.domain.data.NetworkResult
 import com.example.feature_chat.ui.AiChatTopBar
@@ -98,7 +100,7 @@ fun AiConversation() {
                         .padding(16.dp)
                 ) {
                     Text(
-                        text = "AbsBot History",
+                        text = stringResource(R.string.absbot_history),
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
                         color = Black,
@@ -108,7 +110,7 @@ fun AiConversation() {
                     HorizontalDivider(color = IceGray, modifier = Modifier.padding(bottom = 12.dp))
 
                     NavigationDrawerItem(
-                        label = { Text("New Chat", fontWeight = FontWeight.SemiBold) },
+                        label = { Text(stringResource(R.string.new_chat), fontWeight = FontWeight.SemiBold) },
                         selected = false,
                         onClick = {
                             viewModel.startNewChat()
@@ -117,7 +119,7 @@ fun AiConversation() {
                         icon = {
                             Icon(
                                 imageVector = Icons.Default.Add,
-                                contentDescription = "New Chat",
+                                contentDescription = stringResource(R.string.new_chat),
                                 tint = TealGreen
                             )
                         },
@@ -135,7 +137,7 @@ fun AiConversation() {
                         if (pinnedList.isNotEmpty()) {
                             item {
                                 Text(
-                                    text = "PINNED CHATS",
+                                    text = stringResource(R.string.pinned_chats),
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = SlateGray,
@@ -165,7 +167,7 @@ fun AiConversation() {
                                         ) {
                                             Icon(
                                                 imageVector = Icons.Default.PushPin,
-                                                contentDescription = "Unpin",
+                                                contentDescription = stringResource(R.string.unpin),
                                                 tint = TealGreen,
                                                 modifier = Modifier.size(18.dp)
                                             )
@@ -182,7 +184,7 @@ fun AiConversation() {
                         if (recentList.isNotEmpty()) {
                             item {
                                 Text(
-                                    text = "RECENT CHATS",
+                                    text =stringResource(R.string.recent_chats) ,
                                     fontSize = 11.sp,
                                     fontWeight = FontWeight.Bold,
                                     color = SlateGray,
@@ -212,7 +214,7 @@ fun AiConversation() {
                                         ) {
                                             Icon(
                                                 imageVector = Icons.Outlined.PushPin,
-                                                contentDescription = "Pin",
+                                                contentDescription = stringResource(R.string.pin),
                                                 tint = SlateGray,
                                                 modifier = Modifier.size(18.dp)
                                             )
@@ -229,7 +231,7 @@ fun AiConversation() {
                         if (pinnedList.isEmpty() && recentList.isEmpty()) {
                             item {
                                 Text(
-                                    text = "No conversation history yet",
+                                    text = stringResource(R.string.no_coversation_history),
                                     fontSize = 14.sp,
                                     color = SlateGray,
                                     modifier = Modifier.padding(16.dp)
@@ -271,7 +273,9 @@ fun AiConversation() {
                         viewModel.sendAttachments(file = file, messageText = text.ifBlank { null })
                         messageText = ""
                     },
-                    onVoiceRecorded = {}
+                    onVoiceRecorded = { file ->
+                        viewModel.sendAttachments(file = file)
+                    }
                 )
             }
         ) { scaffoldPadding ->
@@ -302,10 +306,12 @@ fun AiConversation() {
                             items(messageList, key = { it.messageId }) { item ->
                                 val isSelf = item.role.equals("user", ignoreCase = true)
                                 val formattedTime = Utils.formatTime(item.timestamp)
+                                val selfName = stringResource(R.string.you)
+                                val aiName = stringResource(R.string.ai)
                                 val chatMessage = ChatMessage(
                                     id = null,
                                     senderId = if (isSelf) 1 else 0,
-                                    senderName = if (isSelf) "You" else "AI",
+                                    senderName = if (isSelf) selfName else aiName,
                                     text = item.message,
                                     timestamp = formattedTime,
                                     dateStamp = "",
@@ -349,7 +355,7 @@ fun AiConversation() {
                                                     color = TextIncoming
                                                 )
                                                 Text(
-                                                    text = "AbsBot is thinking...",
+                                                    text = stringResource(R.string.absbot_is_thinking),
                                                     color = TextIncoming,
                                                     fontSize = 14.sp
                                                 )
@@ -362,7 +368,7 @@ fun AiConversation() {
                     }
                     is NetworkResult.Error -> {
                         Text(
-                            text = state.message ?: "Failed to load messages",
+                            text = state.message ?: stringResource(R.string.failed_to_load_messages),
                             modifier = Modifier
                                 .align(Alignment.Center)
                                 .padding(16.dp)

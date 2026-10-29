@@ -27,9 +27,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.common.R
 import com.example.ui.theme.Black
 import com.example.ui.theme.White
 
@@ -69,7 +71,7 @@ import com.example.ui.theme.White
         ) {
             CallButton(
                 icon    = if (isMuted) Icons.Rounded.MicOff else Icons.Rounded.Mic,
-                label   = if (isMuted) "Unmute" else "Mute",
+                label   = if (isMuted) stringResource(R.string.unmute) else stringResource(R.string.mute),
                 tint    = if (isMuted) Color(0xFFFF5252) else White,
                 onClick = onToggleMute
             )
@@ -77,7 +79,7 @@ import com.example.ui.theme.White
             if (isVideo) {
                 CallButton(
                     icon    = if (isCameraOn) Icons.Rounded.Videocam else Icons.Rounded.VideocamOff,
-                    label   = if (isCameraOn) "Camera" else "No cam",
+                    label   = if (isCameraOn) stringResource(R.string.camera) else stringResource(R.string.nocam),
                     tint    = if (!isCameraOn) Color(0xFFFF5252) else White,
                     onClick = onToggleCamera
                 )
@@ -106,7 +108,7 @@ import com.example.ui.theme.White
             ) {
                 Icon(
                     imageVector        = Icons.Rounded.CallEnd,
-                    contentDescription = "End call",
+                    contentDescription = stringResource(R.string.end_call),
                     tint               = Color.White,
                     modifier           = Modifier.size(28.dp)
                 )

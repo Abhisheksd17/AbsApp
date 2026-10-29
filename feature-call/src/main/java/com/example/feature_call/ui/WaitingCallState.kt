@@ -23,9 +23,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.common.R as common
 import com.example.ui.theme.AnimatedCircleInner
 import com.example.ui.theme.AnimatedCircleOuter
 import com.example.ui.theme.AvatarBackground
@@ -110,11 +112,14 @@ import com.example.ui.theme.WaitingStateText
                 if (!isConnected) {
                     PulsingDot()
                 }
+                val ringingText = stringResource(common.string.ringing)
+                val connectingText = stringResource(common.string.connecting)
+                val connectedText = stringResource(common.string.connected)
                 Text(
                     text = when {
-                        !isConnected && isCaller -> "Ringing..."
-                        !isConnected -> "Connecting..."
-                        else -> "Connected"
+                        !isConnected && isCaller -> ringingText
+                        !isConnected -> connectingText
+                        else -> connectedText
                     },
                     color = WaitingStateText,
                     fontSize = 16.sp

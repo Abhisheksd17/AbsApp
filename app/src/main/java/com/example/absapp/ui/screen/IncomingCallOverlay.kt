@@ -36,9 +36,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.common.R as common
 import com.example.common.viewmodel.CallerViewModel
 import com.example.domain.data.CallState
 import com.example.ui.theme.AcceptButtonColor
@@ -114,7 +116,7 @@ fun IncomingCallOverlay(
                         modifier = Modifier.size(20.dp)
                     )
                     Text(
-                        text = if (event.callType == "video") "Incoming video call" else "Incoming voice call",
+                        text = if (event.callType == "video") stringResource(common.string.incoming_video_call) else stringResource(common.string.incoming_voice_call),
                         color = Color.White.copy(alpha = 0.7f),
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
@@ -131,7 +133,7 @@ fun IncomingCallOverlay(
                         onClick = { viewModel.rejectCall(event) },
                         backgroundColor = DeclineButtonColor,
                         icon = Icons.Rounded.CallEnd,
-                        label = "Decline",
+                        label = stringResource(common.string.decline),
                         iconSize = 32.dp
                     )
 
@@ -139,7 +141,7 @@ fun IncomingCallOverlay(
                         onClick = { viewModel.acceptCall(event) },
                         backgroundColor = AcceptButtonColor,
                         icon = Icons.Rounded.Call,
-                        label = "Accept",
+                        label = stringResource(common.string.accept),
                         iconSize = 32.dp
                     )
                 }

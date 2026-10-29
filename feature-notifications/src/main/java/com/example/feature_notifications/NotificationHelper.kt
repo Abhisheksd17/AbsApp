@@ -13,11 +13,8 @@ import androidx.core.app.NotificationCompat
 import androidx.core.app.NotificationManagerCompat
 import coil.ImageLoader
 import com.example.feature_notifications.NotificationConstants.CHANNEL_CALLS
-import com.example.feature_notifications.NotificationConstants.CHANNEL_CALLS_NAME
 import com.example.feature_notifications.NotificationConstants.CHANNEL_MESSAGES
-import com.example.feature_notifications.NotificationConstants.CHANNEL_MESSAGES_NAME
 import com.example.feature_notifications.NotificationConstants.CHANNEL_MISSED_CALLS
-import com.example.feature_notifications.NotificationConstants.CHANNEL_MISSED_CALLS_NAME
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
 import com.example.ui.R
@@ -35,10 +32,10 @@ object NotificationHelper {
         manager.createNotificationChannel(
             NotificationChannel(
                 CHANNEL_MESSAGES,
-                CHANNEL_MESSAGES_NAME,
+                context.getString(com.example.common.R.string.notification_channel_messages),
                 NotificationManager.IMPORTANCE_DEFAULT,
             ).apply {
-                description = "New chat messages"
+                description = context.getString(com.example.common.R.string.channel_messages_desc)
                 enableVibration(true)
             }
         )
@@ -46,10 +43,10 @@ object NotificationHelper {
         manager.createNotificationChannel(
             NotificationChannel(
                 CHANNEL_CALLS,
-                CHANNEL_CALLS_NAME,
+                context.getString(com.example.common.R.string.incoming_calls_channel_name),
                 NotificationManager.IMPORTANCE_HIGH,
             ).apply {
-                description = "Incoming voice and video calls"
+                description = context.getString(com.example.common.R.string.channel_calls_desc)
                 enableVibration(true)
                 setBypassDnd(true)
             }
@@ -58,10 +55,10 @@ object NotificationHelper {
         manager.createNotificationChannel(
             NotificationChannel(
                 CHANNEL_MISSED_CALLS,
-                CHANNEL_MISSED_CALLS_NAME,
+                context.getString(com.example.common.R.string.notification_channel_missed_calls),
                 NotificationManager.IMPORTANCE_DEFAULT,
             ).apply {
-                description = "Missed calls"
+                description = context.getString(com.example.common.R.string.channel_missed_calls_desc)
             }
         )
     }

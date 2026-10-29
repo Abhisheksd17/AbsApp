@@ -213,9 +213,7 @@ fun UpdateProfile(){
                     try {
                         FirebaseMessaging.getInstance().token
                             .addOnSuccessListener { token ->
-
-                                    tokenViewModel.registerFcmToken(token)
-
+                tokenViewModel.registerFcmToken(token)
                             }
                     } catch (e: Exception) {
                         Log.e("UpdateProfile", "Firebase error", e)
